@@ -6,5 +6,5 @@ trait Natural extends ConstraintAnchor
 
 implicit object Natural extends Constraint[Double, Natural] {
   
-  override def assert(value: Double): Unit = if(value % 1 != 0 || value < 0) throw AssertionError(s"$value is not natural")
+  override def assert(value: Double): Option[String] = if(value % 1 != 0 || value < 0) Some(s"$value is not natural") else None
 }

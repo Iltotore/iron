@@ -1,20 +1,20 @@
 package io.github.iltotore.scalalint.test
 
-import io.github.iltotore.scalalint.constraint.numeric._
-import org.scalatest._
-import flatspec._
-import matchers._
+import io.github.iltotore.scalalint.constraint._, numeric._
+import org.scalatest._, flatspec._, matchers._
 
-class ConstraintSpec extends AnyFlatSpec with should.Matchers {
+class ConstraintSpec extends UnitSpec {
 
-  "The Natural constraint" should "return an error message if the number isn't natural" in {
-    val inputs: Map[Double, Boolean] = Map(
-      -1.0 -> true,
-      1.0 -> false,
-      -1.5 -> true,
-      1.5 -> true
-    )
-    
-    for(input <- inputs) Natural.assert(input(0)).isDefined shouldBe input(1)
+  "The Positive constraint" should "return an error message if the number isn't positive" in {
+    Positive.assert(1).isEmpty shouldBe true
+    Positive.assert(1).isEmpty shouldBe true
+    Positive.assert(-1).isEmpty shouldBe false
+  }
+
+  "A composed constraint" should "include effect of components" in {
+    val positiveAndNotNull = composedConstraint[Double, Positive, NotNull]
+    positiveAndNotNull.assert(1).isEmpty shouldBe true
+    positiveAndNotNull.assert(-1).isEmpty shouldBe false
+    positiveAndNotNull.assert(0).isEmpty shouldBe false
   }
 }

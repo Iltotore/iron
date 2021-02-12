@@ -1,10 +1,12 @@
 package io.github.iltotore.scalalint.constraint
 
+import io.github.iltotore.scalalint.compileTime
+
 import scala.quoted._
 
-trait CompileTimeConstraint[T, C <: ConstraintAnchor] extends Constraint[T, C] {
+trait CompileTimeConstraint[T, C <: ConstraintAnchor] extends InlinedConstraint[T, C] {
 
-  //override inline def assert(value: T): Unit = compileTime(assertCompileTime(value))
+  override inline def assertInlined(inline value: T): Option[String] = compileTime.preAssert(assertCompileTime(value))
 
-  def assertCompileTime(value: T): Unit
+  inline def assertCompileTime(inline value: T): Option[String]
 }

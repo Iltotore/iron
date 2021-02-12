@@ -5,7 +5,7 @@ import org.scalatest._, flatspec._, matchers._
 
 class ConstraintSpec extends UnitSpec {
 
-  "The Positive constraint" should "return an error message if the number isn't positive" in {
+  "A runtime constraint" should "return an error message if the value doesn't match the internal condition" in {
     Positive.assert(1).isEmpty shouldBe true
     Positive.assert(1).isEmpty shouldBe true
     Positive.assert(-1).isEmpty shouldBe false

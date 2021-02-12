@@ -5,10 +5,12 @@ ScalaLint is an advanced type constraints system.
 It allows you to add assertion/conditions to types of parameters, variables or method returned value.
 
 # Features
-| type               | location                                       | state           |
-| ------------------ | ---------------------------------------------- | --------------- |
-| runtime constraint | parameters, variables, method return-type      | ✅              |
-| compile-time constraint | parameters, variables, method return-type | experimental    |
+| type                    | location                                       | state           |
+| ----------------------- | ---------------------------------------------- | --------------- |
+| runtime constraint      | parameters, variables, method return-type      | ✅              |
+| inlined constraint      | parameters, variables, method return-type      | ✅              |
+| compile-time constraint | parameters, variables, method return-type      | experimental    |
+| constraint mixin        | any constraint type                            | ✅              |
 
 # Install
 ScalaLint is pullable from Maven Central.

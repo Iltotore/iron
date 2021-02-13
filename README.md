@@ -1,7 +1,7 @@
 # ScalaLint
 *Compiled Once, Reliable Everywhere.*
 
-ScalaLint is an advanced type constraints system.
+ScalaLint is a refined type system for Dotty.
 It allows you to add assertion/conditions to types of parameters, variables or method returned value.
 
 # Features

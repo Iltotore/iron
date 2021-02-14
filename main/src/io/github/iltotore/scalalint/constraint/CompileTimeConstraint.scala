@@ -8,5 +8,5 @@ trait CompileTimeConstraint[T, C <: ConstraintAnchor] extends InlinedConstraint[
 
   override inline def assertInlined(inline value: T): Option[String] = compileTime.preAssert(assertCompileTime(value))
 
-  inline def assertCompileTime(inline value: T): Option[String]
+  inline def assertCompileTime(inline value: T): Option[(Boolean, String)]
 }

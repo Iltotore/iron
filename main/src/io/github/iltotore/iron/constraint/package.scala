@@ -1,4 +1,4 @@
-package io.github.iltotore.scalalint
+package io.github.iltotore.iron
 
 package object constraint {
 

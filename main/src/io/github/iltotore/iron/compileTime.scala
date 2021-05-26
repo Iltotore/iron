@@ -1,8 +1,8 @@
 
-package io.github.iltotore.scalalint
+package io.github.iltotore.iron
 
 import scala.quoted._
-import io.github.iltotore.scalalint.constraint.AssertionResult
+import io.github.iltotore.iron.constraint.AssertionResult
 
 object compileTime {
 

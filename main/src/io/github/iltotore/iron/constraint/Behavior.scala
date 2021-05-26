@@ -1,4 +1,4 @@
-package io.github.iltotore.scalalint.constraint
+package io.github.iltotore.iron.constraint
 
 trait Behavior[A, B] {
 

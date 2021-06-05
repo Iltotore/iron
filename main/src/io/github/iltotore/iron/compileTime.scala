@@ -2,13 +2,12 @@
 package io.github.iltotore.iron
 
 import scala.quoted._
-import io.github.iltotore.iron.constraint.AssertionResult
 
 object compileTime {
 
-  inline def preAssert(inline value: Boolean): Unit = ${preAssertImpl('value)}
+  inline def preAssert(inline value: Boolean): Boolean = ${preAssertImpl('value)}
 
-  def preAssertImpl(expr: Expr[Boolean])(using quotes: Quotes): Expr[Unit] = {
+  def preAssertImpl(expr: Expr[Boolean])(using quotes: Quotes): Expr[Boolean] = {
 
     expr.value match {
 
@@ -19,6 +18,6 @@ object compileTime {
       case _ =>
     }
 
-    '{()}
+    expr
   }
 }

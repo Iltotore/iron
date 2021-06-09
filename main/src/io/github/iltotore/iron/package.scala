@@ -18,4 +18,5 @@ package object iron {
 
     def unchecked[A, B](value: A): Constrained[A, B] = value
   }
+  
 }

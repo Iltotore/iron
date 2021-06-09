@@ -11,5 +11,6 @@ package object constraint {
     compileTime.preAssert(constraint.assert(value))
     Constrained.unchecked(value)
   }
-  
+
+  implicit inline def constrainedToValue[A, B](constrained: Constrained[A, B]): A = constrained
 }

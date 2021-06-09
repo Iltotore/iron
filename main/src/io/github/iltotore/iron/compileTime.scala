@@ -7,7 +7,7 @@ object compileTime {
 
   inline def preAssert(inline value: Boolean): Boolean = ${preAssertImpl('value)}
 
-  def preAssertImpl(expr: Expr[Boolean])(using quotes: Quotes): Expr[Boolean] = {
+  private def preAssertImpl(expr: Expr[Boolean])(using quotes: Quotes): Expr[Boolean] = {
 
     expr.value match {
 

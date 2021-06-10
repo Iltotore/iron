@@ -1,7 +1,5 @@
 package io.github.iltotore.iron.ordering
 
-import io.github.iltotore.iron.constraint.InlinedOrdering
-
 /**
  * An inline equivalent of scala.Ordering. Each method call is fully inlined at the point of use.
  *

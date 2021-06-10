@@ -1,10 +1,13 @@
-package io.github.iltotore.iron.numeric
+package io.github.iltotore.iron.ordering
+
+import io.github.iltotore.iron.constraint.InlinedOrdering
 
 /**
  * An inline equivalent of scala.Ordering. Each method call is fully inlined at the point of use.
+ *
  * @tparam T
  */
-trait InlineOrdering[T] { outer =>
+trait InlinedOrdering[T] { outer =>
 
   /** Returns whether a comparison between `x` and `y` is defined, and if so
    * the result of `compare(x, y)`.
@@ -98,12 +101,12 @@ trait InlineOrdering[T] { outer =>
   }
 }
 
-object InlineOrdering {
+object InlinedOrdering {
 
   /**
-   * Create an Ordering[T] instance from an InlineOrdering to reduce boilerplate.
+   * Create an Ordering[T] instance from an ordering to reduce boilerplate.
    */
-  given [T](using inlined: InlineOrdering[T]): Ordering[T] with {
+  given [T](using inlined: InlinedOrdering[T]): Ordering[T] with {
     override inline def compare(x: T, y: T): Int = inlined.compareAlias(x, y)
   }
 }

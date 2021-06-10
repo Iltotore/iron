@@ -14,16 +14,6 @@ package object numeric {
   inline given Zero[BigDecimal] = Zero(BigDecimal(0))
 
 
-  type NumericalPrimitive = Byte | Short | Int | Long | Float | Double
-
-  transparent inline def transform(a: NumericalPrimitive): Any = inline a match {
-    case x: Byte   => x
-    case x: Short  => x
-    case x: Int    => x
-    case x: Long   => x
-    case x: Float  => x
-    case x: Double => x
-    case _         => a
-  }
+  type Number = Byte | Short | Int | Long | Float | Double
 
 }

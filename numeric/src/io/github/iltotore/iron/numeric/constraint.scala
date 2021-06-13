@@ -21,6 +21,7 @@ object constraint {
   trait Greater[V]
   type >[A, B] = A ==> Greater[B]
   type Positive[A] = Greater[0]
+  type Natural = Int ==> Positive
 
   class GreaterConstraint[A <: Number, V <: A] extends Constraint[A, Greater[V]] {
     override inline def assert(value: A): Boolean = NumberOrdering.gt(value, constValue[V])

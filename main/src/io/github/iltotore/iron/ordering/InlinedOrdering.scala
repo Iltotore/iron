@@ -20,7 +20,7 @@ trait InlinedOrdering[T] { outer =>
    *  - positive if x > y
    *  - zero otherwise (if x == y)
    */
-  inline def compare(inline x: T, inline y: T): Int
+  transparent inline def compare(inline x: T, inline y: T): Int
 
   inline def compareAlias(inline x: T, inline y: T): Int = compare(x, y)
 

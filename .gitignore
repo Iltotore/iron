@@ -1,4 +1,5 @@
 .idea
 .bsp
+.run
 out
 *.iml

@@ -11,7 +11,7 @@ object constraint {
   type <[A, B] = A ==> Lesser[B]
   type Negative[A] = A ==> Lesser[0]
 
-  class LesserConstraint[V <: Double] extends Constraint[Double, Lesser[V]] {
+  class LesserConstraint[A <: Number, V <: Number] extends Constraint[Number, Lesser[V]] {
     override inline def assert(value: Double): Boolean = value < constValue[V]
   }
 
@@ -22,11 +22,11 @@ object constraint {
   type >[A, B] = A ==> Greater[B]
   type Positive[A] = A ==> Greater[0]
 
-  class GreaterConstraint[V <: Double] extends Constraint[Double, Greater[V]] {
-    override inline def assert(value: Double): Boolean = value > constValue[V]
+  class GreaterConstraint[A <: Number, V <: A] extends Constraint[A, Greater[V]] {
+    override inline def assert(value: A): Boolean = NumberOrdering.gt(value, constValue[V])
   }
 
-  inline given[V <: Double]: GreaterConstraint[V] = new GreaterConstraint
+  inline given[A <: Number, V <: A]: GreaterConstraint[A, V] = new GreaterConstraint
 
 
 }

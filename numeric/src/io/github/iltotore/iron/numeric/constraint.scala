@@ -11,11 +11,11 @@ object constraint {
   type <[A, B] = A ==> Lesser[B]
   type Negative[A] = Lesser[0]
 
-  class LesserConstraint[A <: Number, V <: Number] extends Constraint[Number, Lesser[V]] {
-    override inline def assert(value: Double): Boolean = value < constValue[V]
+  class LesserConstraint[A <: Number, V <: A] extends Constraint[A, Lesser[V]] {
+    override inline def assert(value: A): Boolean = NumberOrdering.lt(value)
   }
 
-  inline given[V <: Double]: LesserConstraint[V] = new LesserConstraint
+  inline given[A <: Number, V <: A]: LesserConstraint[V] = new LesserConstraint
 
 
   trait Greater[V]
@@ -28,6 +28,5 @@ object constraint {
   }
 
   inline given[A <: Number, V <: A]: GreaterConstraint[A, V] = new GreaterConstraint
-
 
 }

@@ -29,4 +29,13 @@ object constraint {
 
   inline given[A <: Number, V <: A]: GreaterConstraint[A, V] = new GreaterConstraint
 
+  trait Divisible[V]
+  type %[A, B] = A ==> Divisible[B]
+
+  class DivisibleConstraint[A <: Number, V <: A] extends Constraint[A, Divisible[V]] {
+    override inline def assert(value: A): Boolean = modulo(value, constValue[V])
+  }
+
+  inline given[A <: Number, V <: A]: DivisibleConstraint[V] = new DivisibleConstraint
+
 }

@@ -7,15 +7,15 @@ import scala.compiletime.{constValue, summonInline}
 
 object constraint {
 
-  trait Lesser[V]
-  type <[A, B] = A ==> Lesser[B]
-  type Negative[A] = Lesser[0]
+  trait Less[V]
+  type <[A, B] = A ==> Less[B]
+  type Negative[A] = Less[0]
 
-  class LesserConstraint[A <: Number, V <: A] extends Constraint[A, Lesser[V]] {
+  class LessConstraint[A <: Number, V <: A] extends Constraint[A, Less[V]] {
     override inline def assert(value: A): Boolean = NumberOrdering.lt(value)
   }
 
-  inline given[A <: Number, V <: A]: LesserConstraint[V] = new LesserConstraint
+  inline given[A <: Number, V <: A]: LessConstraint[V] = new LessConstraint
 
 
   trait Greater[V]

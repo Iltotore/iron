@@ -31,6 +31,7 @@ object constraint {
 
   trait Divisible[V]
   type %[A, B] = A ==> Divisible[B]
+  type Even = Divisible[2]
 
   class DivisibleConstraint[A <: Number, V <: A] extends Constraint[A, Divisible[V]] {
     override inline def assert(value: A): Boolean = modulo(value, constValue[V])

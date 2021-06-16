@@ -33,10 +33,10 @@ object constraint {
 
   type >[A, B] = A ==> Greater[B]
   type Natural1[T] = T > (T match {
-    case Byte => GreaterEqual[0]
-    case Short => GreaterEqual[0]
-    case Int => GreaterEqual[0]
-    case Long => GreaterEqual[0L]
+    case Byte => Greater[0]
+    case Short => Greater[0]
+    case Int => Greater[0]
+    case Long => Greater[0L]
   })
 
   class GreaterConstraint[A <: Number, V <: A] extends Constraint[A, Greater[V]] {

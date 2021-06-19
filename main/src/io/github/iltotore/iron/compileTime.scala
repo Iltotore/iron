@@ -11,9 +11,18 @@ object compileTime {
 
     expr.value match {
 
-      case Some(false) => quotes.reflect.report.error(s"Compile-time assertion failed", expr)
+      case Some(false) => quotes.reflect.report.error("Compile-time assertion failed", expr)
 
-      case None => quotes.reflect.report.warning(s"Unable to evaluate assertion at compile time", expr)
+      case None => System.getProperty("iron.fallback", "error") match {
+
+        case "error" => quotes.reflect.report.error("Unable to evaluate assertion at compile time", expr)
+
+        case "warn" => quotes.reflect.report.warning("Unable to evaluate assertion at compile time", expr)
+
+        case "allow" =>
+
+        case unknown => quotes.reflect.report.error(s"Unknown option: $unknown. Use error|warn|allow")
+      }
 
       case _ =>
     }

@@ -9,7 +9,7 @@ object testCore extends ScalaModule {
 }
 
 trait ScalaTest extends TestModule {
-  def moduleDeps = Seq(testCore, main)
+  def moduleDeps = super.moduleDeps ++ Seq(testCore, main)
   def testFramework = "org.scalatest.tools.Framework"
 }
 
@@ -22,7 +22,7 @@ object main extends ScalaModule with PublishModule {
   def publishVersion = "0.0.1"
 
   def pomSettings = PomSettings(
-    description = "Hardened type constraints for Scala",
+    description = "Type-level assertions for Scala",
     organization = "io.github.iltotore",
     url = "https://github.com/Iltotore/iron",
     licenses = Seq(License.`Apache-2.0`),

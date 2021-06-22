@@ -1,123 +1,97 @@
-# ScalaLint
-*Compiled Once, Reliable Everywhere.*
+# Iron
 
-ScalaLint is a refined type system for Dotty.
-It allows you to add assertion/conditions to types of parameters, variables or method returned value.
+Iron is a type constraint system for Scala. It allows creating type-level assertions, evaluable at compile time and/or
+runtime.
 
-# Features
-| type                    | location                                       | state           |
-| ----------------------- | ---------------------------------------------- | --------------- |
-| runtime constraint      | parameters, variables, method return-type      | ✅              |
-| inlined constraint      | parameters, variables, method return-type      | ✅              |
-| compile-time constraint | parameters, variables, method return-type      | experimental    |
-| constraint mixin        | any constraint type                            | ✅              |
+**Summary:**
 
-# Install
-ScalaLint is pullable from Maven Central.
+- [Features](#Features)
+- [Import in your project](#Import-in-your-project)
+- [Contribute](#Contribute)
 
-<details>
-<summary>Using SBT</summary>
+## Features
+
+### Easy to use
+
+Iron offers a simple way to create type-level assertions using Scala's givens and type aliases.
+This syntactic sugar allows the user to create more readable constraints.
+
+Example of a constraint alias:
 
 ```scala
-libraryDependencies += "io.github.iltotore" %% "scalalint" % "<version>"
+type >[A, B] = A ==> Greater[B]
+
+def log(x: Double > 0d): Double = Math.log(x)
+log(-1d) //Compile time error
 ```
+
+### Minimal overhead
+
+When evaluated at compile time, almost all traces of type constraint disappear. They desugar to only one method returning
+the passed argument:
+
+```scala
+inline def log(x: Double > 0d): Double = Math.log(x)
+log(2d)
+```
+
+Desugars to:
+
+```scala
+Math.log(Constrained.unchecked(2d))
+```
+
+This will go to zero overhead
+in [the next Dotty release](https://github.com/lampepfl/dotty/pull/12815).
+
+### Consistency
+
+Compile time assertions will fallback to runtime (disabled by default) only if they're not evaluable at compile time.
+
+Iron relies heavily on Scala's inline feature instead of macros for compile time evaluation, leading to strong and
+consistent rules:
+
+- Fully inline constraints with inline input are guaranteed to be evaluated at compile time
+- Non-fully inline constraints or inputs will be as optimized as possible by the language through the inline feature and
+  will be evaluated at runtime.
+
+### Configurability
+
+The fallback behaviour can be configured using the `-Diron.fallback` argument to fit your needs:
+
+- error (default): Throw an error if Iron is unable to evaluate the assertion at compile time
+- warn: Warn and fallback to runtime evaluation if Iron is unable to evaluate the assertion at compile
+- allow: Silently fallback to runtime evaluation if required
+
+## Import in your project
+
+<details>
+<summary>
+SBT
+</summary>
+
+```scala
+libraryDependencies += "io.github.iltotore" %% "iron" % "version"
+```
+
 </details>
 
 <details>
-<summary>Using Mill</summary>
+<summary>
+Mill
+</summary>
 
 ```scala
-ivy"io.github.iltotore::scalalint:<version>"
+ivy"io.github.iltotore::iron:version"
 ```
+
 </details>
 
-# Usage
-## Creating a runtime constraint
+Note: Replace `version` with the version of Iron
 
-You firstly need to create a trait extending ConstraintAnchor
+## Contribute
 
-```scala
-import io.github.iltotore.scalalint.constraint.ConstraintAnchor
+There is two main ways to contribute to Iron:
 
-trait Positive extends ConstraintAnchor
-```
-
-You now need to create an implicit instance of Constraint[T, C <: ConstraintAnchor], then override the assert method.
-
-```scala
-import io.github.iltotore.scalalint.constraint.ConstraintAnchor
-
-trait Positive extends ConstraintAnchor
-
-implicit object Positive extends Constraint[Double, Positive] {
-
-  override def assert(value: Double): Option[String] = if (value < 0) Some("$value is not positive") else None
-}
-```
-
-## Use runtime constraints
-
-Simply use `Constrained[OriginalType, Constraint]` as your parameter's type.
-
-```scala
-import io.github.iltotore.scalalint.constraint._
-
-def printThisNumber(number: Constrained[Double, Positive]): Unit = println(number)
-
-printThisNumber(14)
-printThisNumber(0)
-printThisNumber(-3) //Runtime error
-```
-
-## Mix constraints
-
-You can mix multiple constraints together using the `composedConstraint` method.
-
-```scala
-import io.github.iltotore.scalalint.constraint._
-
-def printThisNumber(number: Constrained[Double, Positive & NotNull]): Unit = println(number)
-
-given (Positive & NotNull) = composedConstraint
-
-printThisNumber(14)
-printThisNumber(0) //Runtime error
-printThisNumber(-3) //Runtime error
-```
-
-## Create a compile-time constraint
-
-Compile-time constraint creation is a bit similar to runtime constraints.
-
-```scala
-import io.github.iltotore.scalalint.constraint.ConstraintAnchor
-
-trait Positive extends ConstraintAnchor
-
-implicit object Positive extends CompileTimeConstraint[Double, Positive] { //We use a CompileTimeConstraint instead of a Constraint
-
-  //Use assertCompileTime for compile-time assertions
-  override inline def assertCompileTime(inline value: Double): Option[String] = if (value < 0) Some("$value is not positive") else None 
-}
-```
-
-## Using compile-time constraints
-
-Unlike runtime ones, compile-time constraints need an Inlined class. This class is like a Constrained that requires an inline parameter.
-
-For example, this code doesn't compile at the last line.
-
-```scala
-import io.github.iltotore.scalalint.constraint._
-
-def printThisNumber(number: Inlined[Double, Positive]): Unit = println(number)
-
-given (Positive & NotNull) = composedConstraint
-
-printThisNumber(14)
-printThisNumber(-3)
-```
-
-Actually, the error message only shows up when passing `valueToInlined(T)` to the method. This is due to [an actual Dotty bug](https://github.com/lampepfl/dotty/issues/11386)
-
-**Note: inlined constraints have same features than runtime ones (mixin etc...)**
+- Opening an issue for bugs/feature requests
+- Forking then opening a pull request for changes

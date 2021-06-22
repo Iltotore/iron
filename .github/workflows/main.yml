@@ -24,11 +24,6 @@ jobs:
     steps:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
-
-      - name: Set up Mill
-        # You may pin to the exact commit or the version.
-        # uses: jodersky/setup-mill@af94239cbc21bbae055205855728956d06423bec
-        uses: jodersky/setup-mill@v0.2.3
-        with:
-          # version of mill to use
-          mill-version: 0.9.8
+          
+      - name: Build project
+        run: mill -i __.compile

@@ -26,4 +26,4 @@ jobs:
       - uses: actions/checkout@v2
           
       - name: Build project
-        run: mill -i __.compile
+        run: ./mill -i __.compile

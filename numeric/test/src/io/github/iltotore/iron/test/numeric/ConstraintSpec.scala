@@ -7,7 +7,7 @@ class ConstraintSpec extends UnitSpec {
 
   "A Greater[V] constraint" should "compile if the argument is > V" in {
 
-    def dummy(x: Int ==> Greater[0]): Unit = {}
+    def dummy(x: Int > 0): Unit = {}
 
     "dummy(1)" should compile
     "dummy(-1)" shouldNot compile

@@ -2,6 +2,9 @@ package io.github.iltotore.iron.numeric
 
 import io.github.iltotore.iron.ordering.InlinedOrdering
 
+/**
+ * An InlineOrdering instance for Number
+ */
 implicit object NumberOrdering extends InlinedOrdering[Number] {
 
   override transparent inline def compare(inline x: Number, inline y: Number): Int = inline x match {
@@ -9,7 +12,7 @@ implicit object NumberOrdering extends InlinedOrdering[Number] {
       case b: Byte if a > b => 1
       case b: Byte if a == b => 0
       case b: Byte if a < b => -1
-      case b: Byte => Ordering.Byte.compare(a, b)
+      case b: Byte => Ordering.Byte.compare(a, b) //This "default" case allows runtime evaluation
     }
     case a: Short => inline y match {
       case b: Short if a > b => 1

@@ -7,6 +7,10 @@ import scala.compiletime.{constValue, summonInline}
 
 object constraint {
 
+  /**
+   * Constraint: checks if the input value is less than V.
+   * @tparam V
+   */
   trait Less[V]
 
   type <[A, B] = A ==> Less[B]
@@ -18,6 +22,10 @@ object constraint {
   inline given[A <: Number, V <: A]: LessConstraint[A, V] = new LessConstraint
 
 
+  /**
+   * Constraint: checks if the input value is less or equal to V.
+   * @tparam V
+   */
   trait LessEqual[V]
 
   type <=[A, B] = A ==> LessEqual[B]
@@ -29,10 +37,14 @@ object constraint {
   inline given[A <: Number, V <: A]: LessEqualConstraint[A, V] = new LessEqualConstraint
 
 
+  /**
+   * Constraint: checks if the input value is greater than V.
+   * @tparam V
+   */
   trait Greater[V]
 
   type >[A, B] = A ==> Greater[B]
-  type Natural1[T] = T > (T match {
+  type Natural1[T] = T ==> (T match {
     case Byte => Greater[0]
     case Short => Greater[0]
     case Int => Greater[0]
@@ -46,9 +58,18 @@ object constraint {
   inline given[A <: Number, V <: A]: GreaterConstraint[A, V] = new GreaterConstraint
 
 
+  /**
+   * Constraint: checks if the input value is greater or equal to V.
+   * @tparam V
+   */
   trait GreaterEqual[V]
 
   type >=[A, B] = A ==> GreaterEqual[B]
+
+  /**
+   * Alias for `T >= 0`. Supports all non-floating primitives.
+   * @tparam T the primitive's type.
+   */
   type Natural[T] = T >= (T match {
     case Byte => GreaterEqual[0]
     case Short => GreaterEqual[0]
@@ -62,9 +83,18 @@ object constraint {
 
   inline given[A <: Number, V <: A]: GreaterEqualConstraint[A, V] = new GreaterEqualConstraint
 
+  /**
+   * Constraint: checks if the input value is divisible by V
+   * @tparam V
+   */
   trait Divisible[V]
 
   type %[A, B] = A ==> Divisible[B]
+
+  /**
+   * Alias for `T % 2`. Supports all non-floating primitives.
+   * @tparam T the primitive's type.
+   */
   type Even[T] = T ==> (T match {
     case Byte => Divisible[2]
     case Short => Divisible[2]

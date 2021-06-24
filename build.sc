@@ -27,13 +27,13 @@ object main extends ScalaModule with PublishModule {
   def publishVersion = "0.0.1"
 
   def pomSettings = PomSettings(
-    description = "Type-level assertions for Scala",
+    description = "Hardened type constraints for Scala",
     organization = "io.github.iltotore",
     url = "https://github.com/Iltotore/iron",
     licenses = Seq(License.`Apache-2.0`),
     versionControl = VersionControl.github("Iltotore", "iron"),
     developers = Seq(
-      Developer("Iltotore", "Raphaël FROMENTIN","https://github.com/Iltotore")
+      Developer("Iltotore", "Raphaël FROMENTIN", "https://github.com/Iltotore")
     )
   )
 
@@ -42,7 +42,7 @@ object main extends ScalaModule with PublishModule {
   }
 
   //Rewrite of Mill's docJar to support custom scaladoc source
-  def docJar: T[PathRef] = T {
+  def fullDocJar: T[PathRef] = T {
     val pluginOptions = scalaDocPluginClasspath().map(pluginPathRef =>
       s"-Xplugin:${pluginPathRef.path}")
     val compileCp = Seq(

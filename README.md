@@ -89,6 +89,10 @@ ivy"io.github.iltotore::iron:version"
 
 Note: Replace `version` with the version of Iron
 
+## Useful links
+- [Wiki](https://github.com/Iltotore/wiki)
+- [Scaladoc](https://iltotore.github.io/scaladoc)
+
 ## Contribute
 
 There is two main ways to contribute to Iron:

@@ -26,6 +26,8 @@ object main extends ScalaModule with PublishModule {
 
   def publishVersion = "0.0.1"
 
+  def artifactName = "iron"
+
   def pomSettings = PomSettings(
     description = "Hardened type constraints for Scala",
     organization = "io.github.iltotore",
@@ -158,6 +160,7 @@ trait IronModule extends ScalaModule with PublishModule {
   def moduleDeps = Seq(main)
 
   def publishVersion = s"${main.publishVersion}-$subVersion"
+  def artifactName = s"iron-${super.artifactName()}"
   def pomSettings = main.pomSettings
 }
 

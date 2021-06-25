@@ -1,9 +1,10 @@
 import mill._
-import mill.api.{PathRef, Result}
-import mill.modules.Jvm.createJar
-import mill.scalalib.api.Util.{isDotty, isScala3, isScala3Milestone}
+import api.{PathRef, Result}
+import modules.Jvm.createJar
 import scalalib._
+import scalalib.api.Util.{isDotty, isScala3, isScala3Milestone}
 import publish._
+import os.pwd
 
 //Test core
 object testCore extends ScalaModule {
@@ -24,7 +25,12 @@ object main extends ScalaModule with PublishModule {
 
   def scalaVersion = "3.0.0"
 
-  def publishVersion = "0.0.1"
+  def publishVersion = "0.1.0"
+
+  def majorVersion: T[String] = publishVersion()
+    .split("\\.")
+    .slice(0, 2)
+    .iterator.mkString(".")
 
   def artifactName = "iron"
 
@@ -38,6 +44,8 @@ object main extends ScalaModule with PublishModule {
       Developer("Iltotore", "Raphaël FROMENTIN", "https://github.com/Iltotore")
     )
   )
+
+  def docSources = T.sources(pwd / "docs")
 
   def scaladocFiles = T {
     os.walk(compile().classes.path) ++ os.walk(numeric.compile().classes.path)
@@ -159,18 +167,18 @@ trait IronModule extends ScalaModule with PublishModule {
   def scalaVersion = main.scalaVersion
   def moduleDeps = Seq(main)
 
-  def publishVersion = s"${main.publishVersion}-$subVersion"
+  def publishVersion = s"${main.majorVersion()}-$subVersion"
   def artifactName = s"iron-${super.artifactName()}"
   def pomSettings = main.pomSettings
+
+  def docSources = T.sources(pwd / "docs")
 }
 
 
 //Subprojects
 object numeric extends IronModule {
 
-  def subVersion = "0.0.1"
-
-  def artifactName = "iron-numeric"
+  def subVersion = "0.1.0"
 
   object test extends Tests with ScalaTest
 }

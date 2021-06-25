@@ -44,6 +44,11 @@ object constraint {
   trait Greater[V]
 
   type >[A, B] = A ==> Greater[B]
+
+  /**
+   * Alias for `T > 0`. Supports all non-floating primitives.
+   * @tparam T the primitive's type.
+   */
   type Natural1[T] = T ==> (T match {
     case Byte => Greater[0]
     case Short => Greater[0]

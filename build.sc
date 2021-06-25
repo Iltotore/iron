@@ -45,7 +45,7 @@ object main extends ScalaModule with PublishModule {
     )
   )
 
-  def docSources = T.sources(pwd / "docs")
+  def docSources = T.sources(pwd / "extra")
 
   def scaladocFiles = T {
     os.walk(compile().classes.path) ++ os.walk(numeric.compile().classes.path)
@@ -171,7 +171,7 @@ trait IronModule extends ScalaModule with PublishModule {
   def artifactName = s"iron-${super.artifactName()}"
   def pomSettings = main.pomSettings
 
-  def docSources = T.sources(pwd / "docs")
+  def docSources = T.sources(pwd / "extra")
 }
 
 

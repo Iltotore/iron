@@ -1,6 +1,7 @@
 
 package io.github.iltotore.iron
 
+import constraint.{Constraint, IllegalValueError}
 import scala.quoted._
 
 object compileTime {
@@ -15,34 +16,28 @@ object compileTime {
    * will be evaluated at runtime
    * @param value the asserted boolean (internally treated as an expression)
    */
-  inline def preAssert(inline value: Boolean): Unit = ${preAssertImpl('value)}
+  inline def preAssert[A](inline input: A, inline constraint: Constraint[A, _]): Refined[A] = ${preAssertImpl('input, 'constraint, '{constraint.assert(input)})}
 
-  private def preAssertImpl(expr: Expr[Boolean])(using quotes: Quotes): Expr[Unit] = {
+  private def preAssertImpl[A : Type](input: Expr[A], constraint: Expr[Constraint[A, _]], result: Expr[Boolean])(using quotes: Quotes): Expr[Refined[A]] = {
 
-    expr.value match {
+    result.value match {
 
-      case Some(false) => quotes.reflect.report.error("Compile time assertion failed", expr)
-        '{()}
+      case Some(false) => quotes.reflect.report.error("Compile time assertion failed", result)
 
       case None => System.getProperty("iron.fallback", "error") match {
 
-        case "error" => quotes.reflect.report.error("Unable to evaluate assertion at compile time", expr)
-          '{()}
+        case "error" => quotes.reflect.report.error("Unable to evaluate assertion at compile time", result)
 
-        case "warn" => quotes.reflect.report.warning("Unable to evaluate assertion at compile time", expr)
-          fallback(expr)
+        case "warn" => quotes.reflect.report.warning("Unable to evaluate assertion at compile time", result)
 
-        case "allow" => fallback(expr)
+        case "allow" =>
 
         case unknown => quotes.reflect.report.error(s"Unknown option: $unknown. Use error|warn|allow")
-          '{()}
       }
 
-      case _ => '{()}
+      case _ =>
     }
-  }
 
-  private def fallback(expr: Expr[Boolean])(using Quotes): Expr[Unit] = '{
-    if(!$expr) throw new IllegalArgumentException("Type assertion failed")
+    '{Either.cond($result, $input, IllegalValueError($input, $constraint))}
   }
 }

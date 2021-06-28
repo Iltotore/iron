@@ -54,6 +54,11 @@ consistent rules:
 - Fully inline constraints with inline input are guaranteed to be evaluated at compile time
 - Non-fully inline constraints or inputs will be as optimized as possible by the language through the inline feature and
   will be evaluated at runtime.
+  
+### Functional
+
+Refined parameters return an Either to allow
+[better error handling](https://docs.scala-lang.org/overviews/scala-book/functional-error-handling.html).
 
 ### Configurability
 

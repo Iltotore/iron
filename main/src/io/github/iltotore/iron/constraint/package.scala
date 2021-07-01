@@ -2,7 +2,7 @@ package io.github.iltotore.iron
 
 import io.github.iltotore.iron.{Constrained, compileTime}
 import scala.language.implicitConversions
-import scala.compiletime.constValue
+import scala.compiletime.{constValue, summonInline}
 import scala.math.Ordering.Implicits.infixOrderingOps
 
 package object constraint {
@@ -38,6 +38,7 @@ package object constraint {
 
   /**
    * Constraint: checks if the input value equals (using Any#equals) to V.
+   *
    * @tparam V
    * @note This constraint is runtime-only
    */
@@ -49,4 +50,41 @@ package object constraint {
   }
 
   inline given[A, V <: A]: EqualConstraint[A, V] = new EqualConstraint
+
+
+  /**
+   * Constraint: checks if the input value doesn't pass B's constraint.
+   *
+   * @tparam B the "inverted" constraint's dummy.
+   * @note use the [[Not]] alias instead of [[NotDummy]] directly: {{{
+   *          //Bad
+   *          def inverse(x: Double ==> NotDummy[StrictEqual[0]]): Double = 1/x
+   *
+   *          //Good
+   *          def inverse(x: Double ==> Not[StrictEqual[0]]): Double = 1/x
+   *
+   *          //Even better
+   *          def inverse(x: Double ==> Not[0]): Double = 1/x
+   * }}}
+   */
+  trait NotDummy[B]
+
+  /**
+   * Proxy for NotDummy[B] if B has a constraint. Not[StrictEqual[B]] otherwise.
+   *
+   * @tparam B the constraint's dummy or the value used for StrictEqual[B]
+   */
+  type Not[B] = B match {
+
+    case Constraint[_, _] => NotDummy[B]
+
+    case _ => NotDummy[StrictEqual[B]]
+  }
+
+  class NotConstraint[A, B, C <: Constraint[A, B]](using constraint: C) extends Constraint[A, NotDummy[B]] {
+
+    override inline def assert(value: A): Boolean = !constraint.assert(value)
+  }
+
+  inline given[A, B, C <: Constraint[A, B]](using C): NotConstraint[A, B, C] = new NotConstraint
 }

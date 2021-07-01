@@ -12,4 +12,12 @@ class RuntimeSpec extends UnitSpec {
     assert(dummy(0).isRight)
     assert(dummy(1).isLeft)
   }
+
+  "A Not[B] constraint" should "return Right if the argument doesn't pass " in {
+
+    def dummy(x: Int ==> Equal[0]): Int ==> Equal[0] = x
+
+    assert(dummy(0).isRight)
+    assert(dummy(1).isLeft)
+  }
 }

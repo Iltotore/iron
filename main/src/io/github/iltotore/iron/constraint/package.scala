@@ -55,7 +55,7 @@ package object constraint {
   /**
    * Constraint: checks if the input value doesn't pass B's constraint.
    *
-   * @tparam B the reversed constraint's dummy.
+   * @tparam B the reversed constraint's dummy
    */
   trait Not[B]
 
@@ -69,4 +69,20 @@ package object constraint {
   inline given[A, B, C <: Constraint[A, B]](using C): NotConstraint[A, B, C] = new NotConstraint
 
 
+  /**
+   * Constraint: checks if the value pass B or C. Acts like a boolean OR.
+   *
+   * @tparam B the first constraint's dummy
+   * @tparam C the second constraint's dummy
+   */
+  trait Or[B, C]
+
+  type ||[B, C] = Or[B, C]
+
+  class OrConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using left: CB, right: CC) extends Constraint[A, Or[B, C]] {
+
+    override inline def assert(value: A): Boolean = left.assert(value) || right.assert(value)
+  }
+
+  inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using CB, CC): OrConstraint[A, B, C, CB, CC] = new OrConstraint
 }

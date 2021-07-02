@@ -1,9 +1,7 @@
 package io.github.iltotore.iron.test
 
-import org.scalatest._
-import flatspec._
+import org.scalatest._, flatspec._, matchers._
 import io.github.iltotore.iron._, constraint.{_, given}
-import matchers._
 
 class CompileTimeSpec extends UnitSpec {
 

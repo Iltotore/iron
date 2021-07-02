@@ -85,4 +85,22 @@ package object constraint {
   }
 
   inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using CB, CC): OrConstraint[A, B, C, CB, CC] = new OrConstraint
+
+
+  /**
+   * Constraint: checks if the value pass both B and C. Acts like a boolean AND.
+   *
+   * @tparam B the first constraint's dummy
+   * @tparam C the second constraint's dummy
+   */
+  trait And[B, C]
+
+  type &&[B, C] = And[B, C]
+
+  class AndConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using left: CB, right: CC) extends Constraint[A, And[B, C]] {
+
+    override inline def assert(value: A): Boolean = left.assert(value) && right.assert(value)
+  }
+
+  inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using CB, CC): AndConstraint[A, B, C, CB, CC] = new AndConstraint
 }

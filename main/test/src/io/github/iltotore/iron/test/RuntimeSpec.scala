@@ -29,4 +29,13 @@ class RuntimeSpec extends UnitSpec {
     assert(dummy(1).isRight)
     assert(dummy(2).isLeft)
   }
+
+  "An And[B, C] constraint" should "return Right if the argument satisfies both B and C" in {
+
+    def dummy(x: Int ==> (Positive && Even)): Int ==> (Positive && Even) = x
+
+    assert(dummy(2).isRight)
+    assert(dummy(3).isLeft)
+    assert(dummy(-2).isLeft)
+  }
 }

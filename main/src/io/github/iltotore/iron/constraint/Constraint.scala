@@ -21,3 +21,10 @@ trait Constraint[A, B] {
    */
   inline def runtimeAssert(value: A): Boolean = assert(value)
 }
+
+object Constraint {
+
+  trait RuntimeOnly[A, B] extends Constraint[A, B]
+
+  trait CompileTimeOnly[A, B] extends Constraint[A, B]
+}

@@ -21,8 +21,17 @@ Example of a constraint alias:
 ```scala
 type >[A, B] = A ==> Greater[B]
 
-def log(x: Double > 0d): Double = Math.log(x)
+def log(x: Double > 0d): Refined[Double] = x.map(Math.log)
 log(-1d) //Compile time error
+```
+
+Refined parameters return an Either to allow
+[better error handling](https://docs.scala-lang.org/overviews/scala-book/functional-error-handling.html) when using runtime constraints:
+```scala
+def log(x: Double > 0d): Refined[Double] = x.map(Math.log)
+
+val runtime = 1d
+log(runtime) //Either[IllegalValueError[Double], Double] (Refined[Double])
 ```
 
 ### Minimal overhead
@@ -55,10 +64,6 @@ consistent rules:
 - Non-fully inline constraints or inputs will be as optimized as possible by the language through the inline feature and
   will be evaluated at runtime.
   
-### Functional
-
-Refined parameters return an Either to allow
-[better error handling](https://docs.scala-lang.org/overviews/scala-book/functional-error-handling.html).
 
 ### Configurability
 

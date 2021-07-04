@@ -17,7 +17,7 @@ package object constraint {
    * @return the value as Constrained (meaning "asserted value")
    * @note Due to a type inference bug of Scala 3, [[constrainedToValue]] was moved to the package object.
    */
-  implicit inline def valueToConstrained[A, B](value: A)(using inline constraint: Constraint[A, B]): Constrained[A, B] = {
+  implicit inline def valueToConstrained[A, B, C <: Constraint[A, B]](value: A)(using inline constraint: C): Constrained[A, B] = {
     Constrained(compileTime.preAssert(value, constraint))
   }
 

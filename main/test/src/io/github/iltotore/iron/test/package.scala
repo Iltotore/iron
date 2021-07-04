@@ -10,6 +10,12 @@ package object test {
     override inline def assert(value: Boolean): Boolean = value
   }
 
+  trait DummyCompileTime
+
+  inline given Constraint.CompileTimeOnly[Boolean, DummyCompileTime] with {
+    override inline def assert(value: Boolean): Boolean = value
+  }
+
   trait Positive
 
   inline given Constraint[Int, Positive] with {

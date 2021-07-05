@@ -36,22 +36,22 @@ log(runtime) //Either[IllegalValueError[Double], Double] (Refined[Double])
 
 ### Minimal overhead
 
-When evaluated at compile time, almost all traces of type constraint disappear. They desugar to only one method returning
-the passed argument:
+When evaluated at compile time, almost all traces of type constraint disappear. They desugar directly to a Right
+without unneeded assertion:
 
 ```scala
-inline def log(x: Double > 0d): Double = Math.log(x)
+inline def log(x: Double > 0d): Refined[Double] = x.map(Math.log)
 log(2d)
 ```
 
 Desugars to:
 
 ```scala
-Math.log(Constrained.unchecked(2d))
+Right(Constrained.apply(2d)).map(Math.log)
 ```
 
-This will go to zero overhead
-in [the next Dotty release](https://github.com/lampepfl/dotty/pull/12815).
+Note: Once compiled, `Constrained.apply` returns the passed argument. This dummy method will be remove once
+[the next Dotty release](https://github.com/lampepfl/dotty/pull/12815).
 
 ### Consistency
 
@@ -73,12 +73,12 @@ The fallback behaviour can be configured using the `-Diron.fallback` argument to
 - warn: Warn and fallback to runtime evaluation if Iron is unable to evaluate the assertion at compile
 - allow: Silently fallback to runtime evaluation if required
 
+This behaviour can be configured individually using `Constraint.RuntimeOnly[A, B]` or `Constraint.CompileTimeOnly[A, B]`.
+
 ## Import in your project
 
 <details>
-<summary>
-SBT
-</summary>
+<summary>SBT</summary>
 
 ```scala
 libraryDependencies += "io.github.iltotore" %% "iron" % "version"
@@ -87,9 +87,7 @@ libraryDependencies += "io.github.iltotore" %% "iron" % "version"
 </details>
 
 <details>
-<summary>
-Mill
-</summary>
+<summary>Mill</summary>
 
 ```scala
 ivy"io.github.iltotore::iron:version"
@@ -102,6 +100,7 @@ Note: Replace `version` with the version of Iron
 ## Useful links
 - [Wiki](https://github.com/Iltotore/wiki)
 - [Scaladoc](https://iltotore.github.io/iron/scaladoc)
+- [Ask a question (Issues section)](https://github.com/Iltotore/iron/issues)
 
 ## Contribute
 

@@ -17,9 +17,7 @@ object compileTime {
    *
    * @param value the asserted boolean (internally treated as an expression)
    */
-  inline def preAssert[A, B, C <: Constraint[A, B]](inline input: A, inline constraint: C): Refined[A] = $
-  {preAssertImpl('input, 'constraint, '
-  {constraint.assert(input)})}
+  inline def preAssert[A, B, C <: Constraint[A, B]](inline input: A, inline constraint: C): Refined[A] = ${preAssertImpl('input, 'constraint, '{constraint.assert(input)})}
 
   private def preAssertImpl[A: Type, B: Type, C <: Constraint[A, B]: Type](input: Expr[A], constraint: Expr[C], result: Expr[Boolean])(using quotes: Quotes): Expr[Refined[A]] = {
 

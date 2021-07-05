@@ -29,6 +29,9 @@ class CompileTimeSpec extends UnitSpec {
 
     "dummy(true)" should compile
     "dummy(false)" should compile
+
+    "valueToConstrained[Boolean, Dummy](true)" should compile
+    "valueToConstrained[Boolean, Dummy](false)" shouldNot compile
   }
 
   "A StrictEqual[V] constraint" should "compile if the argument == V" in {

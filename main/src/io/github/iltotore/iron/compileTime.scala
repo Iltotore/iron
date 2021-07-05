@@ -21,17 +21,18 @@ object compileTime {
   {preAssertImpl('input, 'constraint, '
   {constraint.assert(input)})}
 
-  private def preAssertImpl[A: Type, B: Type, C <: Constraint[A, B]: Type](input: Expr[A], constraint: Expr[C], result: Expr[Boolean])(using quotes: Quotes, c: Type[Constraint.CompileTimeOnly[?, ?]]): Expr[Refined[A]] = {
+  private def preAssertImpl[A: Type, B: Type, C <: Constraint[A, B]: Type](input: Expr[A], constraint: Expr[C], result: Expr[Boolean])(using quotes: Quotes): Expr[Refined[A]] = {
 
     import quotes.reflect.*
 
     result.value match {
 
-      case Some(false) => report.error("Compile time assertion failed", result)
+      case Some(false) if !(TypeRepr.of[C] <:< TypeRepr.of[Constraint.RuntimeOnly[?, ?]]) =>
+        report.error("Compile time assertion failed", result)
 
       case None => System.getProperty("iron.fallback", "error") match {
 
-        case _ if TypeRepr.of[C] <:< quotes.reflect.TypeRepr.of[Constraint.CompileTimeOnly[?, ?]] =>
+        case _ if TypeRepr.of[C] <:< TypeRepr.of[Constraint.CompileTimeOnly[?, ?]] =>
           report.error("Unable to evaluate CompileTimeOnly assertion", result)
 
         case "error" => report.error("Unable to evaluate assertion at compile time", result)

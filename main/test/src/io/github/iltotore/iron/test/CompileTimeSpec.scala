@@ -13,7 +13,7 @@ class CompileTimeSpec extends UnitSpec {
     "dummy(false)" shouldNot compile
   }
 
-  "A compile-only constraint" should "abort compilation if unable to be evaluated at compile time" in {
+  "A compiletime-only constraint" should "abort compilation if unable to be evaluated at compile time" in {
 
     def dummy(x: Boolean ==> DummyCompileTime): Unit = {}
 
@@ -21,6 +21,13 @@ class CompileTimeSpec extends UnitSpec {
     "dummy(false)" shouldNot compile
     """val test = true
       dummy(test)""" shouldNot compile
+  }
+
+  "A runtime-only constraint" should "be evaluated at runtime only" in {
+
+    def dummy(x: Boolean ==> DummyRuntime): Unit = {}
+
+    "dummy(false)" should compile
   }
 
   "A StrictEqual[V] constraint" should "compile if the argument == V" in {

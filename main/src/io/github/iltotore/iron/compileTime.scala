@@ -30,7 +30,7 @@ object compileTime {
       case Some(false) if !(TypeRepr.of[C] <:< TypeRepr.of[Constraint.RuntimeOnly[?, ?]]) =>
         report.error("Compile time assertion failed", result)
 
-      case None => System.getProperty("iron.fallback", "error") match {
+      case None => System.getProperty("iron.fallback", "allow") match {
 
         case _ if TypeRepr.of[C] <:< TypeRepr.of[Constraint.CompileTimeOnly[?, ?]] =>
           report.error("Unable to evaluate CompileTimeOnly assertion", result)

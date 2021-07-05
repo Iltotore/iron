@@ -27,6 +27,7 @@ class CompileTimeSpec extends UnitSpec {
 
     def dummy(x: Boolean ==> DummyRuntime): Unit = {}
 
+    "dummy(true)" should compile
     "dummy(false)" should compile
   }
 

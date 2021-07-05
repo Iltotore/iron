@@ -14,25 +14,34 @@ object compileTime {
    *
    * - Non-fully inline constraints or inputs will be as optimized as possible by the language through the inline feature and
    * will be evaluated at runtime
+   *
    * @param value the asserted boolean (internally treated as an expression)
    */
-  inline def preAssert[A](inline input: A, inline constraint: Constraint[A, _]): Refined[A] = ${preAssertImpl('input, 'constraint, '{constraint.assert(input)})}
+  inline def preAssert[A, B, C <: Constraint[A, B]](inline input: A, inline constraint: C): Refined[A] = $
+  {preAssertImpl('input, 'constraint, '
+  {constraint.assert(input)})}
 
-  private def preAssertImpl[A : Type](input: Expr[A], constraint: Expr[Constraint[A, _]], result: Expr[Boolean])(using quotes: Quotes): Expr[Refined[A]] = {
+  private def preAssertImpl[A: Type, B: Type, C <: Constraint[A, B]: Type](input: Expr[A], constraint: Expr[C], result: Expr[Boolean])(using quotes: Quotes): Expr[Refined[A]] = {
+
+    import quotes.reflect.*
 
     result.value match {
 
-      case Some(false) => quotes.reflect.report.error("Compile time assertion failed", result)
+      case Some(false) if !(TypeRepr.of[C] <:< TypeRepr.of[Constraint.RuntimeOnly[?, ?]]) =>
+        report.error("Compile time assertion failed", result)
 
-      case None => System.getProperty("iron.fallback", "error") match {
+      case None => System.getProperty("iron.fallback", "allow") match {
 
-        case "error" => quotes.reflect.report.error("Unable to evaluate assertion at compile time", result)
+        case _ if TypeRepr.of[C] <:< TypeRepr.of[Constraint.CompileTimeOnly[?, ?]] =>
+          report.error("Unable to evaluate CompileTimeOnly assertion", result)
 
-        case "warn" => quotes.reflect.report.warning("Unable to evaluate assertion at compile time", result)
+        case "error" => report.error("Unable to evaluate assertion at compile time", result)
+
+        case "warn" => report.warning("Unable to evaluate assertion at compile time", result)
 
         case "allow" =>
 
-        case unknown => quotes.reflect.report.error(s"Unknown option: $unknown. Use error|warn|allow")
+        case unknown => report.error(s"Unknown option: $unknown. Use error|warn|allow")
       }
 
       case _ =>

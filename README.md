@@ -1,4 +1,4 @@
-![logo](iron.png)
+![logo](logo.png)
 
 [![iron Scala version support](https://index.scala-lang.org/iltotore/iron/iron/latest-by-scala-version.svg)](https://index.scala-lang.org/iltotore/iron/iron)
 [![example workflow](https://github.com/Iltotore/iron/actions/workflows/main.yml/badge.svg)](https://github.com/Iltotore/iron/actions/workflows/main.yml)
@@ -29,7 +29,7 @@ log(-1d) //Compile time error
 ```
 
 Refined parameters return an Either to allow
-[better error handling](https://docs.scala-lang.org/overviews/scala-book/functional-error-handling.html) when using
+[functional error handling](https://docs.scala-lang.org/overviews/scala-book/functional-error-handling.html) when using
 runtime constraints:
 ```scala
 def log(x: Double > 0d): Refined[Double] = x.map(Math.log)

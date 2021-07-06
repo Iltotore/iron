@@ -1,4 +1,4 @@
-# Iron
+![logo](iron.png)
 
 Iron is a type constraint system for Scala. It allows creating type-level assertions, evaluable at compile time and/or
 runtime.
@@ -26,7 +26,8 @@ log(-1d) //Compile time error
 ```
 
 Refined parameters return an Either to allow
-[better error handling](https://docs.scala-lang.org/overviews/scala-book/functional-error-handling.html) when using runtime constraints:
+[better error handling](https://docs.scala-lang.org/overviews/scala-book/functional-error-handling.html) when using
+runtime constraints:
 ```scala
 def log(x: Double > 0d): Refined[Double] = x.map(Math.log)
 
@@ -50,7 +51,7 @@ Desugars to:
 Right(Constrained.apply(2d)).map(Math.log)
 ```
 
-Note: Once compiled, `Constrained.apply` returns the passed argument. This dummy method will be remove once
+Note: Once compiled, `Constrained.apply` returns the passed argument. This dummy method will be removed once
 [the next Dotty release](https://github.com/lampepfl/dotty/pull/12815).
 
 ### Consistency

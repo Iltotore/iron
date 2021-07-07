@@ -23,6 +23,12 @@ package object constraint {
 
   extension [A](a: A) {
 
+    /**
+     * Ensure that `a` passes B's constraint
+     * @tparam B the constraint's dummy
+     * @return the value as Constrained
+     * @see [[refineValue]]
+     */
     def refined[B](using Constraint[A, B]): Constrained[B] = refineValue[A, B, Constraint[A, B]]
   }
 

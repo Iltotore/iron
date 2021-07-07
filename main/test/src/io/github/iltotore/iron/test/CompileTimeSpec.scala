@@ -33,7 +33,7 @@ class CompileTimeSpec extends UnitSpec {
 
   "A StrictEqual[V] constraint" should "compile if the argument == V" in {
 
-    def dummy(x: Int == 0): Unit = {}
+    def dummy(x: Int == 0): Unit = ???
 
     "dummy(0)" should compile
     "dummy(1)" shouldNot compile

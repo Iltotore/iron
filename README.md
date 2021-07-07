@@ -101,6 +101,12 @@ ivy"io.github.iltotore::iron:version"
 
 Note: Replace `version` with the version of Iron
 
+## Modules
+Iron modules are versioned using the schema `ironMajorVersion-moduleVersion`.
+
+Official modules:
+- [Numeric](https://github.com/Iltotore/iron/tree/main/numeric)
+
 ## Useful links
 - [Wiki](https://github.com/Iltotore/wiki)
 - [Scaladoc](https://iltotore.github.io/iron/scaladoc)

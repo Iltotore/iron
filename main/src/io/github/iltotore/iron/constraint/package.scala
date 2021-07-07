@@ -29,7 +29,7 @@ package object constraint {
      * @return the value as Constrained
      * @see [[refineValue]]
      */
-    def refined[B](using Constraint[A, B]): Constrained[B] = refineValue[A, B, Constraint[A, B]]
+    def refined[B](using Constraint[A, B]): Constrained[A, B] = refineValue[A, B, Constraint[A, B]](a)
   }
 
   /**

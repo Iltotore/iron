@@ -6,4 +6,4 @@ package io.github.iltotore.iron.constraint
  * @param constraint the type constraint applied to [[input]]
  * @tparam A the input type
  */
-case class IllegalValueError[A](input: A, constraint: Constraint[A, _]) extends Error
+case class IllegalValueError[A](input: A, constraint: Constraint[A, ?]) extends Error

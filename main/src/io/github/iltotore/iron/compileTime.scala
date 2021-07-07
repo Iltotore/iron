@@ -2,7 +2,7 @@
 package io.github.iltotore.iron
 
 import constraint.{Constraint, IllegalValueError}
-import scala.quoted._
+import scala.quoted.*
 
 object compileTime {
 

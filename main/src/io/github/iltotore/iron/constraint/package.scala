@@ -21,6 +21,11 @@ package object constraint {
     Constrained(compileTime.preAssert(value, constraint))
   }
 
+  extension [A](a: A) {
+
+    def refined[B](using Constraint[A, B]): Constrained[B] = refineValue[A, B, Constraint[A, B]]
+  }
+
   /**
    * Constraint: checks if the input value strictly equals to V.
    * @tparam V

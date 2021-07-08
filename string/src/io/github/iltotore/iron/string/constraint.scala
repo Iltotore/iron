@@ -18,4 +18,14 @@ object constraint {
   inline given Constraint.RuntimeOnly[String, UpperCase] with {
     override inline def assert(value: String): Boolean = value equals value.toUpperCase
   }
+
+  trait Match[V]
+
+  type Alphanumeric = Match["^[a-z0-9]+"]
+  type URLLike = Match[raw"^(?:http(s)?:\/\/)?[\w.-]+(?:\.[\w\.-]+)+[\w\-\._~:/?#[\]@!\$&'\(\)\*\+,;=.]+$"]
+  type UUIDLike = Match[raw"^([0-9a-fA-F]{8}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{4}\-[0-9a-fA-F]{12})"]
+
+  inline given [V <: String]: Constraint.RuntimeOnly[String, Match[V]] with {
+    override inline def assert(value: String): Boolean = constValue[V].r.matches(value)
+  }
 }

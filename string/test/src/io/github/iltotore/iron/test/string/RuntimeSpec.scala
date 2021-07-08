@@ -13,4 +13,13 @@ class RuntimeSpec extends UnitSpec {
     assert(dummy("abc").isRight)
     assert(dummy("ABC").isLeft)
   }
+
+  "An UpperCase constraint" should "return Right if the argument is upper case" in {
+
+    def dummy(x: String ==> UpperCase): String ==> UpperCase = x
+
+    assert(dummy("ABC").isRight)
+    assert(dummy("abc").isLeft)
+  }
+  
 }

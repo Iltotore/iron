@@ -182,3 +182,10 @@ object numeric extends IronModule {
 
   object test extends Tests with ScalaTest
 }
+
+object string extends IronModule {
+
+  def subVersion = "0.1.0"
+
+  object test extends Tests with ScalaTest
+}

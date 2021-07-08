@@ -7,18 +7,28 @@ import scala.compiletime.constValue
 
 object constraint {
 
+  /**
+   * Constraint: checks if the input value is lower case.
+   */
   trait LowerCase
 
   inline given Constraint.RuntimeOnly[String, LowerCase] with {
     override inline def assert(value: String): Boolean = value equals value.toLowerCase
   }
 
+  /**
+   * Constraint: checks if the input value is upper case.
+   */
   trait UpperCase
 
   inline given Constraint.RuntimeOnly[String, UpperCase] with {
     override inline def assert(value: String): Boolean = value equals value.toUpperCase
   }
 
+  /**
+   * Constraint: checks if the input value matches V.
+   * @tparam V the regex to match with.
+   */
   trait Match[V]
 
   type Alphanumeric = Match["^[a-z0-9]+"]

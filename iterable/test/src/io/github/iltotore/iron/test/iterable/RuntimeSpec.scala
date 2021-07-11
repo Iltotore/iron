@@ -31,4 +31,12 @@ class RuntimeSpec extends UnitSpec {
     assert(dummy(0 until 2).isLeft)
     assert(dummy(0 until 5).isLeft)
   }
+
+  "A Contains[V] constraint" should "return Right if the argument contains V" in {
+
+    def dummy(x: Iterable[Int] ==> Contains[2]): Iterable[Int] ==> Contains[2] = x
+
+    assert(dummy(Seq(1, 2, 3)).isRight)
+    assert(dummy(Seq(1, 3, 4)).isLeft)
+  }
 }

@@ -37,4 +37,14 @@ object constraint {
   inline given [T, A <: Iterable[T], V <: Int]: Constraint.RuntimeOnly[A, Size[V]] with {
     override inline def assert(value: A): Boolean = value.size == constValue[V]
   }
+
+  /**
+   * Constraint: checks if the input contains V
+   * @tparam V
+   */
+  trait Contains[V]
+
+  inline given [T, A <: Iterable[T], V <: T]: Constraint.RuntimeOnly[A, Contains[V]] with {
+    override inline def assert(value: A): Boolean = value.iterator.contains(constValue[V])
+  }
 }

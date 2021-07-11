@@ -38,6 +38,8 @@ object constraint {
     override inline def assert(value: A): Boolean = value.size == constValue[V]
   }
 
+  type Empty = Size[0]
+
   /**
    * Constraint: checks if the input contains V
    * @tparam V

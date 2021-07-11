@@ -189,3 +189,10 @@ object string extends IronModule {
 
   object test extends Tests with ScalaTest
 }
+
+object iterable extends IronModule {
+
+  def subVersion = "0.1.0"
+
+  object test extends Tests with ScalaTest
+}

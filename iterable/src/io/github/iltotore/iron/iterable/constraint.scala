@@ -8,18 +8,30 @@ import scala.collection.Iterable
 
 object constraint {
 
+  /**
+   * Constraint: checks if the input has a size greater or equal to V
+   * @tparam V
+   */
   trait MinSize[V]
 
   inline given [T, A <: Iterable[T], V <: Int]: Constraint.RuntimeOnly[A, MinSize[V]] with {
     override inline def assert(value: A): Boolean = value.size >= constValue[V]
   }
 
+  /**
+   * Constraint: checks if the input has a size lesser or equal to V
+   * @tparam V
+   */
   trait MaxSize[V]
 
   inline given [T, A <: Iterable[T], V <: Int]: Constraint.RuntimeOnly[A, MaxSize[V]] with {
     override inline def assert(value: A): Boolean = value.size <= constValue[V]
   }
 
+  /**
+   * Constraint: checks if the input has a size of V
+   * @tparam V
+   */
   trait Size[V]
 
   inline given [T, A <: Iterable[T], V <: Int]: Constraint.RuntimeOnly[A, Size[V]] with {

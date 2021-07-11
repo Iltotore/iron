@@ -10,6 +10,8 @@ runtime.
 
 - [Features](#Features)
 - [Import in your project](#Import-in-your-project)
+- [Modules](#Modules)
+- [Useful links](#Useful-links)
 - [Contribute](#Contribute)
 
 ## Features
@@ -105,7 +107,9 @@ Note: Replace `version` with the version of Iron
 Iron modules are versioned using the schema `ironMajorVersion-moduleVersion`.
 
 Official modules:
+- [Iterable](https://github.com/Iltotore/iron/tree/main/iterable)
 - [Numeric](https://github.com/Iltotore/iron/tree/main/numeric)
+- [String](https://github.com/Iltotore/iron/tree/main/string)
 
 ## Useful links
 - [Wiki](https://github.com/Iltotore/wiki)

@@ -112,7 +112,7 @@ Official modules:
 - [String](https://github.com/Iltotore/iron/tree/main/string)
 
 ## Useful links
-- [Wiki](https://github.com/Iltotore/wiki)
+- [Wiki](https://github.com/Iltotore/iron/wiki)
 - [Scaladoc](https://iltotore.github.io/iron/scaladoc)
 - [Ask a question (Issues section)](https://github.com/Iltotore/iron/issues)
 

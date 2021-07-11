@@ -19,4 +19,10 @@ object constraint {
   inline given [T, A <: Iterable[T], V <: Int]: Constraint.RuntimeOnly[A, MaxSize[V]] with {
     override inline def assert(value: A): Boolean = value.size <= constValue[V]
   }
+
+  trait Size[V]
+
+  inline given [T, A <: Iterable[T], V <: Int]: Constraint.RuntimeOnly[A, Size[V]] with {
+    override inline def assert(value: A): Boolean = value.size == constValue[V]
+  }
 }

@@ -43,6 +43,8 @@ val runtime = 1d
 log(runtime) //Either[IllegalValueError[Double], Double] (Refined[Double])
 ```
 
+More information on [the wiki](https://github.com/Iltotore/iron/wiki/Constraint-Usage).
+
 ### Minimal overhead
 
 When evaluated at compile time, almost all traces of type constraint disappear. They desugar directly to a Right

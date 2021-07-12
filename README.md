@@ -24,6 +24,9 @@ This syntactic sugar allows the user to create more readable constraints.
 Example of a constraint alias:
 
 ```scala
+//This is mainly implicit functions/instances but if you prefer without star import, you can specify them.
+import iron.*, constraint.*, numeric.constraint.{given, Greater}
+
 type >[A, B] = A ==> Greater[B]
 
 def log(x: Double > 0d): Refined[Double] = x.map(Math.log)

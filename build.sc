@@ -48,7 +48,10 @@ object main extends ScalaModule with PublishModule {
   def docSources = T.sources(pwd / "extra")
 
   def scaladocFiles = T {
-    os.walk(compile().classes.path) ++ os.walk(numeric.compile().classes.path)
+    os.walk(compile().classes.path) ++
+      os.walk(numeric.compile().classes.path) ++
+      os.walk(string.compile().classes.path) ++
+      os.walk(iterable.compile().classes.path)
   }
 
   //Rewrite of Mill's docJar to support custom scaladoc source

@@ -1,7 +1,8 @@
-package io.github.iltotore.iron.test
+package io.github.iltotore.iron.test.main
 
 import org.scalatest._, flatspec._, matchers._
 import io.github.iltotore.iron._, constraint.{_, given}
+import io.github.iltotore.iron.test.{*, given}
 
 class RuntimeSpec extends UnitSpec {
 

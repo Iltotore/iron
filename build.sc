@@ -11,6 +11,7 @@ object testCore extends ScalaModule {
 
   def scalaVersion = "3.0.0"
 
+  def moduleDeps = super.moduleDeps :+ main
   def ivyDeps = Agg(ivy"org.scalatest::scalatest:3.2.9")
 }
 

@@ -6,7 +6,7 @@ import io.github.iltotore.iron.constraint.IllegalValueError
 
 package object catsSupport {
 
-  type AccumulatedRefined[A] = Either[NonEmptyList[IllegalValueError[A]], A]
+  type AccumulatedRefined[A] = Either[NonEmptyList[IllegalValueError[?]], A]
 
   extension [A](refined: Refined[A]) {
 

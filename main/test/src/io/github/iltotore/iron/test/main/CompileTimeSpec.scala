@@ -3,7 +3,7 @@ package io.github.iltotore.iron.test.main
 import org.scalatest._, flatspec._, matchers._
 import io.github.iltotore.iron._, constraint.{_, given}
 
-import io.github.iltotore.iron.test.{Dummy, UnitSpec, given}
+import io.github.iltotore.iron.test.{_, given}
 
 class CompileTimeSpec extends UnitSpec {
 

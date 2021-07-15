@@ -48,24 +48,33 @@ object main extends ScalaModule with PublishModule {
 
   def docSources = T.sources(pwd / "extra")
 
-  def scaladocFiles = T {
-    os.walk(compile().classes.path) ++
-      os.walk(numeric.compile().classes.path) ++
-      os.walk(string.compile().classes.path) ++
-      os.walk(iterable.compile().classes.path)
+  def fullScaladocModules: Agg[ScalaModule] = Agg(
+    main,
+    cats,
+    iterable,
+    numeric,
+    string
+  )
+
+  def fullScaladocClasspath = T {
+    T.sequence(fullScaladocModules.map(_.compileClasspath).iterator.toSeq)()
+      .flatten
+      .filter(_.path.ext != "pom")
+      .map(_.path)
+  }
+
+  def fullScaladocFiles = T {
+    T.sequence(fullScaladocModules.map(_.compile).iterator.toSeq)()
+      .flatMap(result => os.walk(result.classes.path))
+      .filter(_.ext == "tasty")
+      .map(_.toString)
   }
 
   //Rewrite of Mill's docJar to support custom scaladoc source
   def fullDocJar: T[PathRef] = T {
     val pluginOptions = scalaDocPluginClasspath().map(pluginPathRef =>
       s"-Xplugin:${pluginPathRef.path}")
-    val compileCp = Seq(
-      "-classpath",
-      compileClasspath()
-        .filter(_.path.ext != "pom")
-        .map(_.path)
-        .mkString(java.io.File.pathSeparator)
-    )
+    val compileCp = Seq("-classpath", fullScaladocClasspath().mkString(java.io.File.pathSeparator))
 
     def packageWithZinc(options: Seq[String],
                         files: Seq[String],
@@ -88,77 +97,40 @@ object main extends ScalaModule with PublishModule {
       }
     }
 
-    if (isDotty(scalaVersion()) || isScala3Milestone(scalaVersion())) { // dottydoc
-      val javadocDir = T.dest / "javadoc"
-      os.makeDir.all(javadocDir)
+    val javadocDir = T.dest / "javadoc"
+    os.makeDir.all(javadocDir)
 
-      for {
-        ref <- docSources()
-        docSource = ref.path
-        if os.exists(docSource) && os.isDir(docSource)
-        children = os.walk(docSource)
-        child <- children
-        if os.isFile(child)
-      } {
-        os.copy.over(
-          child,
-          javadocDir / (child.subRelativeTo(docSource)),
-          createFolders = true)
-      }
-      packageWithZinc(
-        Seq("-siteroot", javadocDir.toNIO.toString),
-        allSourceFiles().map(_.path.toString),
-        javadocDir / "_site"
-      )
+    // Scaladoc 3 allows including static files in documentation, but it only
+    // supports one directory. Hence, to allow users to generate files
+    // dynamically, we consolidate all files from all `docSources` into one
+    // directory.
+    val combinedStaticDir = T.dest / "static"
+    os.makeDir.all(combinedStaticDir)
 
-    } else if (isScala3(scalaVersion())) { // scaladoc 3
-      val javadocDir = T.dest / "javadoc"
-      os.makeDir.all(javadocDir)
-
-      // Scaladoc 3 allows including static files in documentation, but it only
-      // supports one directory. Hence, to allow users to generate files
-      // dynamically, we consolidate all files from all `docSources` into one
-      // directory.
-      val combinedStaticDir = T.dest / "static"
-      os.makeDir.all(combinedStaticDir)
-
-      for {
-        ref <- docSources()
-        docSource = ref.path
-        if os.exists(docSource) && os.isDir(docSource)
-        children = os.walk(docSource)
-        child <- children
-        if os.isFile(child)
-      } {
-        os.copy.over(
-          child,
-          combinedStaticDir / (child.subRelativeTo(docSource)),
-          createFolders = true)
-      }
-
-      packageWithZinc(
-        Seq(
-          "-d",
-          javadocDir.toNIO.toString,
-          "-siteroot",
-          combinedStaticDir.toNIO.toString
-        ),
-        scaladocFiles()
-          .filter(_.ext == "tasty")
-          .map(_.toString),
-        javadocDir
-      )
-    } else { // scaladoc 2
-      val javadocDir = T.dest / "javadoc"
-      os.makeDir.all(javadocDir)
-
-      packageWithZinc(
-        Seq("-d", javadocDir.toNIO.toString),
-        allSourceFiles().map(_.path.toString),
-        javadocDir
-      )
+    for {
+      ref <- docSources()
+      docSource = ref.path
+      if os.exists(docSource) && os.isDir(docSource)
+      children = os.walk(docSource)
+      child <- children
+      if os.isFile(child)
+    } {
+      os.copy.over(
+        child,
+        combinedStaticDir / (child.subRelativeTo(docSource)),
+        createFolders = true)
     }
 
+    packageWithZinc(
+      Seq(
+        "-d",
+        javadocDir.toNIO.toString,
+        "-siteroot",
+        combinedStaticDir.toNIO.toString
+      ),
+      fullScaladocFiles().iterator.toSeq,
+      javadocDir
+    )
   }
 
   object test extends Tests with ScalaTest

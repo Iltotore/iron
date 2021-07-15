@@ -1,6 +1,6 @@
 package io.github.iltotore.iron.test.catsSupport
 
-import cats.implicits.*, cats.data.*, cats.syntax.all.*
+import cats.implicits.*, cats.data.*, cats.syntax.apply.*
 import cats.Parallel
 
 import org.scalatest._, flatspec._, matchers._
@@ -14,13 +14,13 @@ class RuntimeSpec extends UnitSpec {
 
     case class Foo(a: Boolean, b: Boolean)
 
-    def createFoo(a: Boolean ==> DummyRuntime, b: Boolean ==> DummyRuntime): AccumulatedRefined[Foo] = Parallel.parMap2(
-      a.accumulated,
-      b.accumulated
-    )(Foo.apply)
+    def createFoo(a: Boolean ==> DummyRuntime, b: Boolean ==> DummyRuntime): RefinedNec[Foo] = (
+      a.validatedNec,
+      b.validatedNec
+    ).mapN(Foo.apply)
 
-    assert(createFoo(true, true).isRight)
-    assert(createFoo(false, true).left.exists(_.size == 1))
-    assert(createFoo(false, false).left.exists(_.size == 2))
+    assert(createFoo(true, true).isValid)
+    assert(createFoo(false, true).swap.exists(_.size == 1))
+    assert(createFoo(false, false).swap.exists(_.size == 2))
   }
 }

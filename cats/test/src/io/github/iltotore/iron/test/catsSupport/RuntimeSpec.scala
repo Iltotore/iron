@@ -1,7 +1,7 @@
 package io.github.iltotore.iron.test.catsSupport
 
-import cats.implicits.*, cats.data.*, cats.syntax.apply.*
-import cats.Parallel
+
+import cats.implicits.*, cats.syntax.apply.*
 
 import org.scalatest._, flatspec._, matchers._
 

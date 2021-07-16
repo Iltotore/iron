@@ -112,6 +112,7 @@ Note: Replace `version` with the version of Iron
 Iron modules are versioned using the schema `ironMajorVersion-moduleVersion`.
 
 Official modules:
+- [Cats](https://github.com/Iltotore/iron/tree/main/cats)
 - [Iterable](https://github.com/Iltotore/iron/tree/main/iterable)
 - [Numeric](https://github.com/Iltotore/iron/tree/main/numeric)
 - [String](https://github.com/Iltotore/iron/tree/main/string)

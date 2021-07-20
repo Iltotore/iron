@@ -16,6 +16,8 @@ object constraint {
 
   inline given [T, A <: Iterable[T], V <: Int]: Constraint.RuntimeOnly[A, MinSize[V]] with {
     override inline def assert(value: A): Boolean = value.size >= constValue[V]
+
+    override inline def getMessage(value: A): String = s"Length should be greater or equal to ${constValue[V]}"
   }
 
   /**
@@ -26,6 +28,8 @@ object constraint {
 
   inline given [T, A <: Iterable[T], V <: Int]: Constraint.RuntimeOnly[A, MaxSize[V]] with {
     override inline def assert(value: A): Boolean = value.size <= constValue[V]
+
+    override inline def getMessage(value: A): String = s"Length should be less or equal to ${constValue[V]}"
   }
 
   /**
@@ -36,6 +40,8 @@ object constraint {
 
   inline given [T, A <: Iterable[T], V <: Int]: Constraint.RuntimeOnly[A, Size[V]] with {
     override inline def assert(value: A): Boolean = value.size == constValue[V]
+
+    override inline def getMessage(value: A): String = s"Length should equal to ${constValue[V]}"
   }
 
   type Empty = Size[0]
@@ -48,5 +54,7 @@ object constraint {
 
   inline given [T, A <: Iterable[T], V <: T]: Constraint.RuntimeOnly[A, Contains[V]] with {
     override inline def assert(value: A): Boolean = value.iterator.contains(constValue[V])
+
+    override inline def getMessage(value: A): String = s"Iterable should contain ${constValue[V]}"
   }
 }

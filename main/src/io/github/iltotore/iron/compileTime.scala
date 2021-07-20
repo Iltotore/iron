@@ -17,25 +17,27 @@ object compileTime {
    *
    * @param value the asserted boolean (internally treated as an expression)
    */
-  inline def preAssert[A, B, C <: Constraint[A, B]](inline input: A, inline constraint: C): Refined[A] = ${preAssertImpl('input, 'constraint, '{constraint.assert(input)})}
+  inline def preAssert[A, B, C <: Constraint[A, B]](inline input: A, inline constraint: C): Refined[A] = ${preAssertImpl[A, B, C]('input, '{constraint.getMessage(input)}, '{constraint.assert(input)})}
 
-  private def preAssertImpl[A: Type, B: Type, C <: Constraint[A, B]: Type](input: Expr[A], constraint: Expr[C], result: Expr[Boolean])(using quotes: Quotes): Expr[Refined[A]] = {
+  private def preAssertImpl[A: Type, B: Type, C <: Constraint[A, B]: Type](input: Expr[A], message: Expr[String], result: Expr[Boolean])(using quotes: Quotes): Expr[Refined[A]] = {
 
     import quotes.reflect.*
+
+    val msg = message.value.getOrElse("<Unknown>")
 
     result.value match {
 
       case Some(false) if !(TypeRepr.of[C] <:< TypeRepr.of[Constraint.RuntimeOnly[?, ?]]) =>
-        report.error("Compile time assertion failed", result)
+        report.error(s"Compile time assertion failed: $msg", result)
 
       case None => System.getProperty("iron.fallback", "allow") match {
 
         case _ if TypeRepr.of[C] <:< TypeRepr.of[Constraint.CompileTimeOnly[?, ?]] =>
-          report.error("Unable to evaluate CompileTimeOnly assertion", result)
+          report.error(s"Unable to evaluate CompileTimeOnly assertion: $msg", result)
 
-        case "error" => report.error("Unable to evaluate assertion at compile time", result)
+        case "error" => report.error(s"Unable to evaluate assertion at compile tim: $msg", result)
 
-        case "warn" => report.warning("Unable to evaluate assertion at compile time", result)
+        case "warn" => report.warning(s"Unable to evaluate assertion at compile time: $msg", result)
 
         case "allow" =>
 
@@ -45,6 +47,6 @@ object compileTime {
       case _ =>
     }
 
-    '{Either.cond($result, $input, IllegalValueError($input, $constraint))}
+    '{Either.cond($result, $input, IllegalValueError($input, $message))}
   }
 }

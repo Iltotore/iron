@@ -14,6 +14,8 @@ object constraint {
 
   inline given Constraint.RuntimeOnly[String, LowerCase] with {
     override inline def assert(value: String): Boolean = value equals value.toLowerCase
+
+    override inline def getMessage(value: String): String = s"$value should be lower cased"
   }
 
   /**
@@ -23,6 +25,8 @@ object constraint {
 
   inline given Constraint.RuntimeOnly[String, UpperCase] with {
     override inline def assert(value: String): Boolean = value equals value.toUpperCase
+
+    override inline def getMessage(value: String): String = s"$value should be upper cased"
   }
 
   /**
@@ -37,5 +41,7 @@ object constraint {
 
   inline given [V <: String]: Constraint.RuntimeOnly[String, Match[V]] with {
     override inline def assert(value: String): Boolean = constValue[V].r.matches(value)
+
+    override inline def getMessage(value: String): String = s"$value should match ${constValue[V]}"
   }
 }

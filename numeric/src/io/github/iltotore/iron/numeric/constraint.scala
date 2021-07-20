@@ -17,6 +17,8 @@ object constraint {
 
   class LessConstraint[A <: Number, V <: A] extends Constraint[A, Less[V]] {
     override inline def assert(value: A): Boolean = NumberOrdering.lt(value, constValue[V])
+
+    override inline def getMessage(value: A): String = "value should be less than the specified value"
   }
 
   inline given[A <: Number, V <: A]: LessConstraint[A, V] = new LessConstraint
@@ -32,6 +34,8 @@ object constraint {
 
   class LessEqualConstraint[A <: Number, V <: A] extends Constraint[A, LessEqual[V]] {
     override inline def assert(value: A): Boolean = NumberOrdering.lteq(value, constValue[V])
+
+    override inline def getMessage(value: A): String = "value should be less or equal to the specified value"
   }
 
   inline given[A <: Number, V <: A]: LessEqualConstraint[A, V] = new LessEqualConstraint
@@ -58,6 +62,8 @@ object constraint {
 
   class GreaterConstraint[A <: Number, V <: A] extends Constraint[A, Greater[V]] {
     override inline def assert(value: A): Boolean = NumberOrdering.gt(value, constValue[V])
+
+    override inline def getMessage(value: A): String = "value should be greater than the specified value"
   }
 
   inline given[A <: Number, V <: A]: GreaterConstraint[A, V] = new GreaterConstraint
@@ -84,6 +90,8 @@ object constraint {
 
   class GreaterEqualConstraint[A <: Number, V <: A] extends Constraint[A, GreaterEqual[V]] {
     override inline def assert(value: A): Boolean = NumberOrdering.gteq(value, constValue[V])
+
+    override inline def getMessage(value: A): String = "value should be greater or equal to the specified value"
   }
 
   inline given[A <: Number, V <: A]: GreaterEqualConstraint[A, V] = new GreaterEqualConstraint
@@ -109,6 +117,8 @@ object constraint {
 
   class DivisibleConstraint[A <: Number, V <: A] extends Constraint[A, Divisible[V]] {
     override inline def assert(value: A): Boolean = modulo(value, constValue[V]) == 0
+
+    override inline def getMessage(value: A): String = "value should be divisible by the specified value"
   }
 
   inline given[A <: Number, V <: A]: DivisibleConstraint[A, V] = new DivisibleConstraint

@@ -21,6 +21,13 @@ trait Constraint[A, B] {
    */
   inline def runtimeAssert(value: A): Boolean = assert(value)
 
+  /**
+   * Generate the assertion message using `value`.
+   * @param value the input value
+   * @return the message describing this Constraint
+   * @note For compile-time constraints, you should use only litteral strings to allow the macro to get the value at
+   *       compile-time (and print it correctly when a compile-time error occurs).
+   */
   inline def getMessage(value: A): String
 }
 

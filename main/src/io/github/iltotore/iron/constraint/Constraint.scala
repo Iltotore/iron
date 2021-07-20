@@ -20,6 +20,8 @@ trait Constraint[A, B] {
    * @return true if the assertion is passed, false otherwise
    */
   inline def runtimeAssert(value: A): Boolean = assert(value)
+
+  inline def getMessage(value: A): String
 }
 
 object Constraint {

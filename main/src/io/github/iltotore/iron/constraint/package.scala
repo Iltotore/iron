@@ -42,6 +42,8 @@ package object constraint {
   class StrictEqualConstraint[A, V <: A] extends Constraint[A, StrictEqual[V]] {
 
     override inline def assert(value: A): Boolean = value == constValue[V]
+
+    override inline def getMessage(value: A): String = s"$value should strictly equal to ${constValue[V]}"
   }
 
   inline given[A, V <: A]: StrictEqualConstraint[A, V] = new StrictEqualConstraint
@@ -58,6 +60,8 @@ package object constraint {
   class EqualConstraint[A, V <: A] extends Constraint[A, Equal[V]] {
 
     override inline def assert(value: A): Boolean = value equals constValue[V]
+
+    override inline def getMessage(value: A): String = s"$value should equal to ${constValue[V]}"
   }
 
   inline given[A, V <: A]: EqualConstraint[A, V] = new EqualConstraint
@@ -75,6 +79,8 @@ package object constraint {
   class NotConstraint[A, B, C <: Constraint[A, B]](using constraint: C) extends Constraint[A, Not[B]] {
 
     override inline def assert(value: A): Boolean = !constraint.assert(value)
+
+    override inline def getMessage(value: A): String = s"Not: ${constraint.getMessage(value)}"
   }
 
   inline given[A, B, C <: Constraint[A, B]](using C): NotConstraint[A, B, C] = new NotConstraint
@@ -93,6 +99,8 @@ package object constraint {
   class OrConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using left: CB, right: CC) extends Constraint[A, Or[B, C]] {
 
     override inline def assert(value: A): Boolean = left.assert(value) || right.assert(value)
+
+    override inline def getMessage(value: A): String = s"${left.getMessage(value)} or ${right.getMessage(value)}"
   }
 
   inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using CB, CC): OrConstraint[A, B, C, CB, CC] = new OrConstraint
@@ -111,6 +119,8 @@ package object constraint {
   class AndConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using left: CB, right: CC) extends Constraint[A, And[B, C]] {
 
     override inline def assert(value: A): Boolean = left.assert(value) && right.assert(value)
+
+    override inline def getMessage(value: A): String = s"${left.getMessage(value)} and ${right.getMessage(value)}"
   }
 
   inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using CB, CC): AndConstraint[A, B, C, CB, CC] = new AndConstraint

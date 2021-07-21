@@ -35,7 +35,7 @@ object constraint {
    */
   trait Match[V]
 
-  type Alphanumeric = Match["^[a-z0-9]+"]
+  type Alphanumeric = Match["^[a-zA-Z0-9]+"]
   type URLLike = Match["^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$"]
   type UUIDLike = Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"]
 

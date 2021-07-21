@@ -25,6 +25,7 @@ package object constraint {
 
     /**
      * Ensure that `a` passes B's constraint
+     *
      * @tparam B the constraint's dummy
      * @return the value as Constrained
      * @see [[refineValue]]
@@ -34,9 +35,11 @@ package object constraint {
 
   /**
    * Constraint: checks if the input value strictly equals to V.
+   *
    * @tparam V
    */
   trait StrictEqual[V]
+
   type ==[A, V] = A ==> StrictEqual[V]
 
   class StrictEqualConstraint[A, V <: A] extends Constraint[A, StrictEqual[V]] {
@@ -124,4 +127,23 @@ package object constraint {
   }
 
   inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using CB, CC): AndConstraint[A, B, C, CB, CC] = new AndConstraint
+
+  /**
+   * Constraint: attaches a custom description to the given constraint. Useful when a constraint alias need a more
+   * accurate description.
+   *
+   * @tparam B the wrapped constraint's dummy
+   * @tparam V the description to attach. Must be litteral.
+   * @note This constraint is runtime only.
+   */
+  trait DescribedAs[B, V]
+
+  class DescribedAsConstraint[A, B, C <: Constraint[A, B], V <: String](using constraint: C) extends Constraint.RuntimeOnly[A, DescribedAs[B, V]] {
+
+    override inline def assert(value: A): Boolean = constraint.assert(value)
+
+    override inline def getMessage(value: A): String = constValue[V]
+  }
+
+  inline given[A, B, C <: Constraint[A, B], V <: String](using C): DescribedAsConstraint[A, B, C, V] = new DescribedAsConstraint
 }

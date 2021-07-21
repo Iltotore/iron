@@ -1,7 +1,7 @@
 package io.github.iltotore.iron.string
 
 import io.github.iltotore.iron.==>
-import io.github.iltotore.iron.constraint.Constraint
+import io.github.iltotore.iron.constraint.*
 
 import scala.compiletime.constValue
 
@@ -35,9 +35,13 @@ object constraint {
    */
   trait Match[V]
 
-  type Alphanumeric = Match["^[a-zA-Z0-9]+"]
-  type URLLike = Match["^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$"]
-  type UUIDLike = Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"]
+  type Alphanumeric = Match["^[a-zA-Z0-9]+"] DescribedAs "Value should be alphanumeric"
+
+  type URLLike =
+    Match["^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$"] DescribedAs "Value should be an URL"
+
+  type UUIDLike =
+    Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"] DescribedAs "Value should be an UUID"
 
   inline given [V <: String]: Constraint.RuntimeOnly[String, Match[V]] with {
     override inline def assert(value: String): Boolean = constValue[V].r.matches(value)

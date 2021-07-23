@@ -183,3 +183,15 @@ object cats extends IronModule {
 
   object test extends Tests with ScalaTest
 }
+
+object circe extends IronModule {
+
+  def subVersion = "0.1.0"
+
+  def ivyDeps = super.ivyDeps() ++ Agg(
+    ivy"io.circe::circe-core:0.14.1",
+    ivy"io.circe::circe-parser:0.14.1"
+  )
+
+  object test extends Tests with ScalaTest
+}

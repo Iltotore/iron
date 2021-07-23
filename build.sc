@@ -51,6 +51,7 @@ object main extends ScalaModule with PublishModule {
   def fullScaladocModules: Agg[ScalaModule] = Agg(
     main,
     cats,
+    circe,
     iterable,
     numeric,
     string

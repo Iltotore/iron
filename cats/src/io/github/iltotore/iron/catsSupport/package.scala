@@ -13,19 +13,22 @@ package object catsSupport {
   type RefinedNec[A] = ValidatedNec[IllegalValueError[?], A]
   type RefinedNel[A] = ValidatedNel[IllegalValueError[?], A]
 
+  type RefinedFieldNec[A] = ValidatedNec[IllegalValueError.Field, A]
+  type RefinedFieldNel[A] = ValidatedNel[IllegalValueError.Field, A]
+
   extension [A](refined: Refined[A]) {
 
     /**
      * Transforms this Refined[A] to a ValidatedNec.
      * @return this value as RefinedNec[A]
      */
-    def validatedNec: RefinedNec[A] = refined.toValidatedNec
+    def toValidatedNec: RefinedNec[A] = catsSyntaxEither(refined).toValidated.toValidatedNec
 
     /**
      * Transforms this Refined[A] to a ValidatedNel.
      * @return this value as RefinedNel[A]
      */
-    def validatedNel: RefinedNel[A] = refined.toValidatedNel
+    def toValidatedNel: RefinedNel[A] = catsSyntaxEither(refined).toValidatedNel
 
   }
 }

@@ -15,8 +15,8 @@ class RuntimeSpec extends UnitSpec {
     case class Foo(a: Boolean, b: Boolean)
 
     def createFoo(a: Boolean ==> DummyRuntime, b: Boolean ==> DummyRuntime): RefinedNec[Foo] = (
-      a.validatedNec,
-      b.validatedNec
+      a.toValidatedNec,
+      b.toValidatedNec
     ).mapN(Foo.apply)
 
     assert(createFoo(true, true).isValid)

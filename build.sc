@@ -26,7 +26,7 @@ object main extends ScalaModule with PublishModule {
 
   def scalaVersion = "3.0.0"
 
-  def publishVersion = "1.0"
+  def publishVersion = "1.1"
 
   def majorVersion: T[String] = publishVersion()
     .split("\\.")
@@ -51,6 +51,7 @@ object main extends ScalaModule with PublishModule {
   def fullScaladocModules: Agg[ScalaModule] = Agg(
     main,
     cats,
+    circe,
     iterable,
     numeric,
     string
@@ -179,6 +180,19 @@ object cats extends IronModule {
 
   def ivyDeps = super.ivyDeps() ++ Agg(
     ivy"org.typelevel:cats-core_2.13:2.6.1"
+  )
+
+  object test extends Tests with ScalaTest
+}
+
+object circe extends IronModule {
+
+  def subVersion = "0.1.0"
+
+  def ivyDeps = super.ivyDeps() ++ Agg(
+    ivy"io.circe::circe-core:0.14.1",
+    ivy"io.circe::circe-parser:0.14.1",
+    ivy"io.circe::circe-generic:0.14.1"
   )
 
   object test extends Tests with ScalaTest

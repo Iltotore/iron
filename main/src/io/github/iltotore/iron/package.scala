@@ -13,7 +13,17 @@ package object iron {
    * @tparam A the input type
    */
   type Refined[A] = Either[IllegalValueError[A], A]
+  type RefinedField[A] = Either[IllegalValueError.Field, A]
+  
+  extension [A](refined: Refined[A]) {
 
+    /**
+     * Convert this value to its field-based version.
+     * @param name the field name
+     * @return the RefinedField of this value
+     */
+    def toField(name: String): RefinedField[A] = refined.left.map(_.toField(name))
+  }
 
   /**
    * An alias of Refined marked as "checked".

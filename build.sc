@@ -179,7 +179,7 @@ object cats extends IronModule {
   def subVersion = "0.1.0"
 
   def ivyDeps = super.ivyDeps() ++ Agg(
-    ivy"org.typelevel:cats-core_2.13:2.6.1"
+    ivy"org.typelevel::cats-core:2.6.1"
   )
 
   object test extends Tests with ScalaTest

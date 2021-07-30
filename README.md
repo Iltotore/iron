@@ -122,6 +122,7 @@ Official modules:
 - [Wiki](https://github.com/Iltotore/iron/wiki)
 - [Scaladoc](https://iltotore.github.io/iron/scaladoc)
 - [Ask a question (Issues section)](https://github.com/Iltotore/iron/issues)
+- [A REST API example using Cats and Iron](https://dev.to/davidmm1707/should-you-use-medium-or-dev-to-2g1d)
 
 ## Contribute
 

@@ -4,7 +4,7 @@ import io.circe.{Decoder, Encoder}
 import io.circe.generic.semiauto.deriveEncoder
 import io.github.iltotore.iron.constraint.{Constraint, IllegalValueError, refineValue}
 
-package object circe {
+package object circeSupport {
 
   inline given[A, B, C <: Constraint[A, B]](using inputDecoder: Decoder[A], c: C): Decoder[A ==> B] = inputDecoder
     .map(refineValue[A, B, C](_))

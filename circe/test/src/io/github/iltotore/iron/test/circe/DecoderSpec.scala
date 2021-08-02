@@ -1,6 +1,6 @@
 package io.github.iltotore.iron.test.circe
 
-import io.github.iltotore.iron.*, constraint.{given, *}, circe.{given}, test.{given, *}
+import io.github.iltotore.iron.*, constraint.{given, *}, circeSupport.{given}, test.{given, *}
 import io.circe.parser.*
 
 class DecoderSpec extends UnitSpec {

@@ -142,7 +142,7 @@ trait IronModule extends ScalaModule with PublishModule {
   def subVersion: String
 
   def scalaVersion = main.scalaVersion
-  def moduleDeps = Seq(main)
+  def moduleDeps: Seq[ScalaModule with PublishModule] = Seq(main)
 
   def publishVersion = s"${main.majorVersion()}-$subVersion"
   def artifactName = s"iron-${super.artifactName()}"
@@ -194,6 +194,13 @@ object circe extends IronModule {
     ivy"io.circe::circe-parser:0.14.1",
     ivy"io.circe::circe-generic:0.14.1"
   )
+
+  object test extends Tests with ScalaTest
+}
+
+object io extends IronModule {
+
+  def subVersion = "0.1.0"
 
   object test extends Tests with ScalaTest
 }

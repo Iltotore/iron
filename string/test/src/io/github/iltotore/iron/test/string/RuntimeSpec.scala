@@ -1,6 +1,6 @@
 package io.github.iltotore.iron.test.string
 
-import io.github.iltotore.iron.*, constraint.*, string.constraint.*
+import io.github.iltotore.iron.*, constraint.{*, given}, string.constraint.{*, given}
 import io.github.iltotore.iron.test.UnitSpec
 
 class RuntimeSpec extends UnitSpec {
@@ -30,5 +30,34 @@ class RuntimeSpec extends UnitSpec {
     assert(dummy("123").isRight)
     assert(dummy(" ").isLeft)
     assert(dummy("$!#").isLeft)
+  }
+
+  "An URLLike constraint" should "return Right if the given String is a valid URL" in {
+
+    def dummy(x: String ==> URLLike): String ==> URLLike = x
+
+    //URL samples credits: https://www.regextester.com/94502
+
+    val valid = Seq(
+      "https://www.example.com",
+      "http://www.example.com",
+      "www.example.com",
+      "example.com",
+      "http://blog.example.com",
+      "http://www.example.com/product",
+      "http://www.example.com/products?id=1&page=2",
+      "http://www.example.com#up",
+      "http://255.255.255.255",
+      "255.255.255.255",
+      "http://www.site.com:8008"
+    )
+
+    val invalid = Seq(
+      "http://invalid.com/perl.cgi?key=|",
+      "http//web-site.com/cgi-bin/perl.cgi?key1=value1&key2"
+    )
+
+    for(url <- valid) assert(dummy(url).isRight)
+    for(url <- invalid) assert(dummy(url).isLeft)
   }
 }

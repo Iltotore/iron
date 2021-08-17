@@ -54,7 +54,8 @@ object main extends ScalaModule with PublishModule {
     circe,
     iterable,
     numeric,
-    string
+    string,
+    io
   )
 
   def fullScaladocClasspath = T {

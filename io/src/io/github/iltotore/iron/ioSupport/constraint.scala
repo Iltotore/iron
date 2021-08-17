@@ -8,6 +8,9 @@ import java.nio.file.{Files, Path, Paths}
 
 object constraint {
 
+  /**
+   * Constraint: checks if the input (supported by default: File, Path, String) exists.
+   */
   trait Exists
 
   given Constraint.RuntimeOnly[File, Exists] with {

@@ -38,7 +38,7 @@ object constraint {
   type Alphanumeric = Match["^[a-zA-Z0-9]+"] DescribedAs "Value should be alphanumeric"
 
   type URLLike =
-    Match["^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$"] DescribedAs "Value should be an URL"
+    Match["^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#\\[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$"] DescribedAs "Value should be an URL"
 
   type UUIDLike =
     Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"] DescribedAs "Value should be an UUID"

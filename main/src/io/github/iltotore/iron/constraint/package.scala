@@ -79,7 +79,7 @@ package object constraint {
 
   type \[A, V] = A ==> Not[StrictEqual[V]]
 
-  class NotConstraint[A, B, C <: Constraint[A, B]](using constraint: C) extends Constraint[A, Not[B]] {
+  class NotConstraint[A, B, C <: Constraint[A, B]](using constraint: C) extends Constraint.RuntimeOnly[A, Not[B]] {
 
     override inline def assert(value: A): Boolean = !constraint.assert(value)
 

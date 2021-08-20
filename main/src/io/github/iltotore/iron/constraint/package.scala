@@ -99,7 +99,7 @@ package object constraint {
 
   type ||[B, C] = Or[B, C]
 
-  class OrConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using left: CB, right: CC) extends Constraint[A, Or[B, C]] {
+  class OrConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using left: CB, right: CC) extends Constraint.RuntimeOnly[A, Or[B, C]] {
 
     override inline def assert(value: A): Boolean = left.assert(value) || right.assert(value)
 
@@ -119,7 +119,7 @@ package object constraint {
 
   type &&[B, C] = And[B, C]
 
-  class AndConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using left: CB, right: CC) extends Constraint[A, And[B, C]] {
+  class AndConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using left: CB, right: CC) extends Constraint.RuntimeOnly[A, And[B, C]] {
 
     override inline def assert(value: A): Boolean = left.assert(value) && right.assert(value)
 

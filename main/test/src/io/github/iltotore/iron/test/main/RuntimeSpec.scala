@@ -39,4 +39,13 @@ class RuntimeSpec extends UnitSpec {
     assert(dummy(3).isLeft)
     assert(dummy(-2).isLeft)
   }
+
+  "A RuntimeOnly[B] constraint" should "be evaluated at runtime" in {
+
+    def dummy(x: Int ==> RuntimeOnly[StrictEqual[0]]): Int ==> RuntimeOnly[StrictEqual[0]] = x
+
+    assert(dummy(0).isRight)
+    "dummy(1)" should compile
+    assert(dummy(1).isLeft)
+  }
 }

@@ -146,4 +146,16 @@ package object constraint {
   }
 
   inline given[A, B, C <: Constraint[A, B], V <: String](using C): DescribedAsConstraint[A, B, C, V] = new DescribedAsConstraint
+
+
+  trait RuntimeOnly[B]
+
+  class RuntimeOnlyConstraint[A, B, C <: Constraint[A, B]](using constraint: C) extends Constraint.RuntimeOnly[A, RuntimeOnly[B]] {
+
+    override inline def assert(value: A): Boolean = constraint.assert(value)
+
+    override inline def getMessage(value: A): String = constraint.getMessage(value)
+  }
+
+  inline given [A, B, C <: Constraint[A, B]](using C): RuntimeOnlyConstraint[A, B, C] = new RuntimeOnlyConstraint
 }

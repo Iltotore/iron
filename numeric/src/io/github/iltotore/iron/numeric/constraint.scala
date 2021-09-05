@@ -9,6 +9,7 @@ object constraint {
 
   /**
    * Constraint: checks if the input value is less than V.
+   *
    * @tparam V
    */
   trait Less[V]
@@ -26,6 +27,7 @@ object constraint {
 
   /**
    * Constraint: checks if the input value is less or equal to V.
+   *
    * @tparam V
    */
   trait LessEqual[V]
@@ -43,6 +45,7 @@ object constraint {
 
   /**
    * Constraint: checks if the input value is greater than V.
+   *
    * @tparam V
    */
   trait Greater[V]
@@ -51,6 +54,7 @@ object constraint {
 
   /**
    * Alias for `T > 0`. Supports all non-floating primitives.
+   *
    * @tparam T the primitive's type.
    */
   type Natural1[T] = T ==> (T match {
@@ -71,6 +75,7 @@ object constraint {
 
   /**
    * Constraint: checks if the input value is greater or equal to V.
+   *
    * @tparam V
    */
   trait GreaterEqual[V]
@@ -79,6 +84,7 @@ object constraint {
 
   /**
    * Alias for `T >= 0`. Supports all non-floating primitives.
+   *
    * @tparam T the primitive's type.
    */
   type Natural[T] = T >= (T match {
@@ -98,6 +104,7 @@ object constraint {
 
   /**
    * Constraint: checks if the input value is divisible by V
+   *
    * @tparam V
    */
   trait Divisible[V]
@@ -106,6 +113,7 @@ object constraint {
 
   /**
    * Alias for `T % 2`. Supports all non-floating primitives.
+   *
    * @tparam T the primitive's type.
    */
   type Even[T] = T match {
@@ -113,6 +121,8 @@ object constraint {
     case Short => Divisible[2]
     case Int => Divisible[2]
     case Long => Divisible[2L]
+    case Float => Divisible[2F]
+    case Double => Divisible[2D]
   }
 
   class DivisibleConstraint[A <: Number, V <: A] extends Constraint[A, Divisible[V]] {

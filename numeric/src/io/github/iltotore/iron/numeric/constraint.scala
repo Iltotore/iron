@@ -108,12 +108,12 @@ object constraint {
    * Alias for `T % 2`. Supports all non-floating primitives.
    * @tparam T the primitive's type.
    */
-  type Even[T] = T ==> (T match {
+  type Even[T] = T match {
     case Byte => Divisible[2]
     case Short => Divisible[2]
     case Int => Divisible[2]
     case Long => Divisible[2L]
-  })
+  }
 
   class DivisibleConstraint[A <: Number, V <: A] extends Constraint[A, Divisible[V]] {
     override inline def assert(value: A): Boolean = modulo(value, constValue[V]) == 0

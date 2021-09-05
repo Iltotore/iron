@@ -21,7 +21,7 @@ package object constraint {
     Constrained(compileTime.preAssert(value, constraint))
   }
 
-  extension [A](a: A) {
+  extension[A] (a: A) {
 
     /**
      * Ensure that `a` passes B's constraint
@@ -128,6 +128,7 @@ package object constraint {
 
   inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using CB, CC): AndConstraint[A, B, C, CB, CC] = new AndConstraint
 
+
   /**
    * Constraint: attaches a custom description to the given constraint. Useful when a constraint alias need a more
    * accurate description.
@@ -148,6 +149,10 @@ package object constraint {
   inline given[A, B, C <: Constraint[A, B], V <: String](using C): DescribedAsConstraint[A, B, C, V] = new DescribedAsConstraint
 
 
+  /**
+   * Constraint: makes the wrapped constraint runtime-only.
+   * @tparam B the wrapped constraint's dummy
+   */
   trait RuntimeOnly[B]
 
   class RuntimeOnlyConstraint[A, B, C <: Constraint[A, B]](using constraint: C) extends Constraint.RuntimeOnly[A, RuntimeOnly[B]] {
@@ -157,5 +162,5 @@ package object constraint {
     override inline def getMessage(value: A): String = constraint.getMessage(value)
   }
 
-  inline given [A, B, C <: Constraint[A, B]](using C): RuntimeOnlyConstraint[A, B, C] = new RuntimeOnlyConstraint
+  inline given[A, B, C <: Constraint[A, B]](using C): RuntimeOnlyConstraint[A, B, C] = new RuntimeOnlyConstraint
 }

@@ -87,7 +87,7 @@ object constraint {
    *
    * @tparam T the primitive's type.
    */
-  type Natural[T] = T >= (T match {
+  type Natural[T] = T ==> (T match {
     case Byte => GreaterEqual[0]
     case Short => GreaterEqual[0]
     case Int => GreaterEqual[0]

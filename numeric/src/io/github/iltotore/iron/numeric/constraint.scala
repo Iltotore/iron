@@ -112,7 +112,7 @@ object constraint {
   type %[A, B] = A ==> Divisible[B]
 
   /**
-   * Alias for `T % 2`. Supports all non-floating primitives.
+   * Abstraction over Divisible[2]. Supports all Number subtypes.
    *
    * @tparam T the primitive's type.
    */

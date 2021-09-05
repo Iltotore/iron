@@ -21,7 +21,7 @@ package object constraint {
     Constrained(compileTime.preAssert(value, constraint))
   }
 
-  extension[A] (a: A) {
+  extension [A](a: A) {
 
     /**
      * Ensure that `a` passes B's constraint

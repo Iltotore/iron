@@ -26,7 +26,7 @@ object main extends ScalaModule with PublishModule {
 
   def scalaVersion = "3.0.0"
 
-  def publishVersion = "1.1"
+  def publishVersion = "1.1.1"
 
   def majorVersion: T[String] = publishVersion()
     .split("\\.")
@@ -156,7 +156,7 @@ trait IronModule extends ScalaModule with PublishModule {
 //Subprojects
 object numeric extends IronModule {
 
-  def subVersion = "0.1.0"
+  def subVersion = "1.0.0"
 
   object test extends Tests with ScalaTest
 }

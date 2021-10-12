@@ -31,7 +31,10 @@ package object iron {
    * @tparam B the passed constraint's dummy
    */
   opaque type Constrained[A, B] = Refined[A]
+  
+  @deprecated("Use the `A / B` alias", "1.1.2")
   type ==>[A, B] = Constrained[A, B]
+  type /[A, B] = Constrained[A, B]
 
   object Constrained {
 

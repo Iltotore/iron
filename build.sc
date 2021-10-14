@@ -24,7 +24,7 @@ trait ScalaTest extends TestModule {
 //Project core
 object main extends ScalaModule with PublishModule {
 
-  def scalaVersion = "3.0.0"
+  def scalaVersion = "3.0.2"
 
   def publishVersion = "1.1.1"
 

@@ -1,6 +1,6 @@
 package io.github.iltotore.iron.iterable
 
-import io.github.iltotore.iron.==>
+import io.github.iltotore.iron./
 import io.github.iltotore.iron.constraint.Constraint
 
 import scala.compiletime.constValue

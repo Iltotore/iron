@@ -7,7 +7,7 @@ class RuntimeSpec extends UnitSpec {
 
   "A LowerCase constraint" should "return Right if the argument is lower case" in {
 
-    def dummy(x: String ==> LowerCase): String ==> LowerCase = x
+    def dummy(x: String / LowerCase): String / LowerCase = x
 
     assert(dummy("abc").isRight)
     assert(dummy("ABC").isLeft)
@@ -15,7 +15,7 @@ class RuntimeSpec extends UnitSpec {
 
   "An UpperCase constraint" should "return Right if the argument is upper case" in {
 
-    def dummy(x: String ==> UpperCase): String ==> UpperCase = x
+    def dummy(x: String / UpperCase): String / UpperCase = x
 
     assert(dummy("ABC").isRight)
     assert(dummy("abc").isLeft)
@@ -23,7 +23,7 @@ class RuntimeSpec extends UnitSpec {
 
   "A Matcher[V] constraint" should "return Right if the argument matches the given V regex" in {
 
-    def dummy(x: String ==> Match["^[a-z0-9]+"]): String ==> Match["^[a-z0-9]+"] = x
+    def dummy(x: String / Match["^[a-z0-9]+"]): String / Match["^[a-z0-9]+"] = x
 
     assert(dummy("abc123").isRight)
     assert(dummy("abc").isRight)
@@ -34,7 +34,7 @@ class RuntimeSpec extends UnitSpec {
 
   "An URLLike constraint" should "return Right if the given String is a valid URL" in {
 
-    def dummy(x: String ==> URLLike): String ==> URLLike = x
+    def dummy(x: String / URLLike): String / URLLike = x
 
     //URL samples credits: https://www.regextester.com/94502
 

@@ -8,7 +8,7 @@ class RuntimeSpec extends UnitSpec {
 
   "An Equal[V] constraint" should "return Right if the argument equals to V" in {
 
-    def dummy(x: Int ==> Equal[0]): Int ==> Equal[0] = x
+    def dummy(x: Int / Equal[0]): Int / Equal[0] = x
 
     assert(dummy(0).isRight)
     assert(dummy(1).isLeft)
@@ -24,7 +24,7 @@ class RuntimeSpec extends UnitSpec {
 
   "An Or[B, C] constraint" should "return Right if the argument satisfies one of the two passed assertions" in {
 
-    def dummy(x: Int ==> (Equal[0] || Equal[1])): Int ==> (Equal[0] || Equal[1]) = x
+    def dummy(x: Int / (Equal[0] || Equal[1])): Int / (Equal[0] || Equal[1]) = x
 
     assert(dummy(0).isRight)
     assert(dummy(1).isRight)
@@ -33,7 +33,7 @@ class RuntimeSpec extends UnitSpec {
 
   "An And[B, C] constraint" should "return Right if the argument satisfies both B and C" in {
 
-    def dummy(x: Int ==> (Positive && Even)): Int ==> (Positive && Even) = x
+    def dummy(x: Int / (Positive && Even)): Int / (Positive && Even) = x
 
     assert(dummy(2).isRight)
     assert(dummy(3).isLeft)
@@ -42,7 +42,7 @@ class RuntimeSpec extends UnitSpec {
 
   "A RuntimeOnly[B] constraint" should "be evaluated at runtime" in {
 
-    def dummy(x: Int ==> RuntimeOnly[StrictEqual[0]]): Int ==> RuntimeOnly[StrictEqual[0]] = x
+    def dummy(x: Int / RuntimeOnly[StrictEqual[0]]): Int / RuntimeOnly[StrictEqual[0]] = x
 
     assert(dummy(0).isRight)
     "dummy(1)" should compile

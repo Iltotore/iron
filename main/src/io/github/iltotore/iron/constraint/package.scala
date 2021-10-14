@@ -37,12 +37,12 @@ package object constraint {
 
   /**
    * Alias for binary algebraic operator.
-   * @tparam A the left
-   * @tparam B
-   * @tparam Alg
-   * @tparam Literal
-   * @tparam Left
-   * @tparam Right
+   * @tparam A the algebra part to the left of the operator
+   * @tparam B the right input to the right of the operator
+   * @tparam Alg the algebra type of this operator
+   * @tparam Literal the type of the possible literals for this operator
+   * @tparam Left the constraint type of this operator for the pattern `??? < B` or `A < B`
+   * @tparam Right the constraint type of this operator for the pattern `A > ???`
    */
   type BiOperator[A, B, Alg, Literal, Left[_], Right[_]] = A match {
     case ?? => Left[B]
@@ -220,6 +220,12 @@ package object constraint {
 
   inline given[A, B, C <: Constraint[A, B]](using C): RuntimeOnlyConstraint[A, B, C] = new RuntimeOnlyConstraint
 
+  /**
+   * Represent a constraint with a placehold value as input (instead of the Constrained value). Used for chained algebra.
+   * @tparam B the wrapped constraint
+   * @tparam Alg the algebra type of this placehold
+   * @tparam V the value to pass as input
+   */
   trait Placehold[B, Alg, V] extends AlgebraPart[Alg, V]
 
   class PlaceholdConstraint[A, B, C <: Constraint[A, B], Alg, V <: A](using constraint: C) extends Constraint[A, Placehold[B, Alg, V]] {

@@ -80,7 +80,6 @@ object constraint {
    * @tparam V
    */
   trait GreaterEqual[V] extends AlgebraEntryPoint[MathAlgebra]
-  //75, 46
 
   type >=[A, B] = BiOperator[A, B, MathAlgebra, Number, GreaterEqual, LessEqual]
 

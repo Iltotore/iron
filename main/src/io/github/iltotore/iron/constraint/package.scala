@@ -1,6 +1,7 @@
 package io.github.iltotore.iron
 
 import io.github.iltotore.iron.{Constrained, compileTime}
+
 import scala.language.implicitConversions
 import scala.compiletime.{constValue, summonInline}
 import scala.math.Ordering.Implicits.infixOrderingOps
@@ -21,17 +22,52 @@ package object constraint {
     Constrained(compileTime.preAssert(value, constraint))
   }
 
-  extension [A](a: A) {
+  /**
+   * Represent a part of an algebraic expression.
+   * @tparam T the algebra type to avoid clashes
+   *
+   */
+  trait AlgebraPart[T, V]
 
-    /**
-     * Ensure that `a` passes B's constraint
-     *
-     * @tparam B the constraint's dummy
-     * @return the value as Constrained
-     * @see [[refineValue]]
-     */
-    def refined[B](using Constraint[A, B]): Constrained[A, B] = refineValue[A, B, Constraint[A, B]](a)
+  /**
+   * Represent an entry point of the algebraic expression. Example: `??? < 1d` is an entry point.
+   * @tparam T the algebra type to avoid clashes
+   */
+  trait AlgebraEntryPoint[T]
+
+  /**
+   * Alias for binary algebraic operator.
+   * @tparam A the left
+   * @tparam B
+   * @tparam Alg
+   * @tparam Literal
+   * @tparam Left
+   * @tparam Right
+   */
+  type BiOperator[A, B, Alg, Literal, Left[_], Right[_]] = A match {
+    case ?? => Left[B]
+    case AlgebraEntryPoint[Alg] => AlgebraPartAnd[A, Left[B], Alg, B]
+    case AlgebraPart[Alg, v] => AlgebraPartAnd[A, Placehold[Left[B], Alg, v], Alg, v]
+    case Literal => B match {
+      case ?? => Right[A]
+      case _ => A / Left[B]
+    }
+    case _ => A / Left[B]
   }
+
+  /**
+   * Placeholder for algebraic expressions
+   */
+  final class ??
+
+  class PlaceholderConstraint[A] extends Constraint[A, ??] {
+
+    override inline def assert(value: A): Boolean = true
+
+    override inline def getMessage(value: A): String = "True"
+  }
+
+  inline given [A]: PlaceholderConstraint[A] = new PlaceholderConstraint
 
   /**
    * Constraint: checks if the input value strictly equals to V.
@@ -40,7 +76,7 @@ package object constraint {
    */
   trait StrictEqual[V]
 
-  type ==[A, V] = A ==> StrictEqual[V]
+  type ==[A, V] = A / StrictEqual[V]
 
   class StrictEqualConstraint[A, V <: A] extends Constraint[A, StrictEqual[V]] {
 
@@ -77,7 +113,7 @@ package object constraint {
    */
   trait Not[B]
 
-  type \[A, V] = A ==> Not[StrictEqual[V]]
+  type \[A, V] = A / Not[StrictEqual[V]]
 
   class NotConstraint[A, B, C <: Constraint[A, B]](using constraint: C) extends Constraint.RuntimeOnly[A, Not[B]] {
 
@@ -129,6 +165,19 @@ package object constraint {
   inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using CB, CC): AndConstraint[A, B, C, CB, CC] = new AndConstraint
 
 
+  final class AlgebraPartAnd[B, C, Alg, V] extends AlgebraPart[Alg, V]
+
+  class AlgebaricAndConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C], Alg, V](using left: CB, right: CC) extends Constraint.RuntimeOnly[A, AlgebraPartAnd[B, C, Alg, V]] {
+
+    override inline def assert(value: A): Boolean = left.assert(value) && right.assert(value)
+
+    override inline def getMessage(value: A): String = s"${left.getMessage(value)} and ${right.getMessage(value)}"
+  }
+
+  inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C], Alg, V](using CB, CC): AlgebaricAndConstraint[A, B, C, CB, CC, Alg, V] =
+    new AlgebaricAndConstraint
+
+
   /**
    * Constraint: attaches a custom description to the given constraint. Useful when a constraint alias need a more
    * accurate description.
@@ -163,4 +212,15 @@ package object constraint {
   }
 
   inline given[A, B, C <: Constraint[A, B]](using C): RuntimeOnlyConstraint[A, B, C] = new RuntimeOnlyConstraint
+
+  trait Placehold[B, Alg, V] extends AlgebraPart[Alg, V]
+
+  class PlaceholdConstraint[A, B, C <: Constraint[A, B], Alg, V <: A](using constraint: C) extends Constraint[A, Placehold[B, Alg, V]] {
+
+    override inline def assert(value: A): Boolean = constraint.assert(constValue[V])
+
+    override inline def getMessage(value: A): String = constraint.getMessage(constValue[V])
+  }
+
+  inline given[A, B, C <: Constraint[A, B], Alg, V <: A](using C): PlaceholdConstraint[A, B, C, Alg, V] = new PlaceholdConstraint
 }

@@ -98,13 +98,3 @@ trait InlinedOrdering[T] { outer =>
     if (res1 != 0) res1 else ord.compare(f(x), f(y))
   }
 }
-
-object InlinedOrdering {
-
-  /**
-   * Create an Ordering[T] instance from an ordering to reduce boilerplate.
-   */
-  given [T](using inlined: InlinedOrdering[T]): Ordering[T] with {
-    override inline def compare(x: T, y: T): Int = inlined.compareAlias(x, y)
-  }
-}

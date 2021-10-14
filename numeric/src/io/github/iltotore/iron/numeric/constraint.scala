@@ -1,43 +1,44 @@
 package io.github.iltotore.iron.numeric
 
-import io.github.iltotore.iron.==>
-import io.github.iltotore.iron.constraint.Constraint
+import io.github.iltotore.iron./
+import io.github.iltotore.iron.constraint.*
 
 import scala.compiletime.{constValue, summonInline}
 
 object constraint {
+
+  trait MathAlgebra
 
   /**
    * Constraint: checks if the input value is less than V.
    *
    * @tparam V
    */
-  trait Less[V]
+  trait Less[V] extends AlgebraEntryPoint[MathAlgebra]
 
-  type <[A, B] = A ==> Less[B]
+  type <[A, B] = BiOperator[A, B, MathAlgebra, Number, Less, Greater]
 
   class LessConstraint[A <: Number, V <: A] extends Constraint[A, Less[V]] {
     override inline def assert(value: A): Boolean = NumberOrdering.lt(value, constValue[V])
 
-    override inline def getMessage(value: A): String = "value should be less than the specified value"
+    override inline def getMessage(value: A): String = "value should be less than the specified one"
   }
 
   inline given[A <: Number, V <: A]: LessConstraint[A, V] = new LessConstraint
-
 
   /**
    * Constraint: checks if the input value is less or equal to V.
    *
    * @tparam V
    */
-  trait LessEqual[V]
+  trait LessEqual[V] extends AlgebraEntryPoint[MathAlgebra]
 
-  type <=[A, B] = A ==> LessEqual[B]
+  type <=[A, B] = BiOperator[A, B, MathAlgebra, Number, LessEqual, GreaterEqual]
 
   class LessEqualConstraint[A <: Number, V <: A] extends Constraint[A, LessEqual[V]] {
     override inline def assert(value: A): Boolean = NumberOrdering.lteq(value, constValue[V])
 
-    override inline def getMessage(value: A): String = "value should be less or equal to the specified value"
+    override inline def getMessage(value: A): String = "value should be less or equal to the specified one"
   }
 
   inline given[A <: Number, V <: A]: LessEqualConstraint[A, V] = new LessEqualConstraint
@@ -48,16 +49,16 @@ object constraint {
    *
    * @tparam V
    */
-  trait Greater[V]
+  trait Greater[V] extends AlgebraEntryPoint[MathAlgebra]
 
-  type >[A, B] = A ==> Greater[B]
+  type >[A, B] = BiOperator[A, B, MathAlgebra, Number, Greater, Less]
 
   /**
    * Alias for `T > 0`. Supports all non-floating primitives.
    *
    * @tparam T the primitive's type.
    */
-  type Natural1[T] = T ==> (T match {
+  type Natural1[T] = T / (T match {
     case Byte => Greater[0]
     case Short => Greater[0]
     case Int => Greater[0]
@@ -67,7 +68,7 @@ object constraint {
   class GreaterConstraint[A <: Number, V <: A] extends Constraint[A, Greater[V]] {
     override inline def assert(value: A): Boolean = NumberOrdering.gt(value, constValue[V])
 
-    override inline def getMessage(value: A): String = "value should be greater than the specified value"
+    override inline def getMessage(value: A): String = "value should be greater than the specified one"
   }
 
   inline given[A <: Number, V <: A]: GreaterConstraint[A, V] = new GreaterConstraint
@@ -78,16 +79,17 @@ object constraint {
    *
    * @tparam V
    */
-  trait GreaterEqual[V]
+  trait GreaterEqual[V] extends AlgebraEntryPoint[MathAlgebra]
+  //75, 46
 
-  type >=[A, B] = A ==> GreaterEqual[B]
+  type >=[A, B] = BiOperator[A, B, MathAlgebra, Number, GreaterEqual, LessEqual]
 
   /**
    * Alias for `T >= 0`. Supports all non-floating primitives.
    *
    * @tparam T the primitive's type.
    */
-  type Natural[T] = T ==> (T match {
+  type Natural[T] = T / (T match {
     case Byte => GreaterEqual[0]
     case Short => GreaterEqual[0]
     case Int => GreaterEqual[0]
@@ -109,7 +111,7 @@ object constraint {
    */
   trait Divisible[V]
 
-  type %[A, B] = A ==> Divisible[B]
+  type %[A, B] = A / Divisible[B]
 
   /**
    * Abstraction over Divisible[2]. Supports all Number subtypes.

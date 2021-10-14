@@ -5,9 +5,9 @@ import io.circe.parser.*
 
 class DecoderSpec extends UnitSpec {
 
-  "A Decoder[A ==> B]" should "decode A into A ==> B and evaluate the assertion" in {
-    assert(decode[Boolean ==> Dummy]("true").exists(_.isRight))
-    assert(decode[Boolean ==> Dummy]("false").exists(_.isLeft))
-    assert(decode[Boolean ==> Dummy]("???").isLeft)
+  "A Decoder[A / B]" should "decode A into A / B and evaluate the assertion" in {
+    assert(decode[Boolean / Dummy]("true").exists(_.isRight))
+    assert(decode[Boolean / Dummy]("false").exists(_.isLeft))
+    assert(decode[Boolean / Dummy]("???").isLeft)
   }
 }

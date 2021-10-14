@@ -27,7 +27,7 @@ Example of a constraint alias:
 //This is mainly implicit functions/instances but if you prefer without star import, you can specify them.
 import iron.*, constraint.*, numeric.constraint.{given, Greater}
 
-type >[A, B] = A ==> Greater[B]
+type >[A, B] = A / Greater[B]
 
 def log(x: Double > 0d): Refined[Double] = x.map(Math.log)
 log(-1d) //Compile time error

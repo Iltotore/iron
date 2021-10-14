@@ -1,6 +1,6 @@
 package io.github.iltotore.iron.string
 
-import io.github.iltotore.iron.==>
+import io.github.iltotore.iron./
 import io.github.iltotore.iron.constraint.*
 
 import scala.compiletime.constValue

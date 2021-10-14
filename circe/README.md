@@ -7,7 +7,7 @@ This module includes iterable/collection utils for Iron.
 ## Features
 
 - [Scaladoc](https://iltotore.github.io/iron/scaladoc/api/io/github/iltotore/iron/circe.html)
-- Circe Decoder for `A ==> B`
+- Circe Decoder for `A / B`
 - Circe Encoder for `IllegalValueError[A]` and `IllegalValueError.Field`
 
 ## Import in your project

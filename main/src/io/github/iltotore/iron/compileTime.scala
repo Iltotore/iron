@@ -1,7 +1,8 @@
 
 package io.github.iltotore.iron
 
-import constraint.{Constraint, IllegalValueError}
+import constraint.{Constraint, IllegalValueError, Not}
+
 import scala.quoted.*
 
 object compileTime {

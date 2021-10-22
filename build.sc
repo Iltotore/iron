@@ -26,7 +26,7 @@ object main extends ScalaModule with PublishModule {
 
   def scalaVersion = "3.0.2"
 
-  def publishVersion = "1.1.1"
+  def publishVersion = "1.1.2"
 
   def majorVersion: T[String] = publishVersion()
     .split("\\.")
@@ -156,28 +156,28 @@ trait IronModule extends ScalaModule with PublishModule {
 //Subprojects
 object numeric extends IronModule {
 
-  def subVersion = "1.0.0"
+  def subVersion = "1.0.1"
 
   object test extends Tests with ScalaTest
 }
 
 object string extends IronModule {
 
-  def subVersion = "0.1.0"
+  def subVersion = "1.0.0"
 
   object test extends Tests with ScalaTest
 }
 
 object iterable extends IronModule {
 
-  def subVersion = "0.1.0"
+  def subVersion = "1.0.0"
 
   object test extends Tests with ScalaTest
 }
 
 object cats extends IronModule {
 
-  def subVersion = "0.1.0"
+  def subVersion = "1.0.0"
 
   def ivyDeps = super.ivyDeps() ++ Agg(
     ivy"org.typelevel::cats-core:2.6.1"
@@ -188,7 +188,7 @@ object cats extends IronModule {
 
 object circe extends IronModule {
 
-  def subVersion = "0.1.0"
+  def subVersion = "1.0.0"
 
   def ivyDeps = super.ivyDeps() ++ Agg(
     ivy"io.circe::circe-core:0.14.1",
@@ -201,7 +201,7 @@ object circe extends IronModule {
 
 object io extends IronModule {
 
-  def subVersion = "0.1.0"
+  def subVersion = "1.0.0"
 
   object test extends Tests with ScalaTest
 }

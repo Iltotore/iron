@@ -2,6 +2,7 @@ package io.github.iltotore.iron
 
 import io.github.iltotore.iron.{Constrained, compileTime}
 
+import scala.annotation.targetName
 import scala.language.implicitConversions
 import scala.compiletime.{constValue, summonInline}
 import scala.math.Ordering.Implicits.infixOrderingOps
@@ -58,9 +59,11 @@ package object constraint {
   /**
    * Placeholder for algebraic expressions
    */
-  final class ??
+  final class Placeholder
 
-  class PlaceholderConstraint[A] extends Constraint[A, ??] {
+  type ?? = Placeholder
+
+  class PlaceholderConstraint[A] extends Constraint[A, Placeholder] {
 
     override inline def assert(value: A): Boolean = true
 

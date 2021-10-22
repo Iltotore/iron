@@ -43,7 +43,7 @@ package object iron {
      * @param value the value to be wrapped
      * @tparam A value's type
      * @tparam B the passed constraint's dummy
-     * @return The [[Constrained]] version of [[value]]
+     * @return The [[Constrained]] version of value
      */
     def apply[A, B](value: Refined[A]): Constrained[A, B] = value
   }

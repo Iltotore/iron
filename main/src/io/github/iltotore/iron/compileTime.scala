@@ -8,7 +8,7 @@ import scala.quoted.*
 object compileTime {
 
   /**
-   * Try to check [[value]] at compile time if possible or fallbacks to runtime if allowed.
+   * Try to check the passed constraint with the given input at compile time if possible or fallbacks to runtime if allowed.
    *
    * Evaluation rules:
    * - Fully inline constraints with inline input are guaranteed to be evaluated at compile time
@@ -16,7 +16,8 @@ object compileTime {
    * - Non-fully inline constraints or inputs will be as optimized as possible by the language through the inline feature and
    * will be evaluated at runtime
    *
-   * @param value the asserted boolean (internally treated as an expression)
+   * @param input the constrained input
+   * @param constraint the constraint to evaluate
    */
   inline def preAssert[A, B, C <: Constraint[A, B]](inline input: A, inline constraint: C): Refined[A] = ${preAssertImpl[A, B, C]('input, '{constraint.getMessage(input)}, '{constraint.assert(input)})}
 

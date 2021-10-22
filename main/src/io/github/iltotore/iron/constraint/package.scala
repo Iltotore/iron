@@ -122,14 +122,14 @@ package object constraint {
    */
   type ==>>[A, B] = Not[A] || B
 
-  class NotConstraint[A, B, C <: Constraint[A, B]](using constraint: C) extends Constraint.RuntimeOnly[A, Not[B]] {
+  class NotConstraint[A, B, C <: Constraint[A, B]](using C) extends Constraint[A, Not[B]] {
 
-    override inline def assert(value: A): Boolean = !constraint.assert(value)
+    override inline def assert(value: A): Boolean = !summonInline[C].assert(value)
 
-    override inline def getMessage(value: A): String = s"Not: ${constraint.getMessage(value)}"
+    override inline def getMessage(value: A): String = summonInline[C].getMessage(value)
   }
 
-  inline given[A, B, C <: Constraint[A, B]](using C): NotConstraint[A, B, C] = new NotConstraint
+  inline given[A, B, C <: Constraint[A, B]](using inline constraint: C): NotConstraint[A, B, C] = new NotConstraint
 
 
   /**
@@ -142,14 +142,14 @@ package object constraint {
 
   type ||[B, C] = Or[B, C]
 
-  class OrConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using left: CB, right: CC) extends Constraint.RuntimeOnly[A, Or[B, C]] {
+  class OrConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using CB, CC) extends Constraint[A, Or[B, C]] {
 
-    override inline def assert(value: A): Boolean = left.assert(value) || right.assert(value)
+    override inline def assert(value: A): Boolean = summonInline[CB].assert(value) || summonInline[CC].assert(value)
 
-    override inline def getMessage(value: A): String = s"${left.getMessage(value)} or ${right.getMessage(value)}"
+    override inline def getMessage(value: A): String = s"${summonInline[CB].getMessage(value)} || ${summonInline[CC].getMessage(value)}"
   }
 
-  inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using CB, CC): OrConstraint[A, B, C, CB, CC] = new OrConstraint
+  inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using inline cb: CB, inline cc: CC): OrConstraint[A, B, C, CB, CC] = new OrConstraint
 
 
   /**
@@ -162,26 +162,26 @@ package object constraint {
 
   type &&[B, C] = And[B, C]
 
-  class AndConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using left: CB, right: CC) extends Constraint.RuntimeOnly[A, And[B, C]] {
+  class AndConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using CB, CC) extends Constraint[A, And[B, C]] {
 
-    override inline def assert(value: A): Boolean = left.assert(value) && right.assert(value)
+    override inline def assert(value: A): Boolean = summonInline[CB].assert(value) && summonInline[CC].assert(value)
 
-    override inline def getMessage(value: A): String = s"${left.getMessage(value)} and ${right.getMessage(value)}"
+    override inline def getMessage(value: A): String = s"${summonInline[CB].getMessage(value)} and ${summonInline[CC].getMessage(value)}"
   }
 
-  inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using CB, CC): AndConstraint[A, B, C, CB, CC] = new AndConstraint
+  inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using inline cb: CB, inline cc: CC): AndConstraint[A, B, C, CB, CC] = new AndConstraint
 
 
   final class AlgebraPartAnd[B, C, Alg, V] extends AlgebraPart[Alg, V]
 
-  class AlgebaricAndConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C], Alg, V](using left: CB, right: CC) extends Constraint.RuntimeOnly[A, AlgebraPartAnd[B, C, Alg, V]] {
+  class AlgebaricAndConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C], Alg, V](using CB, CC) extends Constraint[A, AlgebraPartAnd[B, C, Alg, V]] {
 
-    override inline def assert(value: A): Boolean = left.assert(value) && right.assert(value)
+    override inline def assert(value: A): Boolean = summonInline[CB].assert(value) && summonInline[CC].assert(value)
 
-    override inline def getMessage(value: A): String = s"${left.getMessage(value)} and ${right.getMessage(value)}"
+    override inline def getMessage(value: A): String = s"${summonInline[CB].getMessage(value)} and ${summonInline[CC].getMessage(value)}"
   }
 
-  inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C], Alg, V](using CB, CC): AlgebaricAndConstraint[A, B, C, CB, CC, Alg, V] =
+  inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C], Alg, V](using inline cb: CB, inline cc: CC): AlgebaricAndConstraint[A, B, C, CB, CC, Alg, V] =
     new AlgebaricAndConstraint
 
 
@@ -191,18 +191,17 @@ package object constraint {
    *
    * @tparam B the wrapped constraint's dummy
    * @tparam V the description to attach. Must be litteral.
-   * @note This constraint is runtime only.
    */
   trait DescribedAs[B, V]
 
-  class DescribedAsConstraint[A, B, C <: Constraint[A, B], V <: String](using constraint: C) extends Constraint.RuntimeOnly[A, DescribedAs[B, V]] {
+  class DescribedAsConstraint[A, B, C <: Constraint[A, B], V <: String](using C) extends Constraint[A, DescribedAs[B, V]] {
 
-    override inline def assert(value: A): Boolean = constraint.assert(value)
+    override inline def assert(value: A): Boolean = summonInline[C].assert(value)
 
     override inline def getMessage(value: A): String = constValue[V]
   }
 
-  inline given[A, B, C <: Constraint[A, B], V <: String](using C): DescribedAsConstraint[A, B, C, V] = new DescribedAsConstraint
+  inline given[A, B, C <: Constraint[A, B], V <: String](using inline constraint: C): DescribedAsConstraint[A, B, C, V] = new DescribedAsConstraint
 
 
   /**
@@ -228,12 +227,12 @@ package object constraint {
    */
   trait Placehold[B, Alg, V] extends AlgebraPart[Alg, V]
 
-  class PlaceholdConstraint[A, B, C <: Constraint[A, B], Alg, V <: A](using constraint: C) extends Constraint[A, Placehold[B, Alg, V]] {
+  class PlaceholdConstraint[A, B, C <: Constraint[A, B], Alg, V <: A](using C) extends Constraint[A, Placehold[B, Alg, V]] {
 
-    override inline def assert(value: A): Boolean = constraint.assert(constValue[V])
+    override inline def assert(value: A): Boolean = summonInline[C].assert(constValue[V])
 
-    override inline def getMessage(value: A): String = constraint.getMessage(constValue[V])
+    override inline def getMessage(value: A): String = summonInline[C].getMessage(constValue[V])
   }
 
-  inline given[A, B, C <: Constraint[A, B], Alg, V <: A](using C): PlaceholdConstraint[A, B, C, Alg, V] = new PlaceholdConstraint
+  inline given[A, B, C <: Constraint[A, B], Alg, V <: A](using inline constraint: C): PlaceholdConstraint[A, B, C, Alg, V] = new PlaceholdConstraint
 }

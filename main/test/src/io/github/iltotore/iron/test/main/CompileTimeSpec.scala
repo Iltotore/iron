@@ -40,4 +40,30 @@ class CompileTimeSpec extends UnitSpec {
     "dummy(0)" should compile
     "dummy(1)" shouldNot compile
   }
+
+  "A Not[B] constraint" should "compile if the argument doesn't pass the reversed constraint" in {
+
+    def dummy(x: Int \ 0): Unit = ???
+
+    "dummy(1)" should compile
+    "dummy(0)" shouldNot compile
+  }
+
+  "An Or[B, C] constraint" should "compile if the argument satisfies one of the two passed assertions" in {
+
+    def dummy(x: Int / (StrictEqual[0] || StrictEqual[1])): Unit = ???
+
+    "dummy(0)" should compile
+    "dummy(1)" should compile
+    "dummy(2)" shouldNot compile
+  }
+
+  "An And[B, C] constraint" should "compile if the argument satisfies both B and C" in {
+
+    def dummy(x: Int / (Positive && Even)): Unit = ???
+
+    "dummy(2)" should compile
+    "dummy(3)" shouldNot compile
+    "dummy(-2)" shouldNot compile
+  }
 }

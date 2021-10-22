@@ -31,7 +31,7 @@ package object constraint {
   trait AlgebraPart[T, V]
 
   /**
-   * Represent an entry point of the algebraic expression. Example: `??? < 1d` is an entry point.
+   * Represent an entry point of the algebraic expression. Example: `?? < 1d` is an entry point.
    * @tparam T the algebra type to avoid clashes
    */
   trait AlgebraEntryPoint[T]
@@ -42,8 +42,8 @@ package object constraint {
    * @tparam B the right input to the right of the operator
    * @tparam Alg the algebra type of this operator
    * @tparam Literal the type of the possible literals for this operator
-   * @tparam Left the constraint type of this operator for the pattern `??? < B` or `A < B`
-   * @tparam Right the constraint type of this operator for the pattern `A > ???`
+   * @tparam Left the constraint type of this operator for the pattern `?? < B` or `A < B`
+   * @tparam Right the constraint type of this operator for the pattern `A > ??`
    */
   type BiOperator[A, B, Alg, Literal, Left[_], Right[_]] = A match {
     case ?? => Left[B]

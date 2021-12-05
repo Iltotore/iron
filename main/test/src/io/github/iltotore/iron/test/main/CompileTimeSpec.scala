@@ -33,6 +33,14 @@ class CompileTimeSpec extends UnitSpec {
     "dummy(false)" should compile
   }
 
+  "A Literal[V] constraint" should "compile if V" in {
+
+    def dummy[V <: Boolean](x: Int / Literal[V]): Unit = ???
+
+    "dummy[true](0)" should compile
+    "dummy[false](1)" shouldNot compile
+  }
+
   "A StrictEqual[V] constraint" should "compile if the argument == V" in {
 
     def dummy(x: Int == 0): Unit = ???

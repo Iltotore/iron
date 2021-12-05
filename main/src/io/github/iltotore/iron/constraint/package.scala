@@ -56,6 +56,17 @@ package object constraint {
     case _ => A / Left[B]
   }
 
+  final class Literal[V]
+
+  class LiteralConstraint[A, V <: Boolean] extends Constraint[A, Literal[V]] {
+
+    override inline def assert(value: A): Boolean = constValue[V]
+
+    override inline def getMessage(value: A): String = inline if(constValue[V]) "true" else "false"
+  }
+
+  inline given [A, V <: Boolean]: LiteralConstraint[A, V] = new LiteralConstraint
+
   /**
    * Placeholder for algebraic expressions
    */

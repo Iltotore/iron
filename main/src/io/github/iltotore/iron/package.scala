@@ -1,6 +1,6 @@
 package io.github.iltotore
 
-import io.github.iltotore.iron.constraint.{Constraint, IllegalValueError}
+import io.github.iltotore.iron.constraint.{Constraint, IllegalValueError, Literal}
 
 import scala.compiletime.constValue
 import scala.language.implicitConversions
@@ -10,15 +10,17 @@ package object iron {
 
   /**
    * Alias for Either[IllegalValueError[A], A], used as constraint result.
+   *
    * @tparam A the input type
    */
   type Refined[A] = Either[IllegalValueError[A], A]
   type RefinedField[A] = Either[IllegalValueError.Field, A]
-  
-  extension [A](refined: Refined[A]) {
+
+  extension[A] (refined: Refined[A]) {
 
     /**
      * Convert this value to its field-based version.
+     *
      * @param name the field name
      * @return the RefinedField of this value
      */
@@ -27,19 +29,23 @@ package object iron {
 
   /**
    * An alias of Refined marked as "checked".
+   *
    * @tparam A the input/raw type
    * @tparam B the passed constraint's dummy
    */
-  opaque type Constrained[A, B] = Refined[A]
-  
+  opaque type Constrained[A, B] = Either[IllegalValueError[A], A]
+
   @deprecated("Use the `A / B` alias", "1.1.2")
   type ==>[A, B] = Constrained[A, B]
   type /[A, B] = Constrained[A, B]
+
+  type Raw[A] = A / Literal[true]
 
   object Constrained {
 
     /**
      * Public "constructor" for [[Constrained]].
+     *
      * @param value the value to be wrapped
      * @tparam A value's type
      * @tparam B the passed constraint's dummy
@@ -49,7 +55,45 @@ package object iron {
   }
 
   /**
-   * Implicit conversion from Constrained[A, B] to its shadowed type
+   * Empty object implicitly available in a refined block.
+   */
+  case object RefinedDSL
+
+  /**
+   * Capability for constrained values. Allow usage of constrained values in an imperative style.
+   *
+   * @param statement the imperative-styled block
+   * @tparam A the input value type
+   * @tparam B the constraint's dummy
+   * @return the resulting constraint of the passed statement
+   */
+  inline def refined[A, B](statement: RefinedDSL.type ?=> Constrained[A, B]): Constrained[A, B] =
+    try {
+      statement(using RefinedDSL)
+    } catch case err: IllegalValueError[A] => Constrained(Left(err))
+
+  /**
+   * Abort the current refinement and return an IllegalValueError instead.
+   *
+   * @param input   the invalid value
+   * @param message the assertion message
+   * @tparam A the input value type
+   */
+  inline def reject[A](input: A, message: String)(using RefinedDSL.type): Nothing = throw IllegalValueError(input, message)
+
+  /**
+   * Unbox the given Constrained.
+   *
+   * @param constrained the constrained to unwrap
+   * @tparam A the input value type
+   * @tparam B the constraint's dummy
+   * @return the underlying value
+   */
+  implicit def unbox[A, B](constrained: A / B)(using RefinedDSL.type): A = constrained.fold(throw _, x => x)
+
+  /**
+   * Implicit conversion from Constrained[A, B] to its shadowed type.
+   *
    * @param constrained the Constrained to be cast from
    * @tparam A the input type
    * @tparam B the constraint's dummy

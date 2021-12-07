@@ -39,6 +39,11 @@ package object iron {
   type ==>[A, B] = Constrained[A, B]
   type /[A, B] = Constrained[A, B]
 
+  /**
+   * Represent a refinement-less Constrained. This is different from [[Refined]] since Raw can be used as a Constrained
+   * while [[Refined]] is a standard `Either`.
+   * @tparam A the value's type
+   */
   type Raw[A] = A / Literal[true]
 
   object Constrained {
@@ -61,11 +66,21 @@ package object iron {
 
   /**
    * Capability for constrained values. Allow usage of constrained values in an imperative style.
+   * {{{
+   *   //Vanilla version
+   *   def log(x: Double > 0d): Refined[Double] = x.map(Math.log)
+   *
+   *   //Imperative version
+   *   def log(x: Double > 0d): Raw[Double] = refined {
+   *     Math.log(x)
+   *   }
+   * }}}
    *
    * @param statement the imperative-styled block
    * @tparam A the input value type
    * @tparam B the constraint's dummy
    * @return the resulting constraint of the passed statement
+   * @see [[Raw]]
    */
   inline def refined[A, B](statement: RefinedDSL.type ?=> Constrained[A, B]): Constrained[A, B] =
     try {

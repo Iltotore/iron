@@ -22,6 +22,14 @@ package object constraint {
   implicit inline def refineValue[A, B, C <: Constraint[A, B]](value: A)(using inline constraint: C): Constrained[A, B] = {
     Constrained(compileTime.preAssert(value, constraint))
   }
+  
+  implicit inline def refineConstrained[A, AB, B, C <: Constraint[A, B]](constrained: A / AB)(using inline constraint: C): Constrained[A, B] =
+    constrainedToValue(constrained) match {
+
+      case Right(value) => refineValue(value)
+
+      case left => Constrained(left)
+    }
 
   /**
    * Represent a part of an algebraic expression.

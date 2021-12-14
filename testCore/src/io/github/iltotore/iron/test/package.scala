@@ -25,6 +25,6 @@ package object test {
   inline given Constraint.RuntimeOnly[Boolean, DummyRuntime] with {
     override inline def assert(value: Boolean): Boolean = value
 
-    override inline def getMessage(value: Boolean): String = s"$value is false"
+    override inline def getMessage(value: Boolean): String = "value is false"
   }
 }

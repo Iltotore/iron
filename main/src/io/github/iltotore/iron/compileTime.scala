@@ -17,9 +17,10 @@ object compileTime {
    * will be evaluated at runtime
    *
    * @param input the constrained input
-   * @param constraint the constraint to evaluate
+   * @param message the error message to throw if the result is false
+   * @param result the result of the assertion
    */
-  inline def preAssert[A, B, C <: Constraint[A, B]](inline input: A, inline constraint: C): Refined[A] = ${preAssertImpl[A, B, C]('input, '{constraint.getMessage(input)}, '{constraint.assert(input)})}
+  inline def preAssert[A, B, C <: Constraint[A, B]](inline input: A, inline message: String, inline result: Boolean): Refined[A] = ${preAssertImpl[A, B, C]('input, 'message, 'result)}
 
   private def preAssertImpl[A: Type, B: Type, C <: Constraint[A, B]: Type](input: Expr[A], message: Expr[String], result: Expr[Boolean])(using quotes: Quotes): Expr[Refined[A]] = {
 

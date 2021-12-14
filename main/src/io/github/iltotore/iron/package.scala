@@ -1,6 +1,6 @@
 package io.github.iltotore
 
-import io.github.iltotore.iron.constraint.{Constraint, IllegalValueError, Literal}
+import io.github.iltotore.iron.constraint.{Consequence, Constraint, IllegalValueError, Literal}
 
 import scala.compiletime.constValue
 import scala.language.implicitConversions
@@ -56,7 +56,7 @@ package object iron {
      * @tparam B the passed constraint's dummy
      * @return The [[Constrained]] version of value
      */
-    def apply[A, B](value: Refined[A]): Constrained[A, B] = value
+    inline def apply[A, B](value: Refined[A]): Constrained[A, B] = value
   }
 
   /**
@@ -105,6 +105,13 @@ package object iron {
    * @return the underlying value
    */
   implicit def unbox[A, B](constrained: A / B)(using RefinedDSL.type): A = constrained.fold(throw _, x => x)
+  
+  implicit inline def refineConstrained[A, B1, B2](constrained: A / B1)(using inline consequence: Consequence[A, B1, B2]): A / B2 = constrained match {
+
+    case Right(value) => Constrained(compileTime.preAssert(value, consequence.getMessage(value), consequence.assert(value)))
+
+    case left => Constrained(left)
+  }
 
   /**
    * Implicit conversion from Constrained[A, B] to its shadowed type.
@@ -114,5 +121,5 @@ package object iron {
    * @tparam B the constraint's dummy
    * @return the Constrained as Refined[A]
    */
-  implicit def constrainedToValue[A, B](constrained: Constrained[A, B]): Refined[A] = constrained
+  implicit inline def constrainedToValue[A, B](constrained: Constrained[A, B]): Refined[A] = constrained
 }

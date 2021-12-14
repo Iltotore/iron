@@ -1,11 +1,13 @@
 package io.github.iltotore.iron
 
+import io.github.iltotore.iron.constraint.Consequence.VerifiedConsequence
 import io.github.iltotore.iron.{Constrained, compileTime}
 
 import scala.annotation.targetName
-import scala.language.implicitConversions
 import scala.compiletime.{constValue, summonInline}
+import scala.language.implicitConversions
 import scala.math.Ordering.Implicits.infixOrderingOps
+import scala.util.NotGiven
 
 package object constraint {
 
@@ -19,20 +21,22 @@ package object constraint {
    * @return the value as Constrained (meaning "asserted value")
    * @note Due to a type inference bug of Scala 3, [[constrainedToValue]] was moved to the package object.
    */
-  implicit inline def refineValue[A, B, C <: Constraint[A, B]](value: A)(using inline constraint: C): Constrained[A, B] = {
-    Constrained(compileTime.preAssert(value, constraint))
+  implicit inline def refineValue[A, B, C <: Constraint[A, B]](value: A)(using inline constraint: C): A / B = {
+    Constrained(compileTime.preAssert[A, B, C](value, constraint.getMessage(value), constraint.assert(value)))
   }
-  
-  implicit inline def refineConstrained[A, AB, B, C <: Constraint[A, B]](constrained: A / AB)(using inline constraint: C): Constrained[A, B] =
-    constrainedToValue(constrained) match {
 
-      case Right(value) => refineValue(value)
+  class DefaultConsequence[A, B1, B2, C <: Constraint[A, B2]](using C) extends Consequence[A, B1, B2] {
 
-      case left => Constrained(left)
-    }
+    override inline def assert(value: A): Boolean = summonInline[C].assert(value)
+
+    override inline def getMessage(value: A): String = summonInline[C].getMessage(value)
+  }
+
+  inline given [A, B1, B2, C <: Constraint[A, B2]](using inline constraint: C): DefaultConsequence[A, B1, B2, C] = new DefaultConsequence
 
   /**
    * Represent a part of an algebraic expression.
+   *
    * @tparam T the algebra type to avoid clashes
    *
    */
@@ -40,18 +44,20 @@ package object constraint {
 
   /**
    * Represent an entry point of the algebraic expression. Example: `?? < 1d` is an entry point.
+   *
    * @tparam T the algebra type to avoid clashes
    */
   trait AlgebraEntryPoint[T]
 
   /**
    * Alias for binary algebraic operator.
-   * @tparam A the algebra part to the left of the operator
-   * @tparam B the right input to the right of the operator
-   * @tparam Alg the algebra type of this operator
+   *
+   * @tparam A       the algebra part to the left of the operator
+   * @tparam B       the right input to the right of the operator
+   * @tparam Alg     the algebra type of this operator
    * @tparam Literal the type of the possible literals for this operator
-   * @tparam Left the constraint type of this operator for the pattern `?? < B` or `A < B`
-   * @tparam Right the constraint type of this operator for the pattern `A > ??`
+   * @tparam Left    the constraint type of this operator for the pattern `?? < B` or `A < B`
+   * @tparam Right   the constraint type of this operator for the pattern `A > ??`
    */
   type BiOperator[A, B, Alg, Literal, Left[_], Right[_]] = A match {
     case ?? => Left[B]
@@ -66,14 +72,16 @@ package object constraint {
 
   final class Literal[V]
 
+  type NoConstraint = Literal[true]
+
   class LiteralConstraint[A, V <: Boolean] extends Constraint[A, Literal[V]] {
 
     override inline def assert(value: A): Boolean = constValue[V]
 
-    override inline def getMessage(value: A): String = inline if(constValue[V]) "true" else "false"
+    override inline def getMessage(value: A): String = inline if (constValue[V]) "true" else "false"
   }
 
-  inline given [A, V <: Boolean]: LiteralConstraint[A, V] = new LiteralConstraint
+  inline given[A, V <: Boolean]: LiteralConstraint[A, V] = new LiteralConstraint
 
   /**
    * Placeholder for algebraic expressions
@@ -89,7 +97,7 @@ package object constraint {
     override inline def getMessage(value: A): String = "True"
   }
 
-  inline given [A]: PlaceholderConstraint[A] = new PlaceholderConstraint
+  inline given[A]: PlaceholderConstraint[A] = new PlaceholderConstraint
 
   /**
    * Constraint: checks if the input value strictly equals to V.
@@ -139,6 +147,7 @@ package object constraint {
 
   /**
    * Equivalent of the mathematical implication `=>`. Alias for `Not[A] || B`
+   *
    * @tparam A the antecedent of B
    * @tparam B the consequence of A
    */
@@ -193,6 +202,10 @@ package object constraint {
 
   inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using inline cb: CB, inline cc: CC): AndConstraint[A, B, C, CB, CC] = new AndConstraint
 
+  inline given [A, B1, B2]: VerifiedConsequence[A, And[B1, B2], B1] = Consequence.verified
+
+  inline given [A, B1, B2]: VerifiedConsequence[A, And[B1, B2], B2] = Consequence.verified
+
 
   final class AlgebraPartAnd[B, C, Alg, V] extends AlgebraPart[Alg, V]
 
@@ -228,6 +241,7 @@ package object constraint {
 
   /**
    * Constraint: makes the wrapped constraint runtime-only.
+   *
    * @tparam B the wrapped constraint's dummy
    */
   trait RuntimeOnly[B]
@@ -241,11 +255,24 @@ package object constraint {
 
   inline given[A, B, C <: Constraint[A, B]](using C): RuntimeOnlyConstraint[A, B, C] = new RuntimeOnlyConstraint
 
+
+  trait CompileTimeOnly[B]
+
+  class CompileTimeConstraint[A, B, C <: Constraint[A, B]](using C) extends Constraint.CompileTimeOnly[A, CompileTimeOnly[B]] {
+
+    override inline def assert(value: A): Boolean = summonInline[C].assert(value)
+
+    override inline def getMessage(value: A): String = summonInline[C].getMessage(value)
+  }
+
+  inline given[A, B, C <: Constraint[A, B]](using inline constraint: C): CompileTimeConstraint[A, B, C] = new CompileTimeConstraint
+
   /**
    * Represent a constraint with a placehold value as input (instead of the Constrained value). Used for chained algebra.
-   * @tparam B the wrapped constraint
+   *
+   * @tparam B   the wrapped constraint
    * @tparam Alg the algebra type of this placehold
-   * @tparam V the value to pass as input
+   * @tparam V   the value to pass as input
    */
   trait Placehold[B, Alg, V] extends AlgebraPart[Alg, V]
 

@@ -52,4 +52,11 @@ object compileTime {
 
     '{Either.cond($result, $input, IllegalValueError($input, $message))}
   }
+
+  inline def showType[T]: String = ${showTypeImpl[T]}
+
+  private def showTypeImpl[T : Type](using Quotes): Expr[String] = {
+    val repr = Type.show[T]
+    Expr(repr)
+  }
 }

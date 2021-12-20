@@ -1,5 +1,6 @@
 package io.github.iltotore.iron
 
+import io.github.iltotore.iron.constraint.Consequence
 import io.github.iltotore.iron.constraint.Consequence.VerifiedConsequence
 import io.github.iltotore.iron.{Constrained, compileTime}
 
@@ -9,7 +10,7 @@ import scala.language.implicitConversions
 import scala.math.Ordering.Implicits.infixOrderingOps
 import scala.util.NotGiven
 
-package object constraint {
+package object constraint extends LowPriorityConsequence {
 
   /**
    * Implicit assertion check
@@ -24,15 +25,6 @@ package object constraint {
   implicit inline def refineValue[A, B, C <: Constraint[A, B]](value: A)(using inline constraint: C): A / B = {
     Constrained(compileTime.preAssert[A, B, C](value, constraint.getMessage(value), constraint.assert(value)))
   }
-
-  class DefaultConsequence[A, B1, B2, C <: Constraint[A, B2]](using C) extends Consequence[A, B1, B2] {
-
-    override inline def assert(value: A): Boolean = summonInline[C].assert(value)
-
-    override inline def getMessage(value: A): String = summonInline[C].getMessage(value)
-  }
-
-  inline given [A, B1, B2, C <: Constraint[A, B2]](using inline constraint: C): DefaultConsequence[A, B1, B2, C] = new DefaultConsequence
 
   /**
    * Represent a part of an algebraic expression.
@@ -104,7 +96,7 @@ package object constraint {
    *
    * @tparam V
    */
-  trait StrictEqual[V]
+  final class StrictEqual[V]
 
   type ==[A, V] = A / StrictEqual[V]
 
@@ -162,6 +154,15 @@ package object constraint {
 
   inline given[A, B, C <: Constraint[A, B]](using inline constraint: C): NotConstraint[A, B, C] = new NotConstraint
 
+  /**
+   * (B => !B) <=> false
+   */
+  transparent inline given [A, B]: Consequence[A, B, Not[B]] = Consequence.invalid
+
+  /**
+   * (!B => B) <=> false
+   */
+  transparent inline given [A, B]: Consequence[A, Not[B], B] = Consequence.invalid
 
   /**
    * Constraint: checks if the value pass B or C. Acts like a boolean OR.
@@ -181,6 +182,26 @@ package object constraint {
   }
 
   inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using inline cb: CB, inline cc: CC): OrConstraint[A, B, C, CB, CC] = new OrConstraint
+
+  /**
+   * B1 | B2 => B1
+   */
+  transparent inline given[A, B1, B2]: Consequence[A, Or[B1, B2], B1] = Consequence.verified
+
+  /**
+   * B1 | B2 => B2
+   */
+  transparent inline given[A, B1, B2]: Consequence[A, Or[B1, B2], B2] = Consequence.verified
+
+  /**
+   * B1 => B1 | B2
+   */
+  transparent inline given[A, B1, B2]: Consequence[A, B1, Or[B1, B2]] = Consequence.verified
+
+  /**
+   * B2 => B1 | B2
+   */
+  transparent inline given[A, B1, B2]: Consequence[A, B2, Or[B1, B2]] = Consequence.verified
 
 
   /**
@@ -202,9 +223,15 @@ package object constraint {
 
   inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using inline cb: CB, inline cc: CC): AndConstraint[A, B, C, CB, CC] = new AndConstraint
 
-  inline given [A, B1, B2]: VerifiedConsequence[A, And[B1, B2], B1] = Consequence.verified
+  /**
+   * B1 & B2 => B1
+   */
+  transparent inline given [A, B1, B2]: Consequence[A, And[B1, B2], B1] = Consequence.verified
 
-  inline given [A, B1, B2]: VerifiedConsequence[A, And[B1, B2], B2] = Consequence.verified
+  /**
+   * B1 & B2 => B2
+   */
+  transparent inline given [A, B1, B2]: Consequence[A, And[B1, B2], B2] = Consequence.verified
 
 
   final class AlgebraPartAnd[B, C, Alg, V] extends AlgebraPart[Alg, V]

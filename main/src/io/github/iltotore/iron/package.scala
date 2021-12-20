@@ -106,7 +106,7 @@ package object iron {
    */
   implicit def unbox[A, B](constrained: A / B)(using RefinedDSL.type): A = constrained.fold(throw _, x => x)
   
-  implicit inline def refineConstrained[A, B1, B2](constrained: A / B1)(using inline consequence: Consequence[A, B1, B2]): A / B2 = constrained match {
+  implicit inline def refineConstrained[A, B1, B2, C <: Consequence[A, B1, B2]](constrained: A / B1)(using inline consequence: C): A / B2 = constrained match {
 
     case Right(value) => Constrained(compileTime.preAssert(value, consequence.getMessage(value), consequence.assert(value)))
 

@@ -184,16 +184,6 @@ package object constraint extends LowPriorityConsequence {
   inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C]](using inline cb: CB, inline cc: CC): OrConstraint[A, B, C, CB, CC] = new OrConstraint
 
   /**
-   * B1 | B2 => B1
-   */
-  transparent inline given[A, B1, B2]: Consequence[A, Or[B1, B2], B1] = Consequence.verified
-
-  /**
-   * B1 | B2 => B2
-   */
-  transparent inline given[A, B1, B2]: Consequence[A, Or[B1, B2], B2] = Consequence.verified
-
-  /**
    * B1 => B1 | B2
    */
   transparent inline given[A, B1, B2]: Consequence[A, B1, Or[B1, B2]] = Consequence.verified

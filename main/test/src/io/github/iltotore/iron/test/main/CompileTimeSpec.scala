@@ -57,6 +57,16 @@ class CompileTimeSpec extends UnitSpec {
     "dummy(0)" shouldNot compile
   }
 
+  "B" should "not verify Not[B]" in {
+    val dummy: Boolean / Not[Dummy] = false
+    "val foo: Boolean / Dummy = dummy" shouldNot compile
+  }
+
+  "Not[B]" should "not verify B" in {
+    val dummy: Boolean / Dummy = true
+    "val foo: Boolean / Not[Dummy] = dummy" shouldNot compile
+  }
+
   "An Or[B, C] constraint" should "compile if the argument satisfies one of the two passed assertions" in {
 
     def dummy(x: Int / (StrictEqual[0] || StrictEqual[1])): Unit = ???
@@ -64,6 +74,13 @@ class CompileTimeSpec extends UnitSpec {
     "dummy(0)" should compile
     "dummy(1)" should compile
     "dummy(2)" shouldNot compile
+  }
+
+  "Both A and B" should "verify Or[A, B]" in {
+    val a: Int / Even = -2
+    val b: Int / Positive = 3
+    "val foo: Int / (Even || Positive) = a" should compile
+    "val foo: Int / (Even || Positive) = b" should compile
   }
 
   "An And[B, C] constraint" should "compile if the argument satisfies both B and C" in {
@@ -74,4 +91,12 @@ class CompileTimeSpec extends UnitSpec {
     "dummy(3)" shouldNot compile
     "dummy(-2)" shouldNot compile
   }
+
+  "And[A, B]" should "verify both A and B" in {
+
+    val dummy: Int / (Positive && Even) = 4
+    "val a: Int / Positive = dummy" should compile
+    "val b: Int / Even = dummy" should compile
+  }
+
 }

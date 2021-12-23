@@ -89,6 +89,9 @@ package object constraint extends LowPriorityConsequence {
 
   transparent inline given [A, V1 <: A, V2 <: A, B[_] <: Transitive[_], C <: Constraint[A, B[V2]]](using inline constraint: C): Consequence[A, B[V1], B[V2]] = new TransitiveConsequence
 
+  trait Equivalence[V, Sym[_]] extends Reflexive[V] with AntiSymmetric[V, Sym] with Transitive[V]
+  trait Order[V, Sym[_]] extends Reflexive[V] with AntiSymmetric[V, Sym] with Transitive[V]
+
 
   final class Literal[V]
 

@@ -30,7 +30,7 @@ package object constraint extends LowPriorityConsequence {
    * Represent a part of an algebraic expression.
    *
    * @tparam T the algebra type to avoid clashes
-   *
+   * @tparam V the value parameter of this algebraic expression
    */
   trait AlgebraPart[T, V]
 
@@ -61,6 +61,34 @@ package object constraint extends LowPriorityConsequence {
     }
     case _ => A / Left[B]
   }
+
+
+  trait Reflexive[V]
+
+  transparent inline given [A, V <: A, B[_] <: Reflexive[_]]: Consequence[A, StrictEqual[V], B[V]] = Consequence.verified
+
+
+  trait Symmetric[V, Sym[_]]
+
+  transparent inline given [A, V <: A, Sym[_], B[_] <: Symmetric[_, Sym]]: Consequence[A, B[V], Sym[V]] = Consequence.verified
+
+
+  trait AntiSymmetric[V, Sym[_]]
+
+  transparent inline given [A, V <: A, Sym[_], B[_] <: AntiSymmetric[_, Sym]]: Consequence[A, B[V] && Sym[V], StrictEqual[V]] = Consequence.verified
+
+
+  trait Transitive[V]
+
+  class TransitiveConsequence[A, V1 <: A, V2 <: A, B[_] <: Transitive[_], C <: Constraint[A, B[V2]]](using C) extends Consequence[A, B[V1], B[V2]] {
+
+    override inline def assert(value: A): Boolean = summonInline[C].assert(constValue[V1]) || summonInline[C].assert(value)
+
+    override inline def getMessage(value: A): String = summonInline[C].getMessage(constValue[V1])
+  }
+
+  transparent inline given [A, V1 <: A, V2 <: A, B[_] <: Transitive[_], C <: Constraint[A, B[V2]]](using inline constraint: C): Consequence[A, B[V1], B[V2]] = new TransitiveConsequence
+
 
   final class Literal[V]
 

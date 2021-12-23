@@ -14,7 +14,7 @@ object constraint {
    *
    * @tparam V
    */
-  trait Less[V] extends AlgebraEntryPoint[MathAlgebra]
+  trait Less[V] extends AlgebraEntryPoint[MathAlgebra] with Transitive[V]
 
   type <[A, B] = BiOperator[A, B, MathAlgebra, Number, Less, Greater]
 
@@ -31,7 +31,7 @@ object constraint {
    *
    * @tparam V
    */
-  trait LessEqual[V] extends AlgebraEntryPoint[MathAlgebra]
+  trait LessEqual[V] extends AlgebraEntryPoint[MathAlgebra] with Order[V, GreaterEqual] with Equivalence[V, GreaterEqual]
 
   type <=[A, B] = BiOperator[A, B, MathAlgebra, Number, LessEqual, GreaterEqual]
 
@@ -49,7 +49,7 @@ object constraint {
    *
    * @tparam V
    */
-  trait Greater[V] extends AlgebraEntryPoint[MathAlgebra]
+  trait Greater[V] extends AlgebraEntryPoint[MathAlgebra] with Transitive[V]
 
   type >[A, B] = BiOperator[A, B, MathAlgebra, Number, Greater, Less]
 
@@ -79,7 +79,7 @@ object constraint {
    *
    * @tparam V
    */
-  trait GreaterEqual[V] extends AlgebraEntryPoint[MathAlgebra]
+  trait GreaterEqual[V] extends AlgebraEntryPoint[MathAlgebra] with Order[V, LessEqual] with Equivalence[V, LessEqual]
 
   type >=[A, B] = BiOperator[A, B, MathAlgebra, Number, GreaterEqual, LessEqual]
 
@@ -108,7 +108,7 @@ object constraint {
    *
    * @tparam V
    */
-  trait Divisible[V]
+  trait Divisible[V] extends Order[V, Divide]
 
   type %[A, B] = A / Divisible[B]
 
@@ -133,4 +133,21 @@ object constraint {
   }
 
   inline given[A <: Number, V <: A]: DivisibleConstraint[A, V] = new DivisibleConstraint
+
+
+  /**
+   * Constraint: checks if the input value divides V
+   *
+   * @tparam V
+   */
+  trait Divide[V] extends Order[V, Divisible]
+
+  class DivideConstraint[A <: Number, V <: A] extends Constraint[A, Divide[V]] {
+
+    override inline def assert(value: A): Boolean = modulo(constValue[V], value) == 0
+
+    override inline def getMessage(value: A): String = "value should divide the specified value"
+  }
+
+  transparent inline given[A <: Number, V <: A]: Constraint[A, Divide[V]] = new DivideConstraint
 }

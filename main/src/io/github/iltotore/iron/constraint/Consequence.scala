@@ -9,6 +9,12 @@ trait Consequence[A, B1, B2] {
 
 object Consequence {
 
+  /**
+   * An always-valid consequence.
+   * @tparam A the input type
+   * @tparam B1
+   * @tparam B2
+   */
   class VerifiedConsequence[A, B1, B2] extends Consequence[A, B1, B2] {
 
     override inline def assert(value: A): Boolean = true

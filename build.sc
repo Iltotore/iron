@@ -26,7 +26,7 @@ object main extends ScalaModule with PublishModule {
 
   def scalaVersion = "3.0.2"
 
-  def publishVersion = "1.1.2"
+  def publishVersion = "1.2.0"
 
   def majorVersion: T[String] = publishVersion()
     .split("\\.")

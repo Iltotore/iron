@@ -283,15 +283,15 @@ package object constraint extends LowPriorityConsequence {
 
   final class AlgebraPartAnd[B, C, Alg, V] extends AlgebraPart[Alg, V]
 
-  class AlgebaricAndConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C], Alg, V](using CB, CC) extends Constraint[A, AlgebraPartAnd[B, C, Alg, V]] {
+  class AlgebraicConstraint[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C], Alg, V](using CB, CC) extends Constraint[A, AlgebraPartAnd[B, C, Alg, V]] {
 
     override inline def assert(value: A): Boolean = summonInline[CB].assert(value) && summonInline[CC].assert(value)
 
     override inline def getMessage(value: A): String = s"${summonInline[CB].getMessage(value)} and ${summonInline[CC].getMessage(value)}"
   }
 
-  inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C], Alg, V](using inline cb: CB, inline cc: CC): AlgebaricAndConstraint[A, B, C, CB, CC, Alg, V] =
-    new AlgebaricAndConstraint
+  inline given[A, B, C, CB <: Constraint[A, B], CC <: Constraint[A, C], Alg, V](using inline cb: CB, inline cc: CC): AlgebraicConstraint[A, B, C, CB, CC, Alg, V] =
+    new AlgebraicConstraint
 
 
   /**

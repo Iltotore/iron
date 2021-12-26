@@ -31,7 +31,7 @@ object constraint {
    *
    * @tparam V
    */
-  trait LessEqual[V] extends AlgebraEntryPoint[MathAlgebra] with Order[V, GreaterEqual] with Equivalence[V, GreaterEqual]
+  trait LessEqual[V] extends AlgebraEntryPoint[MathAlgebra] with Order[V, GreaterEqual]
 
   type <=[A, B] = BiOperator[A, B, MathAlgebra, Number, LessEqual, GreaterEqual]
 
@@ -79,7 +79,7 @@ object constraint {
    *
    * @tparam V
    */
-  trait GreaterEqual[V] extends AlgebraEntryPoint[MathAlgebra] with Order[V, LessEqual] with Equivalence[V, LessEqual]
+  trait GreaterEqual[V] extends AlgebraEntryPoint[MathAlgebra] with Order[V, LessEqual]
 
   type >=[A, B] = BiOperator[A, B, MathAlgebra, Number, GreaterEqual, LessEqual]
 

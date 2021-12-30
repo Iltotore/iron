@@ -5,7 +5,7 @@ package io.github.iltotore.iron.constraint
  * @tparam A the input type
  * @tparam B the constraint's dummy
  */
-trait Constraint[A, B] {
+trait Constraint[A, -B] {
 
   /**
    * Asserts the given value.

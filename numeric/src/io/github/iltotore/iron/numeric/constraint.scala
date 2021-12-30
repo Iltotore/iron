@@ -31,7 +31,7 @@ object constraint {
    *
    * @tparam V
    */
-  trait LessEqual[V] extends AlgebraEntryPoint[MathAlgebra] with Order[V, GreaterEqual]
+  trait LessEqual[V] extends AlgebraEntryPoint[MathAlgebra] with Order[V, GreaterEqual] with Or[Less[V], StrictEqual[V]]
 
   type <=[A, B] = BiOperator[A, B, MathAlgebra, Number, LessEqual, GreaterEqual]
 
@@ -79,7 +79,7 @@ object constraint {
    *
    * @tparam V
    */
-  trait GreaterEqual[V] extends AlgebraEntryPoint[MathAlgebra] with Order[V, LessEqual]
+  trait GreaterEqual[V] extends AlgebraEntryPoint[MathAlgebra] with Order[V, LessEqual] with Or[Less[V], StrictEqual[V]]
 
   type >=[A, B] = BiOperator[A, B, MathAlgebra, Number, GreaterEqual, LessEqual]
 
@@ -101,7 +101,7 @@ object constraint {
     override inline def getMessage(value: A): String = "value should be greater or equal to the specified value"
   }
 
-  inline given[A <: Number, V <: A]: GreaterEqualConstraint[A, V] = new GreaterEqualConstraint
+  inline given [A <: Number, V <: A]: GreaterEqualConstraint[A, V] = new GreaterEqualConstraint
 
   /**
    * Constraint: checks if the input value is divisible by V

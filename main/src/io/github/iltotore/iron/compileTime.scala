@@ -54,6 +54,8 @@ object compileTime {
   }
 
   inline def showType[T]: String = ${showTypeImpl[T]}
+  
+  inline def showTypeOf[T](inline value: T): String = ${showTypeImpl[T]}
 
   private def showTypeImpl[T : Type](using Quotes): Expr[String] = {
     val repr = Type.show[T]

@@ -14,7 +14,7 @@ object constraint {
    *
    * @tparam V
    */
-  trait Less[V] extends AlgebraEntryPoint[MathAlgebra] with Transitive[V]
+  trait Less[V] extends AlgebraEntryPoint[MathAlgebra] with Transitive[V] with Asymmetric[V, Greater]
 
   type <[A, B] = BiOperator[A, B, MathAlgebra, Number, Less, Greater]
 
@@ -49,7 +49,7 @@ object constraint {
    *
    * @tparam V
    */
-  trait Greater[V] extends AlgebraEntryPoint[MathAlgebra] with Transitive[V]
+  trait Greater[V] extends AlgebraEntryPoint[MathAlgebra] with Transitive[V] with Asymmetric[V, Less]
 
   type >[A, B] = BiOperator[A, B, MathAlgebra, Number, Greater, Less]
 

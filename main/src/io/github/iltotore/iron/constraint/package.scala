@@ -90,6 +90,17 @@ package object constraint extends LowPriorityConsequence {
   transparent inline given [A, V <: A, Sym[_], B[_] <: AntiSymmetric[_, Sym]]: Consequence[A, B[V] && Sym[V], StrictEqual[V]] = Consequence.verified
 
   /**
+   * An asymmetric binary relation aRb
+   * @tparam V the value of b
+   * @tparam Sym the opposite relation (`bRa` <=> `a Sym b`)
+   */
+  trait Asymmetric[V, Sym[_]]
+
+  transparent inline given asym[A, V <: A, Sym[_], B[_] <: Asymmetric[_, Sym]]: Consequence[A, B[V], Sym[V]] = Consequence.invalid
+
+  transparent inline given asymEq[A, V <: A, B <: Asymmetric[V, ?]]: Consequence[A, B, StrictEqual[V]] = Consequence.invalid
+
+  /**
    * A Transitive binary relation `aRb`
    * @tparam V the value of `b`
    */
@@ -102,7 +113,7 @@ package object constraint extends LowPriorityConsequence {
     override inline def getMessage(value: A): String = summonInline[C].getMessage(constValue[V1])
   }
 
-  transparent inline given [A, V1 <: A, V2 <: A, B[_] <: Transitive[_], C <: Constraint[A, B[V2]]](using inline constraint: C): Consequence[A, B[V1], B[V2]] = new TransitiveConsequence
+  transparent inline given trans[A, V1 <: A, V2 <: A, B[_] <: Transitive[_], C <: Constraint[A, B[V2]]](using inline constraint: C): Consequence[A, B[V1], B[V2]] = new TransitiveConsequence
 
   /**
    * A reflexive, transitive and symmetric binary relation `aRb`.

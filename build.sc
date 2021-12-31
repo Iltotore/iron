@@ -156,7 +156,7 @@ trait IronModule extends ScalaModule with PublishModule {
 //Subprojects
 object numeric extends IronModule {
 
-  def subVersion = "1.0.1"
+  def subVersion = "1.0.0"
 
   object test extends Tests with ScalaTest
 }

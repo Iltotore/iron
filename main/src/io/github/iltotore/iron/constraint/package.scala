@@ -81,13 +81,13 @@ package object constraint extends LowPriorityConsequence {
   transparent inline given [A, V <: A, Sym[_], B[_] <: Symmetric[_, Sym]]: Consequence[A, B[V], Sym[V]] = Consequence.verified
 
   /**
-   * An anti symmetric binary relation `aRb`
+   * An antisymmetric binary relation `aRb`
    * @tparam V the value of `b`
    * @tparam Sym the opposite relation (`bRa` <=> `a Sym b`)
    */
-  trait AntiSymmetric[V, Sym[_]]
+  trait Antisymmetric[V, Sym[_]]
 
-  transparent inline given [A, V <: A, Sym[_], B[_] <: AntiSymmetric[_, Sym]]: Consequence[A, B[V] && Sym[V], StrictEqual[V]] = Consequence.verified
+  transparent inline given [A, V <: A, Sym[_], B[_] <: Antisymmetric[_, Sym]]: Consequence[A, B[V] && Sym[V], StrictEqual[V]] = Consequence.verified
 
   /**
    * An asymmetric binary relation aRb
@@ -120,14 +120,14 @@ package object constraint extends LowPriorityConsequence {
    * @tparam V the value of `b`
    * @tparam Sym the opposite relation (`bRa` <=> `a Sym b`)
    */
-  trait Equivalence[V, Sym[_]] extends Reflexive[V] with AntiSymmetric[V, Sym] with Transitive[V]
+  trait Equivalence[V, Sym[_]] extends Reflexive[V] with Antisymmetric[V, Sym] with Transitive[V]
 
   /**
    * A reflexive, transitive and antisymmetric binary relation `aRb`
    * @tparam V the value of `b`
    * @tparam Sym the opposite relation (`bRa` <=> `a Sym b`)
    */
-  trait Order[V, Sym[_]] extends Reflexive[V] with AntiSymmetric[V, Sym] with Transitive[V]
+  trait Order[V, Sym[_]] extends Reflexive[V] with Antisymmetric[V, Sym] with Transitive[V]
 
 
   final class Literal[V]

@@ -90,8 +90,8 @@ package object constraint extends LowPriorityConsequence {
   transparent inline given [A, V <: A, Sym[_], B[_] <: Antisymmetric[_, Sym]]: Consequence[A, B[V] && Sym[V], StrictEqual[V]] = Consequence.verified
 
   /**
-   * An asymmetric binary relation aRb
-   * @tparam V the value of b
+   * An asymmetric binary relation `aRb`javadoc
+   * @tparam V the value of `b`
    * @tparam Sym the opposite relation (`bRa` <=> `a Sym b`)
    */
   trait Asymmetric[V, Sym[_]]

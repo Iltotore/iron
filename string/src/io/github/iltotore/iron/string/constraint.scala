@@ -34,7 +34,7 @@ object constraint {
    * Constraint: checks if the input value matches V.
    * @tparam V the regex to match with.
    */
-  trait Match[V <: String]
+  trait Match[V <: String & Singleton]
 
   type Alphanumeric = Match["^[a-zA-Z0-9]+"] DescribedAs "Value should be alphanumeric"
 
@@ -61,32 +61,5 @@ object constraint {
 
     override inline def getMessage(value: String): String = s"$value should match ${constValue[V]}"
   }
-
-  // transparent inline def getRegex[V <: String, Match[V]] = constValue[V]
-
-
-  // inline given Constraint[String, URLLike] with {
-  //   override inline def assert(value: String): Boolean = false
-
-  //   override inline def getMessage(value: String): String = "test"
-  // }
-
-
-  // inline given Constraint[String, URLLike] with {
-  //   override inline def assert(value: String): Boolean = {
-
-  //     inline val regex = compileTime.singleCheck42(URLLike)
-  //     // inline val a = getRegex[_, URLLike]
-  //     // val a = erasedValue[URLLike] match {
-  //     //   case _: Match[String] => "test"
-  //     // }
-  //     false
-  //     // BaseMatchConstraint.assert(value, constValue[URLLike])
-  //   }
-
-  //   override inline def getMessage(value: String): String = "test"
-  // }
-
-
 
 }

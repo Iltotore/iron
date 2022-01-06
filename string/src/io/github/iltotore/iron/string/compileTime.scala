@@ -45,8 +45,6 @@ object compileTime {
     }
   }
 
-  transparent inline def singleCheck42[T <: String & Singleton](using x: ClassTag[constraint.Match[T]]): T = scala.compiletime.constValue[T]
-
   transparent inline def extractRegex[T <: Match[_] | DescribedAs[Match[_], _]](): String = {
     ${ extractRegexCode[T]() }
   } 
@@ -63,48 +61,12 @@ object compileTime {
     }
 
     val tpe = TypeRepr.of[T]
-
-    val s = tpe.asType match {
+    val regex = tpe.asType match {
       case '[Match[v]] => extractFromConstant(TypeRepr.of[v])
       case '[DescribedAs[Match[v], _]] => extractFromConstant(TypeRepr.of[v])
       case _ => report.throwError(tpe.show + " is not Match or DescribedAs")
     }
-
-    //   // Type.valueOfConstant
-
-    // val r = tpe.asType match 
-  
-    //   // case '[Map { type Map$K <: AnyRef; type Map$V = Int }] => "asd"
-    //   case '[constraint.Match[v] { type Match$V = a } ] => ???
-    //   case '[ constraint.Match[String] { type V = q }] => ???
-    //   case _ => "fail"
-    
-
-    // tpe.
-
-    // w match {
-      // case _: constraint.Match[_] => report.error("123")
-    // }
-
-    // w match {
-      // case '{ constraint.Match[V] { type V = v } } => Type.valueOfConstant[v]
-    // }
-
-    // println(tpe.show)
-
-    // report.error("2 " + r)
-
-    Expr(s)
-    // println(w)
-
-    // Expr("Abc")
-
-  //   '{ new io.github.iltotore.iron.constraint.Constraint[String, T] {
-  //   override def assert(value: String): Boolean = false
-
-  //   override def getMessage(value: String): String = "test"
-  // } 
-    
+    Expr(regex)
   }
 
 }

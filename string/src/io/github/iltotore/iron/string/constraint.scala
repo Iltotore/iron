@@ -3,7 +3,8 @@ package io.github.iltotore.iron.string
 import io.github.iltotore.iron./
 import io.github.iltotore.iron.constraint.*
 
-import scala.compiletime.constValue
+import scala.compiletime.{constValue, constValueOpt, erasedValue}
+import scala.util.NotGiven
 
 object constraint {
 
@@ -12,10 +13,10 @@ object constraint {
    */
   trait LowerCase
 
-  inline given Constraint.RuntimeOnly[String, LowerCase] with {
-    override inline def assert(value: String): Boolean = value equals value.toLowerCase
+  inline given Constraint[String, LowerCase] with {
+    override inline def assert(value: String): Boolean = compileTime.checkLowerCase(value)
 
-    override inline def getMessage(value: String): String = s"$value should be lower cased"
+    override inline def getMessage(value: String): String = value + " should be lower cased"
   }
 
   /**
@@ -23,29 +24,69 @@ object constraint {
    */
   trait UpperCase
 
-  inline given Constraint.RuntimeOnly[String, UpperCase] with {
-    override inline def assert(value: String): Boolean = value equals value.toUpperCase
+  inline given Constraint[String, UpperCase] with {
+    override inline def assert(value: String): Boolean = compileTime.checkUpperCase(value)
 
-    override inline def getMessage(value: String): String = s"$value should be upper cased"
+    override inline def getMessage(value: String): String = value + " should be upper cased"
   }
 
   /**
    * Constraint: checks if the input value matches V.
    * @tparam V the regex to match with.
    */
-  trait Match[V]
+  trait Match[V <: String]
 
   type Alphanumeric = Match["^[a-zA-Z0-9]+"] DescribedAs "Value should be alphanumeric"
+
+  inline given MatchConstraint[Alphanumeric] with {}
 
   type URLLike =
     Match["^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#\\[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$"] DescribedAs "Value should be an URL"
 
+  inline given MatchConstraint[URLLike] with {}
+
   type UUIDLike =
     Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"] DescribedAs "Value should be an UUID"
 
-  inline given [V <: String]: Constraint.RuntimeOnly[String, Match[V]] with {
+  inline given MatchConstraint[UUIDLike] with {}
+
+  trait MatchConstraint[M <: Match[_] | DescribedAs[Match[_], _]] extends Constraint[String, M] {
+    override inline def assert(value: String): Boolean = compileTime.checkMatch(value, compileTime.extractRegex[M]())
+
+    override inline def getMessage(value: String): String = value + " should match " + compileTime.extractRegex[M]()
+  }
+
+  inline given [V <: String & Singleton](using NotGiven[MatchConstraint[Match[V]]]): Constraint.RuntimeOnly[String, Match[V]] with {
     override inline def assert(value: String): Boolean = constValue[V].r.matches(value)
 
     override inline def getMessage(value: String): String = s"$value should match ${constValue[V]}"
   }
+
+  // transparent inline def getRegex[V <: String, Match[V]] = constValue[V]
+
+
+  // inline given Constraint[String, URLLike] with {
+  //   override inline def assert(value: String): Boolean = false
+
+  //   override inline def getMessage(value: String): String = "test"
+  // }
+
+
+  // inline given Constraint[String, URLLike] with {
+  //   override inline def assert(value: String): Boolean = {
+
+  //     inline val regex = compileTime.singleCheck42(URLLike)
+  //     // inline val a = getRegex[_, URLLike]
+  //     // val a = erasedValue[URLLike] match {
+  //     //   case _: Match[String] => "test"
+  //     // }
+  //     false
+  //     // BaseMatchConstraint.assert(value, constValue[URLLike])
+  //   }
+
+  //   override inline def getMessage(value: String): String = "test"
+  // }
+
+
+
 }

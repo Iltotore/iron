@@ -312,7 +312,7 @@ package object constraint extends LowPriorityConsequence {
    * @tparam B the wrapped constraint's dummy
    * @tparam V the description to attach. Must be litteral.
    */
-  trait DescribedAs[B, V]
+  trait DescribedAs[+B, V]
 
   class DescribedAsConstraint[A, B, C <: Constraint[A, B], V <: String](using C) extends Constraint[A, DescribedAs[B, V]] {
 

@@ -23,26 +23,23 @@ class CompileTimeSpec extends UnitSpec {
 
   "A custom Match[V] without MatchConstraint" should "always compile" in {
 
-    def dummy(x: String / Match["^[a-z0-9]+"]): String / Match["^[a-z0-9]+"] = x
+    type NumberMatch = Match["^[0-9]+"]
+    def dummy(x: String / NumberMatch): String / NumberMatch = x
 
-    "dummy(\"abc123\")" should compile
-    "dummy(\"abc\")" should compile
     "dummy(\"123\")" should compile
     "dummy(\" \")" should compile
-    "dummy(\"$!#\")" should compile
+    "dummy(\"abc\")" should compile
   }
 
   "A custom Match[V] with MatchConstraint" should "detect regex at compile time" in {
 
-    type alphanumeric = Match["^[a-z0-9]+"]
-    def dummy(x: String / alphanumeric): String / alphanumeric = x
-    inline given MatchConstraint[alphanumeric] with {}
+    type NumberMatch = Match["^[0-9]+"]
+    def dummy(x: String / NumberMatch): String / NumberMatch = x
+    inline given MatchConstraint[NumberMatch] with {}
 
-    "dummy(\"abc123\")" should compile
-    "dummy(\"abc\")" should compile
     "dummy(\"123\")" should compile
     "dummy(\" \")" shouldNot compile
-    "dummy(\"$!#\")" shouldNot compile
+    "dummy(\"abc\")" shouldNot compile
   }
 
   "An URLLike constraint" should "return Right if the given String is a valid URL" in {

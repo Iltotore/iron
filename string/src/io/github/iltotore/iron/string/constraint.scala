@@ -38,28 +38,19 @@ object constraint {
 
   type Alphanumeric = Match["^[a-zA-Z0-9]+"] DescribedAs "Value should be alphanumeric"
 
-  inline given MatchConstraint[Alphanumeric] with {}
-
   type URLLike =
     Match["^(?:http(s)?:\\/\\/)?[\\w.-]+(?:\\.[\\w\\.-]+)+[\\w\\-\\._~:/?#\\[\\]@!\\$&'\\(\\)\\*\\+,;=.]+$"] DescribedAs "Value should be an URL"
-
-  inline given MatchConstraint[URLLike] with {}
 
   type UUIDLike =
     Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"] DescribedAs "Value should be an UUID"
 
-  inline given MatchConstraint[UUIDLike] with {}
+  class MatchConstraint[V <: String & Singleton] extends Constraint[String, Match[V]] {
 
-  trait MatchConstraint[M <: Match[_] | DescribedAs[Match[_], _]] extends Constraint[String, M] {
-    override inline def assert(value: String): Boolean = compileTime.checkMatch(value, compileTime.extractRegex[M]())
+    override inline def assert(value: String): Boolean = compileTime.checkMatch(value, constValue[V])
 
-    override inline def getMessage(value: String): String = value + " should match " + compileTime.extractRegex[M]()
+    override inline def getMessage(value: String): String = value + " should match " + constValue[V]
   }
 
-  inline given [V <: String & Singleton](using NotGiven[MatchConstraint[Match[V]]]): Constraint.RuntimeOnly[String, Match[V]] with {
-    override inline def assert(value: String): Boolean = constValue[V].r.matches(value)
-
-    override inline def getMessage(value: String): String = s"$value should match ${constValue[V]}"
-  }
+  inline given [V <: String & Singleton]: MatchConstraint[V] = new MatchConstraint
 
 }

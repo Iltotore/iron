@@ -45,28 +45,4 @@ object compileTime {
     }
   }
 
-  transparent inline def extractRegex[T <: Match[_] | DescribedAs[Match[_], _]](): String = {
-    ${ extractRegexCode[T]() }
-  } 
-
-  def extractRegexCode[T]()(using Quotes, Type[T]): Expr[String] = {
-    import quotes.reflect.*
-    import io.github.iltotore.iron.string.constraint.Match
-
-    def extractFromConstant(typeRepr: TypeRepr): String = {
-      typeRepr match {
-        case ConstantType(StringConstant(s)) => s
-        case _ => report.throwError(typeRepr.show + " is not string contant")
-      }
-    }
-
-    val tpe = TypeRepr.of[T]
-    val regex = tpe.asType match {
-      case '[Match[v]] => extractFromConstant(TypeRepr.of[v])
-      case '[DescribedAs[Match[v], _]] => extractFromConstant(TypeRepr.of[v])
-      case _ => report.throwError(tpe.show + " is not Match or DescribedAs")
-    }
-    Expr(regex)
-  }
-
 }

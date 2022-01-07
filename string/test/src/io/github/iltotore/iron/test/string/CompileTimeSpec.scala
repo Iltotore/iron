@@ -21,21 +21,10 @@ class CompileTimeSpec extends UnitSpec {
     "dummy(\"abc\")" shouldNot compile 
   }
 
-  "A custom Match[V] without MatchConstraint" should "always compile" in {
+  "A custom Match[V]" should "detect regex at compile time" in {
 
     type NumberMatch = Match["^[0-9]+"]
     def dummy(x: String / NumberMatch): String / NumberMatch = x
-
-    "dummy(\"123\")" should compile
-    "dummy(\" \")" should compile
-    "dummy(\"abc\")" should compile
-  }
-
-  "A custom Match[V] with MatchConstraint" should "detect regex at compile time" in {
-
-    type NumberMatch = Match["^[0-9]+"]
-    def dummy(x: String / NumberMatch): String / NumberMatch = x
-    inline given MatchConstraint[NumberMatch] with {}
 
     "dummy(\"123\")" should compile
     "dummy(\" \")" shouldNot compile

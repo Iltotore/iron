@@ -1,8 +1,8 @@
-# Iron Iterable
+# Iron Cats
 
 [![iron-cats Scala version support](https://index.scala-lang.org/iltotore/iron/iron-cats/latest-by-scala-version.svg)](https://index.scala-lang.org/iltotore/iron/iron-cats)
 
-This module includes iterable/collection utils for Iron.
+This module includes cats compatibility and utils for Iron.
 
 ## Features
 
@@ -15,7 +15,7 @@ This module includes iterable/collection utils for Iron.
 <summary>SBT</summary>
 
 ```scala
-libraryDependencies += "io.github.iltotore" %% "iron-iterable" % "version"
+libraryDependencies += "io.github.iltotore" %% "iron-cats" % "version"
 ```
 
 </details>
@@ -24,7 +24,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-iterable" % "version"
 <summary>Mill</summary>
 
 ```scala
-ivy"io.github.iltotore::iron-iterable:version"
+ivy"io.github.iltotore::iron-cats:version"
 ```
 
 </details>

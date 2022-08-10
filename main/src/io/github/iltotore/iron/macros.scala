@@ -2,9 +2,9 @@ package io.github.iltotore.iron
 
 import scala.quoted.*
 
-object macros {
+object macros:
 
-  transparent inline def assertCondition(inline cond: Boolean, inline message: String): Unit = ${assertConditionImpl('cond, 'message)}
+  inline def assertCondition(inline cond: Boolean, inline message: String): Unit = ${assertConditionImpl('cond, 'message)}
 
   private def assertConditionImpl(cond: Expr[Boolean], message: Expr[String])(using Quotes): Expr[Unit] =
 
@@ -15,4 +15,5 @@ object macros {
 
     if !condValue then report.errorAndAbort(messageValue)
     else '{()}
-}
+
+end macros

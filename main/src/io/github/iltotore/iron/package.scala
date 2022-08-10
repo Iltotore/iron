@@ -7,22 +7,26 @@ package object iron:
   export constraints.*
 
   /** An Iron type (refined).
-    * @tparam T
+    * @tparam A
     *   the underlying type
     * @tparam C
     *   the predicate/constraint guarding this type
     */
-  opaque type IronType[T, C] <: T = T
-  type /[T, C] = IronType[T, C]
+  opaque type IronType[A, C] <: A = A
+  type /[A, C] = IronType[A, C]
 
   object IronType:
 
-    inline def apply[T, C](value: T): IronType[T, C] = value
+    inline def apply[A, C](value: A): IronType[A, C] = value
 
   end IronType
 
-  implicit inline def autoBoxValue[T, C](inline value: T)(using inline constraint: Constraint[T, C]): IronType[T, C] =
+  implicit inline def autoBoxValue[A, C](inline value: A)(using inline constraint: Constraint[A, C]): IronType[A, C] =
     macros.assertCondition(constraint.test(value), constraint.message)
-    IronType(value)
+    value
+    
+  implicit inline def autoCastIron[A, C1, C2, Impl <: Theorem[A, C1, C2]](inline value: A / C1)(using inline theorem: Impl): IronType[A, C2] =
+    macros.assertCondition(theorem.test(value), theorem.message)
+    value
 
 end iron

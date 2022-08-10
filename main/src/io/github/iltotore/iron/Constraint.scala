@@ -1,7 +1,7 @@
 package io.github.iltotore.iron
 
-trait Constraint[T, C]:
+trait Constraint[A, C]:
 
-  inline def test(value: T): Boolean
+  inline def test(value: A): Boolean
 
-  transparent inline def message: String
+  inline def message: String

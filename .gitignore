@@ -1,0 +1,6 @@
+.bsp
+.idea
+.run
+.scala-build
+*.iml
+tmp

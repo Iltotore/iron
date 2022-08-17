@@ -37,9 +37,9 @@ object constraints:
       "!(" + summonInline[Impl].message + ")"
 
   transparent inline given [A, C, Impl <: Constraint[A, C]](using inline constraint: Impl): Constraint[A, Not[C]] = new NotConstraint
-  
-  given [C]: (Not[Not[C]] ==> C) = Implication()
-  given [C]: (C ==> Not[Not[C]]) = Implication()
+
+  given [C1, C2](using C1 ==> C2): (Not[Not[C1]] ==> C2) = Implication()
+  given [C1, C2](using C1 ==> C2): (C1 ==> Not[Not[C2]]) = Implication()
 
 
   final class Or[C1, C2]

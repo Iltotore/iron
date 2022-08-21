@@ -6,23 +6,24 @@ import scala.quoted.*
 
 object macros:
 
-  /** A FromExpr[Boolean] that can extract value from partially inlined || and
-    * && operations.
-    *
-    * {{{
-    *   inline val x = true
-    *   val y: Boolean = ???
-    *
-    *   x || y //inlined to `true`
-    *   y || x //inlined to `true`
-    *
-    *   inline val a = false
-    *   val b: Boolean = ???
-    *
-    *   x && y //inlined to `false`
-    *   y || x //inlined to `false`
-    * }}}
-    */
+  /**
+   * A FromExpr[Boolean] that can extract value from partially inlined || and
+   * && operations.
+   *
+   * {{{
+   *   inline val x = true
+   *   val y: Boolean = ???
+   *
+   *   x || y //inlined to `true`
+   *   y || x //inlined to `true`
+   *
+   *   inline val a = false
+   *   val b: Boolean = ???
+   *
+   *   x && y //inlined to `false`
+   *   y || x //inlined to `false`
+   * }}}
+   */
   given FromExpr[Boolean] with
 
     override def unapply(expr: Expr[Boolean])(using Quotes): Option[Boolean] =
@@ -30,28 +31,33 @@ object macros:
       import quotes.reflect.*
 
       def rec(tree: Term): Option[Boolean] =
-        tree match
-          case Block(stats, e) => if stats.isEmpty then rec(e) else None
-          case Inlined(_, bindings, e) =>
-            if bindings.isEmpty then rec(e) else None
-          case Typed(e, _) => rec(e)
-          case Apply(Select(left, "||"), List(right)) if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr.of[Boolean] => // OR
-            rec(left) match
-              case Some(value) => if value then Some(true) else rec(right)
-              case None        => rec(right).filter(x => x)
-          case Apply(Select(left, "&&"), List(right)) if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr.of[Boolean] => // AND
-            rec(left) match
-              case Some(value) => if value then rec(right) else Some(false)
-              case None        => rec(right).filterNot(x => x)
-          case _ =>
-            tree.tpe.widenTermRefByName match
-              case ConstantType(c) => Some(c.value.asInstanceOf[Boolean])
-              case _               => None
+          tree match
+            case Block(stats, e) => if stats.isEmpty then rec(e) else None
+            case Inlined(_, bindings, e) =>
+              if bindings.isEmpty then rec(e) else None
+            case Typed(e, _) => rec(e)
+            case Apply(Select(left, "||"), List(right))
+                if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr
+                  .of[Boolean] => // OR
+              rec(left) match
+                case Some(value) => if value then Some(true) else rec(right)
+                case None => rec(right).filter(x => x)
+            case Apply(Select(left, "&&"), List(right))
+                if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr
+                  .of[Boolean] => // AND
+              rec(left) match
+                case Some(value) => if value then rec(right) else Some(false)
+                case None => rec(right).filterNot(x => x)
+            case _ =>
+              tree.tpe.widenTermRefByName match
+                case ConstantType(c) => Some(c.value.asInstanceOf[Boolean])
+                case _ => None
 
       rec(expr.asTerm)
 
   /**
-   * A FromExpr[String] that can extract value from concatenated strings if all arguments are compile-time-extractable strings.
+   * A FromExpr[String] that can extract value from concatenated strings if all
+   * arguments are compile-time-extractable strings.
    *
    * {{{
    *   inline val x = "a"
@@ -70,30 +76,25 @@ object macros:
       import quotes.reflect.*
 
       def rec(tree: Term): Option[String] = tree match
-        case Block(stats, e) => if stats.isEmpty then rec(e) else None
-        case Inlined(_, bindings, e) =>
-          if bindings.isEmpty then rec(e) else None
-        case Typed(e, _) => rec(e)
-        case Apply(Select(left, "+"), List(right)) if left.tpe <:< TypeRepr.of[String] && right.tpe <:< TypeRepr.of[String] =>
-          rec(left).zip(rec(right)).map(_ + _)
-        case _ =>
-          tree.tpe.widenTermRefByName match
-            case ConstantType(c) => Some(c.value.asInstanceOf[String])
-            case _               => None
+          case Block(stats, e) => if stats.isEmpty then rec(e) else None
+          case Inlined(_, bindings, e) =>
+            if bindings.isEmpty then rec(e) else None
+          case Typed(e, _) => rec(e)
+          case Apply(Select(left, "+"), List(right))
+              if left.tpe <:< TypeRepr.of[String] && right.tpe <:< TypeRepr
+                .of[String] =>
+            rec(left).zip(rec(right)).map(_ + _)
+          case _ =>
+            tree.tpe.widenTermRefByName match
+              case ConstantType(c) => Some(c.value.asInstanceOf[String])
+              case _ => None
 
       rec(expr.asTerm)
 
-  inline def assertCondition[A](
-      inline input: A,
-      inline cond: Boolean,
-      inline message: String
-  ): Unit = ${ assertConditionImpl('input, 'cond, 'message) }
+  inline def assertCondition[A](inline input: A, inline cond: Boolean, inline message: String): Unit =
+    ${ assertConditionImpl('input, 'cond, 'message) }
 
-  private def assertConditionImpl[A](
-      input: Expr[A],
-      cond: Expr[Boolean],
-      message: Expr[String]
-  )(using Quotes): Expr[Unit] =
+  private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], message: Expr[String])(using Quotes): Expr[Unit] =
 
     import quotes.reflect.*
 
@@ -102,25 +103,54 @@ object macros:
       .getOrElse(
         report.errorAndAbort(
           s"""Cannot refine value at compile-time because the predicate cannot be evaluated.
-           |This is likely because the condition or the input value isn't fully inlined.
-           |Note: Due to a Scala limitation, already-refined types cannot be tested at compile-time (except proven by an `Implication`).
-           |
-           |To test a constraint at runtime, use the `refined` extension method.
-           |
-           |${CYAN}Inlined input$RESET: ${input.show}
-           |${CYAN}Inlined condition$RESET: ${cond.show}
-           |${CYAN}Message$RESET: $messageValue""".stripMargin
+             |This is likely because the condition or the input value isn't fully inlined.
+             |
+             |To test a constraint at runtime, use the `refined` extension method.
+             |
+             |${CYAN}Inlined input$RESET: ${input.show}
+             |${CYAN}Inlined condition$RESET: ${cond.show}
+             |${CYAN}Message$RESET: $messageValue""".stripMargin
         )
       )
 
     if !condValue then report.error(messageValue)
     '{}
 
-  inline def showAST[T](inline value: T): Unit = ${ showASTMacro('value) }
-  private def showASTMacro[T](expr: Expr[T])(using Quotes): Expr[Unit] =
+  inline def nonConstantError[A](inline value: A): Nothing = ${ nonConstantErrorImpl('value) }
+
+  private def nonConstantErrorImpl[A](expr: Expr[A])(using Quotes): Nothing =
+
     import quotes.reflect.*
 
-    report.info(expr.asTerm.show(using Printer.TreeStructure))
-    '{}
+    report.errorAndAbort(
+        s"""Cannot refine non full inlined input at compile-time.
+           |To test a constraint at runtime, use the `refined` extension method.
+           |
+           |Note: Due to a Scala limitation, already-refined types cannot be tested at compile-time (unless proven by an `Implication`).
+           |
+           |${CYAN}Inlined input$RESET: ${expr.asTerm.show}""".stripMargin
+    )
+
+  inline def isConstant[A](inline value: A): Boolean = ${ isConstantImpl('{ value }) }
+
+  private def isConstantImpl[A: Type](expr: Expr[A])(using Quotes): Expr[Boolean] =
+
+    import quotes.reflect.*
+
+    val aType = TypeRepr.of[A]
+
+    val result: Boolean =
+      if aType <:< TypeRepr.of[Boolean] then expr.asExprOf[Boolean].value.isDefined
+      else if aType <:< TypeRepr.of[Byte] then expr.asExprOf[Byte].value.isDefined
+      else if aType <:< TypeRepr.of[Short] then expr.asExprOf[Short].value.isDefined
+      else if aType <:< TypeRepr.of[Int] then expr.asExprOf[Int].value.isDefined
+      else if aType <:< TypeRepr.of[Long] then expr.asExprOf[Long].value.isDefined
+      else if aType <:< TypeRepr.of[Float] then expr.asExprOf[Float].value.isDefined
+      else if aType <:< TypeRepr.of[Double] then expr.asExprOf[Double].value.isDefined
+      else if aType <:< TypeRepr.of[Char] then expr.asExprOf[Char].value.isDefined
+      else if aType <:< TypeRepr.of[String] then expr.asExprOf[String].value.isDefined
+      else false
+
+    Expr(result)
 
 end macros

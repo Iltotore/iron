@@ -1,19 +1,28 @@
 package io.github.iltotore
 
 import scala.annotation.implicitNotFound
+import scala.Console.{CYAN, RESET}
+import scala.compiletime.{codeOf, error}
 import scala.language.implicitConversions
 import scala.util.NotGiven
 
 package object iron:
 
-  export constraints.{*, given}
+  export io.github.iltotore.iron.constraint.any.{*, given}
 
-  /** An Iron type (refined).
-    * @tparam A
-    *   the underlying type
-    * @tparam C
-    *   the predicate/constraint guarding this type
-    */
+  /**
+   * Union of all numerical primitives.
+   * This abstraction facilitates the creation of numerical constraints.
+   */
+  type Number = Byte | Short | Int | Long | Float | Double
+
+  /**
+   * An Iron type (refined).
+   * @tparam A
+   *   the underlying type
+   * @tparam C
+   *   the predicate/constraint guarding this type
+   */
   opaque type IronType[A, C] <: A = A
   type :|[A, C] = IronType[A, C]
 
@@ -23,7 +32,10 @@ package object iron:
 
   end IronType
 
-  implicit inline def autoRefine[A, C](inline value: A)(using inline constraint: Constraint[A, C]): A :| C =
+  implicit inline def autoRefine[A, C](inline value: A)(using
+      inline constraint: Constraint[A, C]
+  ): A :| C =
+    inline if !macros.isConstant(value) then macros.nonConstantError(value)
     macros.assertCondition(value, constraint.test(value), constraint.message)
     value
 
@@ -31,6 +43,8 @@ package object iron:
   final class Implication[C1, C2]
   type ==>[C1, C2] = Implication[C1, C2]
 
-  implicit inline def autoCastIron[A, C1, C2](inline value: A :| C1)(using C1 ==> C2): A :| C2 = value
+  implicit inline def autoCastIron[A, C1, C2](inline value: A :| C1)(using
+      C1 ==> C2
+  ): A :| C2 = value
 
 end iron

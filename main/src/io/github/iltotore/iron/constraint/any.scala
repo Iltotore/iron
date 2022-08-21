@@ -19,10 +19,13 @@ object any:
 
     override inline def message: String = constValue[V]
 
-  transparent inline given [A, C, Impl <: Constraint[A, C], V <: String](using
+  inline given [A, C, Impl <: Constraint[A, C], V <: String](using
       inline constraint: Impl
-  ): Constraint[A, DescribedAs[C, V]] =
+  ): DescribedAsConstraint[A, C, Impl, V] =
     new DescribedAsConstraint
+
+  given [C1, C2, V <: String](using C1 ==> C2): ((C1 DescribedAs V) ==> C2) = Implication()
+  given [C1, C2, V <: String](using C1 ==> C2): (C1 ==> (C2 DescribedAs V)) = Implication()
 
 
   final class Not[C]
@@ -38,9 +41,9 @@ object any:
     override inline def message: String =
       "!(" + summonInline[Impl].message + ")"
 
-  transparent inline given [A, C, Impl <: Constraint[A, C]](using
+  inline given [A, C, Impl <: Constraint[A, C]](using
       inline constraint: Impl
-  ): Constraint[A, Not[C]] = new NotConstraint
+  ): NotConstraint[A, C, Impl] = new NotConstraint
 
   given [C1, C2](using C1 ==> C2): (Not[Not[C1]] ==> C2) = Implication()
   given [C1, C2](using C1 ==> C2): (C1 ==> Not[Not[C2]]) = Implication()
@@ -62,13 +65,14 @@ object any:
         Impl2
       ].message + ")"
 
-  transparent inline given [A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using
+  inline given [A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using
       inline left: Impl1,
       inline right: Impl2
-  ): Constraint[A, Or[C1, C2]] = new OrConstraint
+  ): OrConstraint[A, C1, C2, Impl1, Impl2] = new OrConstraint
 
-  given [C1, C2, C3](using (C1 ==> C2) | (C1 ==> C3)): (C1 ==> Or[C2, C3]) =
-    Implication()
+  given [C1, C2, C3](using (C1 ==> C2) | (C1 ==> C3)): (C1 ==> Or[C2, C3]) = Implication()
+
+  given [C1, C2, C3](using C1 ==> C3, C2 ==> C3): (Or[C1, C2] ==> C3) = Implication()
 
 
   final class And[C1, C2]
@@ -86,10 +90,10 @@ object any:
     override inline def message: String =
       "(" + summonInline[Impl1].message + ") && (" + summonInline[Impl2].message + ")"
 
-  transparent inline given [A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using
+  inline given [A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using
       inline left: Impl1,
       inline right: Impl2
-  ): Constraint[A, And[C1, C2]] = new AndConstraint
+  ): AndConstraint[A, C1, C2, Impl1, Impl2] = new AndConstraint
 
   given [C1, C2, C3](using (C1 ==> C3) | (C2 ==> C3)): (And[C1, C2] ==> C3) = Implication()
 

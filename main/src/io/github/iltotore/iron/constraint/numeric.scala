@@ -1,6 +1,6 @@
 package io.github.iltotore.iron.constraint
 
-import io.github.iltotore.iron.{==>, Constraint, Implication, Number}
+import io.github.iltotore.iron.{==>, Constraint, Implication, IntNumber, Number}
 import io.github.iltotore.iron.ops.*
 import io.github.iltotore.iron.constraint.any.{*, given}
 import io.github.iltotore.iron.ordering.NumberOrdering
@@ -41,3 +41,14 @@ object numeric:
 
 
   type LessEqual[V] = (Less[V] || StrictEqual[V]) DescribedAs ("Should be less than or equal to " + V)
+
+
+  final class Multiple[V]
+
+  inline given [A <: IntNumber, V <: A]: Constraint[A, Multiple[V]] with
+
+    override inline def test(value: A): Boolean = modulo(value, constValue[V]) == 0
+
+    override inline def message: String = "Should be a multiple of " + stringValue[V]
+    
+  given [A, V1 <: A, V2 <: A](using V1 % V2 =:= Zero[A]): (Multiple[V1] ==> Multiple[V2]) = Implication()

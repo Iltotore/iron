@@ -15,6 +15,8 @@ package object iron:
    * This abstraction facilitates the creation of numerical constraints.
    */
   type Number = Byte | Short | Int | Long | Float | Double
+  
+  type IntNumber = Byte | Short | Int | Long
 
   /**
    * An Iron type (refined).

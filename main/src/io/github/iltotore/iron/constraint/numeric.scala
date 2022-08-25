@@ -10,8 +10,6 @@ import scala.compiletime.ops.any.ToString
 
 object numeric:
 
-  //TODO GreaterEqual, Less, LessEqual, Multiple
-
   final class Greater[V]
 
   inline given [A <: Number, V <: A]: Constraint[A, Greater[V]] with
@@ -52,3 +50,11 @@ object numeric:
     override inline def message: String = "Should be a multiple of " + stringValue[V]
     
   given [A, V1 <: A, V2 <: A](using V1 % V2 =:= Zero[A]): (Multiple[V1] ==> Multiple[V2]) = Implication()
+  
+  final class Divide[V]
+  
+  inline given [A <: IntNumber, V <: A]: Constraint[A, Divide[V]] with
+
+    override inline def test(value: A): Boolean = modulo(constValue[V], value) == 0
+
+    override inline def message: String = "Should divide " + stringValue[V]

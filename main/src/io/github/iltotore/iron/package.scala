@@ -45,8 +45,19 @@ package object iron:
   final class Implication[C1, C2]
   type ==>[C1, C2] = Implication[C1, C2]
 
-  implicit inline def autoCastIron[A, C1, C2](inline value: A :| C1)(using
-      C1 ==> C2
-  ): A :| C2 = value
+  implicit inline def autoCastIron[A, C1, C2](inline value: A :| C1)(using C1 ==> C2): A :| C2 = value
+
+  extension [A](value: A)
+
+    inline def refine[B](using inline constraint: Constraint[A, B]): A :| B =
+      if constraint.test(value) then value
+      else throw IllegalArgumentException(constraint.message)
+
+    inline def refineEither[B](using inline constraint: Constraint[A, B]): Either[String, A :| B] =
+      Either.cond(constraint.test(value), value, constraint.message)
+
+    inline def refineOption[B](using inline constraint: Constraint[A, B]): Option[A :| B] =
+      Option.when(constraint.test(value))(value)
+
 
 end iron

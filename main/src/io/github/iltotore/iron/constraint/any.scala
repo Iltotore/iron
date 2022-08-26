@@ -12,8 +12,7 @@ object any:
 
   final class DescribedAs[C, V <: String]
 
-  class DescribedAsConstraint[A, C, Impl <: Constraint[A, C], V <: String](using Impl)
-      extends Constraint[A, DescribedAs[C, V]]:
+  class DescribedAsConstraint[A, C, Impl <: Constraint[A, C], V <: String](using Impl) extends Constraint[A, DescribedAs[C, V]]:
 
     override inline def test(value: A): Boolean = summonInline[Impl].test(value)
 
@@ -25,13 +24,14 @@ object any:
     new DescribedAsConstraint
 
   given [C1, C2, V <: String](using C1 ==> C2): ((C1 DescribedAs V) ==> C2) = Implication()
+
   given [C1, C2, V <: String](using C1 ==> C2): (C1 ==> (C2 DescribedAs V)) = Implication()
 
-
   final class Not[C]
+
   type ![C] = C match
     case Boolean => boolean.![C]
-    case _ => Not[C]
+    case _       => Not[C]
 
   class NotConstraint[A, C, Impl <: Constraint[A, C]](using Impl) extends Constraint[A, Not[C]]:
 
@@ -48,14 +48,13 @@ object any:
   given [C1, C2](using C1 ==> C2): (Not[Not[C1]] ==> C2) = Implication()
   given [C1, C2](using C1 ==> C2): (C1 ==> Not[Not[C2]]) = Implication()
 
-
   final class Or[C1, C2]
+
   type ||[C1, C2] = (C1, C2) match
     case (Boolean, Boolean) => boolean.||[C1, C2]
-    case _ => Or[C1, C2]
+    case _                  => Or[C1, C2]
 
-  class OrConstraint[A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using Impl1, Impl2)
-      extends Constraint[A, Or[C1, C2]]:
+  class OrConstraint[A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using Impl1, Impl2) extends Constraint[A, Or[C1, C2]]:
 
     override inline def test(value: A): Boolean =
       summonInline[Impl1].test(value) || summonInline[Impl2].test(value)
@@ -74,15 +73,13 @@ object any:
 
   given [C1, C2, C3](using C1 ==> C3, C2 ==> C3): (Or[C1, C2] ==> C3) = Implication()
 
-
   final class And[C1, C2]
 
   type &&[C1, C2] = (C1, C2) match
     case (Boolean, Boolean) => boolean.&&[C1, C2]
-    case _ => And[C1, C2]
+    case _                  => And[C1, C2]
 
-  class AndConstraint[A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using Impl1, Impl2)
-      extends Constraint[A, And[C1, C2]]:
+  class AndConstraint[A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using Impl1, Impl2) extends Constraint[A, And[C1, C2]]:
 
     override inline def test(value: A): Boolean =
       summonInline[Impl1].test(value) && summonInline[Impl2].test(value)
@@ -96,7 +93,6 @@ object any:
   ): AndConstraint[A, C1, C2, Impl1, Impl2] = new AndConstraint
 
   given [C1, C2, C3](using (C1 ==> C3) | (C2 ==> C3)): (And[C1, C2] ==> C3) = Implication()
-
 
   final class StrictEqual[V]
 

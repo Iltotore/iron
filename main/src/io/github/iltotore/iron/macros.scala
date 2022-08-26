@@ -31,27 +31,27 @@ object macros:
       import quotes.reflect.*
 
       def rec(tree: Term): Option[Boolean] =
-          tree match
-            case Block(stats, e) => if stats.isEmpty then rec(e) else None
-            case Inlined(_, bindings, e) =>
-              if bindings.isEmpty then rec(e) else None
-            case Typed(e, _) => rec(e)
-            case Apply(Select(left, "||"), List(right))
-                if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr
-                  .of[Boolean] => // OR
-              rec(left) match
-                case Some(value) => if value then Some(true) else rec(right)
-                case None => rec(right).filter(x => x)
-            case Apply(Select(left, "&&"), List(right))
-                if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr
-                  .of[Boolean] => // AND
-              rec(left) match
-                case Some(value) => if value then rec(right) else Some(false)
-                case None => rec(right).filterNot(x => x)
-            case _ =>
-              tree.tpe.widenTermRefByName match
-                case ConstantType(c) => Some(c.value.asInstanceOf[Boolean])
-                case _ => None
+        tree match
+          case Block(stats, e) => if stats.isEmpty then rec(e) else None
+          case Inlined(_, bindings, e) =>
+            if bindings.isEmpty then rec(e) else None
+          case Typed(e, _) => rec(e)
+          case Apply(Select(left, "||"), List(right))
+              if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr
+                .of[Boolean] => // OR
+            rec(left) match
+              case Some(value) => if value then Some(true) else rec(right)
+              case None        => rec(right).filter(x => x)
+          case Apply(Select(left, "&&"), List(right))
+              if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr
+                .of[Boolean] => // AND
+            rec(left) match
+              case Some(value) => if value then rec(right) else Some(false)
+              case None        => rec(right).filterNot(x => x)
+          case _ =>
+            tree.tpe.widenTermRefByName match
+              case ConstantType(c) => Some(c.value.asInstanceOf[Boolean])
+              case _               => None
 
       rec(expr.asTerm)
 
@@ -76,18 +76,18 @@ object macros:
       import quotes.reflect.*
 
       def rec(tree: Term): Option[String] = tree match
-          case Block(stats, e) => if stats.isEmpty then rec(e) else None
-          case Inlined(_, bindings, e) =>
-            if bindings.isEmpty then rec(e) else None
-          case Typed(e, _) => rec(e)
-          case Apply(Select(left, "+"), List(right))
-              if left.tpe <:< TypeRepr.of[String] && right.tpe <:< TypeRepr
-                .of[String] =>
-            rec(left).zip(rec(right)).map(_ + _)
-          case _ =>
-            tree.tpe.widenTermRefByName match
-              case ConstantType(c) => Some(c.value.asInstanceOf[String])
-              case _ => None
+        case Block(stats, e) => if stats.isEmpty then rec(e) else None
+        case Inlined(_, bindings, e) =>
+          if bindings.isEmpty then rec(e) else None
+        case Typed(e, _) => rec(e)
+        case Apply(Select(left, "+"), List(right))
+            if left.tpe <:< TypeRepr.of[String] && right.tpe <:< TypeRepr
+              .of[String] =>
+          rec(left).zip(rec(right)).map(_ + _)
+        case _ =>
+          tree.tpe.widenTermRefByName match
+            case ConstantType(c) => Some(c.value.asInstanceOf[String])
+            case _               => None
 
       rec(expr.asTerm)
 
@@ -123,12 +123,12 @@ object macros:
     import quotes.reflect.*
 
     report.errorAndAbort(
-        s"""Cannot refine non full inlined input at compile-time.
-           |To test a constraint at runtime, use the `refined` extension method.
-           |
-           |Note: Due to a Scala limitation, already-refined types cannot be tested at compile-time (unless proven by an `Implication`).
-           |
-           |${CYAN}Inlined input$RESET: ${expr.asTerm.show}""".stripMargin
+      s"""Cannot refine non full inlined input at compile-time.
+         |To test a constraint at runtime, use the `refined` extension method.
+         |
+         |Note: Due to a Scala limitation, already-refined types cannot be tested at compile-time (unless proven by an `Implication`).
+         |
+         |${CYAN}Inlined input$RESET: ${expr.asTerm.show}""".stripMargin
     )
 
   inline def isConstant[A](inline value: A): Boolean = ${ isConstantImpl('{ value }) }

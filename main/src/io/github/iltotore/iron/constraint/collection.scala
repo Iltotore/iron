@@ -15,7 +15,6 @@ object collection:
     override inline def test(value: I): Boolean = value.size >= constValue[V]
 
     override inline def message: String = "Should contain atleast " + stringValue[V] + " elements"
-    
 
   final class MaxLength[V <: Int]
 
@@ -25,10 +24,9 @@ object collection:
 
     override inline def message: String = "Should contain at most " + stringValue[V] + " elements"
 
-  
   final class Contain[V]
 
-  inline given[A, V <: A, I <: Iterable[A]]: Constraint[I, Contain[V]] with
+  inline given [A, V <: A, I <: Iterable[A]]: Constraint[I, Contain[V]] with
 
     override inline def test(value: I): Boolean = value.iterator.contains(constValue[V])
 

@@ -3,6 +3,10 @@
 [![iron Scala version support](https://index.scala-lang.org/iltotore/iron/iron/latest-by-scala-version.svg)](https://index.scala-lang.org/iltotore/iron/iron)
 [![example workflow](https://github.com/Iltotore/iron/actions/workflows/main.yml/badge.svg)](https://github.com/Iltotore/iron/actions/workflows/main.yml)
 
+**2.0 is in-dev. See [dev/2.0](https://github.com/Iltotore/iron/tree/dev/v2.0)**
+
+___
+
 Iron is a type constraint system for Scala. It allows creating type-level assertions, evaluable at compile time and/or
 runtime.
 

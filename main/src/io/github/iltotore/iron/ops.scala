@@ -3,14 +3,27 @@ package io.github.iltotore.iron
 import scala.compiletime.constValue
 import scala.compiletime.ops.*, any.ToString
 
+/**
+ * Methods and types to ease compile-time operations.
+ */
 object ops:
 
+  /**
+   * The zero number of the given type.
+   * @tparam A the numerical primitive type.
+   */
   type Zero[A] = A match
     case Int    => 0
     case Long   => 0L
     case Float  => 0f
     case Double => 0d
 
+  /**
+   * Convert the two given numerical types to the least common parent.
+   *
+   * @tparam A the first type to convert.
+   * @tparam B the second type to convert.
+   */
   type Compatible[A, B] = A match
     case Int =>
       B match
@@ -37,6 +50,16 @@ object ops:
         case Float  => (A, float.ToDouble[A])
         case Double => (A, B)
 
+  /**
+   * Polymorphic numerical binary operator. Takes the right implementation according to the least common type of `A` and `B`.
+   *
+   * @tparam A the left member of this operation.
+   * @tparam B the right member of this operation.
+   * @tparam IntOp the operation to apply if both types can be converted to `Int`.
+   * @tparam LongOp the operation to apply if both types can be converted to `Long`.
+   * @tparam FloatOp the operation to apply if both types can be converted to `Float`.
+   * @tparam DoubleOp the operation to apply if both types can be converted to `Double`.
+   */
   type NumOp[A, B, IntOp[_ <: Int, _ <: Int], LongOp[_ <: Long, _ <: Long], FloatOp[_ <: Float, _ <: Float], DoubleOp[_ <: Double, _ <: Double]] =
     Compatible[A, B] match
       case (Int, Int)       => IntOp[A, B]
@@ -44,23 +67,96 @@ object ops:
       case (Float, Float)   => FloatOp[A, B]
       case (Double, Double) => DoubleOp[A, B]
 
+  /**
+   * Polymorphic strict superiority.
+   *
+   * @tparam A the left member of this operation.
+   * @tparam B the right member of this operation.
+   */
   type >[A, B] = NumOp[A, B, int.>, long.>, float.>, double.>]
+
+  /**
+   * Polymorphic non-strict superiority.
+   *
+   * @tparam A the left member of this operation.
+   * @tparam B the right member of this operation.
+   */
   type >=[A, B] = NumOp[A, B, int.>=, long.>=, float.>=, double.>=]
+
+  /**
+   * Polymorphic strict inferiority.
+   *
+   * @tparam A the left member of this operation.
+   * @tparam B the right member of this operation.
+   */
   type <[A, B] = NumOp[A, B, int.<, long.<, float.<, double.<]
+
+  /**
+   * Polymorphic non-strict inferiority.
+   *
+   * @tparam A the left member of this operation.
+   * @tparam B the right member of this operation.
+   */
   type <=[A, B] = NumOp[A, B, int.<=, long.<=, float.<=, double.<=]
 
+  /**
+   * Polymorphic addition.
+   *
+   * @tparam A the left member of this operation.
+   * @tparam B the right member of this operation.
+   */
   type +[A, B] = (A, B) match
     case (String, ?) => string.+[A, ToString[B]]
     case (?, String) => string.+[ToString[A], B]
     case _           => NumOp[A, B, int.+, long.+, float.+, double.+]
 
+  /**
+   * Polymorphic strict subtraction.
+   *
+   * @tparam A the left member of this operation.
+   * @tparam B the right member of this operation.
+   */
   type -[A, B] = NumOp[A, B, int.-, long.-, float.-, double.-]
+
+  /**
+   * Polymorphic multiplication.
+   *
+   * @tparam A the left member of this operation.
+   * @tparam B the right member of this operation.
+   */
   type *[A, B] = NumOp[A, B, int.*, long.*, float.*, double.*]
+
+  /**
+   * Polymorphic division.
+   *
+   * @tparam A the left member of this operation.
+   * @tparam B the right member of this operation.
+   */
   type /[A, B] = NumOp[A, B, int./, long./, float./, double./]
+
+  /**
+   * Polymorphic modulo.
+   *
+   * @tparam A the left member of this operation.
+   * @tparam B the right member of this operation.
+   */
   type %[A, B] = NumOp[A, B, int.%, long.%, float.%, double.%]
 
+  /**
+   * Get the `String` value of the given type.
+   *
+   * @tparam A the type to convert to `String`.
+   * @return the String representation of the given type. Equivalent to `constValue[ToString[A]]`.
+   */
   inline def stringValue[A]: String = constValue[ToString[A]]
 
+  /**
+   * Inline equivalent of the modulo operator. Supports type conversion.
+   *
+   * @param x the dividend.
+   * @param y the divisor.
+   * @return the rest of the euclidian division.
+   */
   transparent inline def modulo(x: IntNumber, y: IntNumber): IntNumber = inline x match
     case a: Byte =>
       inline y match

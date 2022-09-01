@@ -2,6 +2,9 @@ package io.github.iltotore.iron.constraint
 
 import scala.quoted.*
 
+/**
+ * Macros used by some constraints to do some tests/operations at compile-time (e.g most of String assertions).
+ */
 object macros:
 
   inline def checkMinLength(inline value: String, inline minLength: Int): Boolean = ${ checkMinLengthImpl('value, 'minLength) }

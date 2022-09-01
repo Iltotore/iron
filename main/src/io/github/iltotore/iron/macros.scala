@@ -91,6 +91,14 @@ object macros:
 
       rec(expr.asTerm)
 
+  /**
+   * Asserts at compile time if the given condition is true.
+   *
+   * @param input the tested input, used in the error message if the assertion fails.
+   * @param cond the tested condition. Should be evaluable at compile time.
+   * @param message the message/description of this assertion.
+   * @tparam A the input type.
+   */
   inline def assertCondition[A](inline input: A, inline cond: Boolean, inline message: String): Unit =
     ${ assertConditionImpl('input, 'cond, 'message) }
 
@@ -116,6 +124,12 @@ object macros:
     if !condValue then report.error(messageValue)
     '{}
 
+  /**
+   * Throw compile-time error indicating that the given value is not constant.
+   *
+   * @param value the non-constant value, used in the error message.
+   * @tparam A the type of `value`.
+   */
   inline def nonConstantError[A](inline value: A): Nothing = ${ nonConstantErrorImpl('value) }
 
   private def nonConstantErrorImpl[A](expr: Expr[A])(using Quotes): Nothing =
@@ -131,6 +145,13 @@ object macros:
          |${CYAN}Inlined input$RESET: ${expr.asTerm.show}""".stripMargin
     )
 
+  /**
+   * Checks if the given value is constant (aka evaluable at compile time).
+   *
+   * @param value the value to test.
+   * @tparam A the type of `value`.
+   * @return `true` if the given value is constant, `false` otherwise.
+   */
   inline def isConstant[A](inline value: A): Boolean = ${ isConstantImpl('{ value }) }
 
   private def isConstantImpl[A: Type](expr: Expr[A])(using Quotes): Expr[Boolean] =

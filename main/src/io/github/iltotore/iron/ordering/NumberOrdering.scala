@@ -3,7 +3,7 @@ package io.github.iltotore.iron.ordering
 import io.github.iltotore.iron.Number
 
 /**
- * An InlineOrdering instance for Number
+ * An InlineOrdering instance for Number.
  */
 given NumberOrdering: InlinedOrdering[Number] with
 

@@ -19,15 +19,25 @@ object numeric:
    * @tparam V the value the input must be greater than.
    */
   final class Greater[V]
-
-  inline given [A <: Number, V <: A]: Constraint[A, Greater[V]] with
-
-    override inline def test(value: A): Boolean = NumberOrdering.gt(value, constValue[V])
+  
+  private trait GreaterConstraint[A, V <: A] extends Constraint[A, Greater[V]]:
 
     override inline def message: String = "Should be greater than " + stringValue[V]
 
-  inline given [V1, V2](using V1 > V2 =:= true): (Greater[V1] ==> Greater[V2]) = Implication()
-  inline given [V1, V2](using V1 > V2 =:= true): (StrictEqual[V1] ==> Greater[V2]) = Implication()
+  inline given [V <: Int]: GreaterConstraint[Int, V] with
+    override inline def test(value: Int): Boolean = value > constValue[V]
+
+  inline given[V <: Long]: GreaterConstraint[Long, V] with
+    override inline def test(value: Long): Boolean = value > constValue[V]
+
+  inline given[V <: Float]: GreaterConstraint[Float, V] with
+    override inline def test(value: Float): Boolean = value > constValue[V]
+
+  inline given[V <: Double]: GreaterConstraint[Double, V] with
+    override inline def test(value: Double): Boolean = value > constValue[V]
+
+  given [V1, V2](using V1 > V2 =:= true): (Greater[V1] ==> Greater[V2]) = Implication()
+  given [V1, V2](using V1 > V2 =:= true): (StrictEqual[V1] ==> Greater[V2]) = Implication()
 
   /**
    * Tests non-strict superiority.
@@ -43,15 +53,25 @@ object numeric:
    */
   final class Less[V]
 
-  inline given [A <: Number, V <: A]: Constraint[A, Less[V]] with
-
-    override inline def test(value: A): Boolean = NumberOrdering.lt(value, constValue[V])
+  trait LessConstraint[A, V] extends Constraint[A, Less[V]]:
 
     override inline def message: String = "Should be less than " + stringValue[V]
 
-  inline given [V1, V2](using V1 < V2 =:= true): (Less[V1] ==> Less[V2]) = Implication()
+  inline given [V <: Int]: LessConstraint[Int, V] with
+    override inline def test(value: Int): Boolean = value < constValue[V]
 
-  inline given [V1, V2](using V1 < V2 =:= true): (StrictEqual[V1] ==> Less[V2]) = Implication()
+  inline given[V <: Long]: LessConstraint[Long, V] with
+    override inline def test(value: Long): Boolean = value < constValue[V]
+
+  inline given[V <: Float]: LessConstraint[Float, V] with
+    override inline def test(value: Float): Boolean = value < constValue[V]
+
+  inline given[V <: Double]: LessConstraint[Double, V] with
+    override inline def test(value: Double): Boolean = value < constValue[V]
+
+  given [V1, V2](using V1 < V2 =:= true): (Less[V1] ==> Less[V2]) = Implication()
+
+  given [V1, V2](using V1 < V2 =:= true): (StrictEqual[V1] ==> Less[V2]) = Implication()
 
   /**
    * Tests non-strict inferiority.

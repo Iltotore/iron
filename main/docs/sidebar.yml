@@ -1,0 +1,12 @@
+index: index.md
+subsection:
+  - page: overview.md
+  - page: getting-started.md
+  - title: "Reference"
+    directory: reference
+    index: reference/index.md
+    subsection:
+      - page: reference/iron-type.md
+      - page: reference/refinement.md
+      - page: reference/constraint.md
+      - page: reference/implication.md

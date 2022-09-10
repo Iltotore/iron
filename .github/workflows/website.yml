@@ -23,7 +23,7 @@ jobs:
       - uses: actions/checkout@v2
 
       - name: Build website
-        run: chmod u+rx mill && ./mill main.docJar
+        run: chmod u+rx millw && ./millw main.docJar
 
       - uses: actions/upload-pages-artifact@v1.0.4
         with:

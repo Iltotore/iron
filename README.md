@@ -21,7 +21,7 @@ def log(x: Double :| Greater[0.0]): Double =
   Math.log(x) //Used like a normal `Double`
   
   
-log(0.0) //Automatically verified at compile time.
+log(1.0) //Automatically verified at compile time.
 log(-1.0) //Error: -1.0 is not greater than 0.0!
 
 val runtimeValue = ???

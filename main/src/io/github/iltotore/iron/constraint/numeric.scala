@@ -2,7 +2,6 @@ package io.github.iltotore.iron.constraint
 
 import io.github.iltotore.iron.constraint.any.{*, given}
 import io.github.iltotore.iron.ops.*
-import io.github.iltotore.iron.ordering.NumberOrdering
 import io.github.iltotore.iron.{==>, Constraint, Implication, IntNumber, Number}
 
 import scala.compiletime.constValue
@@ -53,7 +52,7 @@ object numeric:
    */
   final class Less[V]
 
-  trait LessConstraint[A, V] extends Constraint[A, Less[V]]:
+  private trait LessConstraint[A, V] extends Constraint[A, Less[V]]:
 
     override inline def message: String = "Should be less than " + stringValue[V]
 
@@ -88,11 +87,21 @@ object numeric:
    */
   final class Multiple[V]
 
-  inline given [A <: IntNumber, V <: A]: Constraint[A, Multiple[V]] with
-
-    override inline def test(value: A): Boolean = modulo(value, constValue[V]) == 0
+  private trait MultipleConstraint[A, V] extends Constraint[A, Multiple[V]]:
 
     override inline def message: String = "Should be a multiple of " + stringValue[V]
+
+  inline given [V <: Int]: MultipleConstraint[Int, V] with
+    override inline def test(value: Int): Boolean = value % constValue[V] == 0
+
+  inline given[V <: Long]: MultipleConstraint[Long, V] with
+    override inline def test(value: Long): Boolean = value % constValue[V] == 0
+
+  inline given[V <: Float]: MultipleConstraint[Float, V] with
+    override inline def test(value: Float): Boolean = value % constValue[V] == 0
+
+  inline given[V <: Double]: MultipleConstraint[Double, V] with
+    override inline def test(value: Double): Boolean = value % constValue[V] == 0
 
   given [A, V1 <: A, V2 <: A](using V1 % V2 =:= Zero[A]): (Multiple[V1] ==> Multiple[V2]) = Implication()
 
@@ -104,8 +113,18 @@ object numeric:
    */
   final class Divide[V]
 
-  inline given [A <: IntNumber, V <: A]: Constraint[A, Divide[V]] with
-
-    override inline def test(value: A): Boolean = modulo(constValue[V], value) == 0
+  private trait DivideConstraint[A, V] extends Constraint[A, Divide[V]]:
 
     override inline def message: String = "Should divide " + stringValue[V]
+
+  inline given [V <: Int]: DivideConstraint[Int, V] with
+    override inline def test(value: Int): Boolean = constValue[V] % value == 0
+
+  inline given[V <: Long]: DivideConstraint[Long, V] with
+    override inline def test(value: Long): Boolean = constValue[V] % value == 0
+
+  inline given[V <: Float]: DivideConstraint[Float, V] with
+    override inline def test(value: Float): Boolean = constValue[V] % value == 0
+
+  inline given[V <: Double]: DivideConstraint[Double, V] with
+    override inline def test(value: Double): Boolean = constValue[V] % value == 0

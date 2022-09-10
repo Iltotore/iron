@@ -149,24 +149,3 @@ object ops:
    * @return the String representation of the given type. Equivalent to `constValue[ToString[A]]`.
    */
   inline def stringValue[A]: String = constValue[ToString[A]]
-
-  /**
-   * Inline equivalent of the modulo operator. Supports type conversion.
-   *
-   * @param x the dividend.
-   * @param y the divisor.
-   * @return the rest of the euclidian division.
-   */
-  transparent inline def modulo(x: IntNumber, y: IntNumber): IntNumber = inline x match
-    case a: Byte =>
-      inline y match
-        case b: Byte => a % b
-    case a: Short =>
-      inline y match
-        case b: Short => a % b
-    case a: Int =>
-      inline y match
-        case b: Int => a % b
-    case a: Long =>
-      inline y match
-        case b: Long => a % b

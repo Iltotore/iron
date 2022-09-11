@@ -9,7 +9,7 @@ permissions:
 # Controls when the action will run.
 on:
   push:
-    branches: [dev/docs] # Must be changed to `main` once released
+    branches: [dev/v2.0] # Must be changed to `main` once released
 
       # Allows you to run this workflow manually from the Actions tab
   workflow_dispatch:

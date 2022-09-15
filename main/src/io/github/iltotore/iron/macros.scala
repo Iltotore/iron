@@ -4,7 +4,7 @@ import scala.Console.{CYAN, RESET}
 import scala.annotation.tailrec
 import scala.quoted.*
 
-object macros:
+private[iron] object macros:
 
   /**
    * A FromExpr[Boolean] that can extract value from partially inlined || and

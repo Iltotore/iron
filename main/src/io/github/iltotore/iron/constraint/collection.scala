@@ -1,7 +1,7 @@
 package io.github.iltotore.iron.constraint
 
 import io.github.iltotore.iron.Constraint
-import io.github.iltotore.iron.ops.*
+import io.github.iltotore.iron.compileTime.*
 
 import scala.compiletime.constValue
 import scala.compiletime.ops.string.Length

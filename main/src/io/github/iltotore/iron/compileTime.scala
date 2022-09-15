@@ -6,7 +6,7 @@ import scala.compiletime.ops.*, any.ToString
 /**
  * Methods and types to ease compile-time operations.
  */
-object ops:
+object compileTime:
 
   /**
    * The zero number of the given type.

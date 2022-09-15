@@ -1,7 +1,7 @@
 package io.github.iltotore.iron.constraint
 
 import io.github.iltotore.iron.constraint.any.{*, given}
-import io.github.iltotore.iron.ops.*
+import io.github.iltotore.iron.compileTime.*
 import io.github.iltotore.iron.{==>, Constraint, Implication, IntNumber, Number}
 
 import scala.compiletime.constValue
@@ -18,7 +18,7 @@ object numeric:
    * @tparam V the value the input must be greater than.
    */
   final class Greater[V]
-  
+
   private trait GreaterConstraint[A, V <: A] extends Constraint[A, Greater[V]]:
 
     override inline def message: String = "Should be greater than " + stringValue[V]
@@ -26,13 +26,13 @@ object numeric:
   inline given [V <: Int]: GreaterConstraint[Int, V] with
     override inline def test(value: Int): Boolean = value > constValue[V]
 
-  inline given[V <: Long]: GreaterConstraint[Long, V] with
+  inline given [V <: Long]: GreaterConstraint[Long, V] with
     override inline def test(value: Long): Boolean = value > constValue[V]
 
-  inline given[V <: Float]: GreaterConstraint[Float, V] with
+  inline given [V <: Float]: GreaterConstraint[Float, V] with
     override inline def test(value: Float): Boolean = value > constValue[V]
 
-  inline given[V <: Double]: GreaterConstraint[Double, V] with
+  inline given [V <: Double]: GreaterConstraint[Double, V] with
     override inline def test(value: Double): Boolean = value > constValue[V]
 
   given [V1, V2](using V1 > V2 =:= true): (Greater[V1] ==> Greater[V2]) = Implication()
@@ -59,13 +59,13 @@ object numeric:
   inline given [V <: Int]: LessConstraint[Int, V] with
     override inline def test(value: Int): Boolean = value < constValue[V]
 
-  inline given[V <: Long]: LessConstraint[Long, V] with
+  inline given [V <: Long]: LessConstraint[Long, V] with
     override inline def test(value: Long): Boolean = value < constValue[V]
 
-  inline given[V <: Float]: LessConstraint[Float, V] with
+  inline given [V <: Float]: LessConstraint[Float, V] with
     override inline def test(value: Float): Boolean = value < constValue[V]
 
-  inline given[V <: Double]: LessConstraint[Double, V] with
+  inline given [V <: Double]: LessConstraint[Double, V] with
     override inline def test(value: Double): Boolean = value < constValue[V]
 
   given [V1, V2](using V1 < V2 =:= true): (Less[V1] ==> Less[V2]) = Implication()
@@ -94,13 +94,13 @@ object numeric:
   inline given [V <: Int]: MultipleConstraint[Int, V] with
     override inline def test(value: Int): Boolean = value % constValue[V] == 0
 
-  inline given[V <: Long]: MultipleConstraint[Long, V] with
+  inline given [V <: Long]: MultipleConstraint[Long, V] with
     override inline def test(value: Long): Boolean = value % constValue[V] == 0
 
-  inline given[V <: Float]: MultipleConstraint[Float, V] with
+  inline given [V <: Float]: MultipleConstraint[Float, V] with
     override inline def test(value: Float): Boolean = value % constValue[V] == 0
 
-  inline given[V <: Double]: MultipleConstraint[Double, V] with
+  inline given [V <: Double]: MultipleConstraint[Double, V] with
     override inline def test(value: Double): Boolean = value % constValue[V] == 0
 
   given [A, V1 <: A, V2 <: A](using V1 % V2 =:= Zero[A]): (Multiple[V1] ==> Multiple[V2]) = Implication()
@@ -120,11 +120,11 @@ object numeric:
   inline given [V <: Int]: DivideConstraint[Int, V] with
     override inline def test(value: Int): Boolean = constValue[V] % value == 0
 
-  inline given[V <: Long]: DivideConstraint[Long, V] with
+  inline given [V <: Long]: DivideConstraint[Long, V] with
     override inline def test(value: Long): Boolean = constValue[V] % value == 0
 
-  inline given[V <: Float]: DivideConstraint[Float, V] with
+  inline given [V <: Float]: DivideConstraint[Float, V] with
     override inline def test(value: Float): Boolean = constValue[V] % value == 0
 
-  inline given[V <: Double]: DivideConstraint[Double, V] with
+  inline given [V <: Double]: DivideConstraint[Double, V] with
     override inline def test(value: Double): Boolean = constValue[V] % value == 0

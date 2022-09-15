@@ -90,7 +90,7 @@ This can be combined with [[iron.ops|io.github.iltotore.iron.ops]] to create log
 For example, we can implement the [transitive relation](https://en.wikipedia.org/wiki/Transitive_relation):
 
 ```scala
-import io.github.iltotore.iron.ops.*
+import io.github.iltotore.iron.compileTime.*
 
 given [V1, V2](using V1 > V2 =:= true): (Greater[V1] ==> Greater[V2]) = Implication()
 ```

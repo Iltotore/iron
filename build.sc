@@ -25,4 +25,12 @@ object main extends ScalaModule with ScalafmtModule with PublishModule {
     s"-social-links:github::${pomSettings().url}"
   )
 
+  object test extends Tests {
+
+    def testFramework = "utest.runner.Framework"
+
+    def ivyDeps = Agg(
+      ivy"com.lihaoyi::utest:0.8.1"
+    )
+  }
 }

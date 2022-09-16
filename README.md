@@ -14,6 +14,8 @@ It allows to attach constraints/assertions to types to enforce some properties a
 - **No black magic.** Use Scala 3's powerful inline, types and restricted macros for consistent behaviour and rules. No direct AST manipulation.
 - **Extendable.** Easily create your own constraints or integrations using simple typeclasses.
 
+To learn more about Iron, see the [microsite](https://iltotore.github.io/iron/docs/index.html).
+
 ## Example
 
 ```scala

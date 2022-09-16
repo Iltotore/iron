@@ -2,6 +2,8 @@ index: index.md
 subsection:
   - page: overview.md
   - page: getting-started.md
+  - page: code-of-conduct.md
+  - page: contributing.md
   - title: "Reference"
     directory: reference
     index: reference/index.md

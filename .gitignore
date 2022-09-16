@@ -4,3 +4,4 @@
 .scala-build
 *.iml
 tmp
+out

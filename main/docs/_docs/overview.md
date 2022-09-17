@@ -2,7 +2,7 @@
 title: "Overview"
 ---
 
-Iron is a type constraints (or "refined types") library for Scala. It allows to bind constraints to a specific type.
+Iron is a type constraints (or "refined types") library for Scala. It enables binding constraints to a specific type.
 This processus is called "type refinement".
 
 ## Why refined types matter
@@ -32,9 +32,9 @@ User(-1) //A User with a negative age?
 
 To fix this caveat, you have to write an assertion/guard condition with the following drawbacks:
 - You have make sure your value is verified wherever you use it
-- The assertion is only evaluated at run time: bugs/wrong values may not be detected
+- The assertion is only evaluated at runtime: bugs/wrong values may not be detected
 
-Refined types solve both problems by ensuring that constraints are checked compile time or __explicitly__ at run time.
+Refined types solve both problems by ensuring that constraints are checked compile time or __explicitly__ at runtime.
 
 ## Use cases
 

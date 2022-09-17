@@ -65,7 +65,7 @@ val runtimeString: String = ???
 val username: String :| Alphanumeric = runtimeString.refine //or more explicitly, refine[LowerCase].
 ```
 
-The `refine` extension method tests the constraint at run time, throwing an `IllegalArgumentException` if the value
+The `refine` extension method tests the constraint at runtime, throwing an `IllegalArgumentException` if the value
 didn't pass
 the assertion.
 

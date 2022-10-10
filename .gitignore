@@ -1,5 +1,8 @@
 .bsp
+.bloop
 .idea
+.vscode
+.metals
 .run
 .scala-build
 *.iml

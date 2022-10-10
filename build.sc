@@ -34,3 +34,23 @@ object main extends ScalaModule with ScalafmtModule with PublishModule {
     )
   }
 }
+
+trait SubModule extends ScalaModule with ScalafmtModule with PublishModule {
+
+  def scalaVersion = main.scalaVersion
+
+  def publishVersion = main.publishVersion
+
+  def pomSettings = main.pomSettings
+
+  def moduleDeps = Seq(main)
+}
+
+object cats extends SubModule {
+
+  def artifactName = "iron-cats"
+
+  def ivyDeps = Agg(
+    ivy"org.typelevel::cats-core:2.8.0"
+  )
+}

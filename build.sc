@@ -1,4 +1,21 @@
-import mill._, scalalib._, scalalib.scalafmt._, scalalib.publish._
+import mill._, define._, scalalib._, scalalib.scalafmt._, scalalib.publish._
+
+object docs extends ScalaModule {
+
+  def scalaVersion = "3.2.1-RC1"
+
+  val modules: Seq[ScalaModule] = Seq(main, cats)
+
+  def docSources = T.sources {
+    T.traverse(modules)(_.docSources)().flatten
+  }
+
+  def compileClasspath = T {
+    T.traverse(modules)(_.compileClasspath)().flatten
+  }
+
+  def docResources = T.sources { millSourcePath }
+}
 
 object main extends ScalaModule with ScalafmtModule with PublishModule {
 

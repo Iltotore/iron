@@ -12,3 +12,8 @@ subsection:
       - page: reference/refinement.md
       - page: reference/constraint.md
       - page: reference/implication.md
+  - title: "Modules"
+    directory: modules
+    index: modules/index.md
+    subsection:
+      - page: modules/cats.md

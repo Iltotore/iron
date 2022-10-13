@@ -46,7 +46,7 @@ inline val value = 2
 val x: Int :| Greater[0] = value //OK
 ```
 
-## Run-time refinement
+## Runtime refinement
 
 Sometimes, you want to refine a value that is not available at compile time. For example in the case of form validation.
 

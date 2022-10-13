@@ -2,7 +2,7 @@ package io.github.iltotore.iron
 
 import cats.data.{Validated, ValidatedNec, ValidatedNel}
 
-package object catsModule:
+package object catsSupport:
 
   extension [A](value: A)
 

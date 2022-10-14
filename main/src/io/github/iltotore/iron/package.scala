@@ -118,7 +118,7 @@ package object iron:
      * Refine the given value at runtime, resulting in an [[Either]].
      *
      * @param constraint the constraint to test with the value to refine.
-     * @return this value a [[Right]] containing this value [[IronType]] or a [[Left]] containing the constraint message.
+     * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
      * @see [[autoRefine]], [[refine]], [[refineOption]].
      */
     inline def refineEither[B](using inline constraint: Constraint[A, B]): Either[String, A :| B] =

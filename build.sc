@@ -71,3 +71,14 @@ object cats extends SubModule {
     ivy"org.typelevel::cats-core:2.8.0"
   )
 }
+
+object circe extends SubModule {
+
+  def artifactName = "iron-circe"
+
+  def ivyDeps = Agg(
+    ivy"io.circe::circe-core:0.14.3",
+    ivy"io.circe::circe-parser:0.14.3",
+    ivy"io.circe::circe-generic:0.14.3"
+  )
+}

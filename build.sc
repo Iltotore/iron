@@ -4,7 +4,7 @@ object docs extends ScalaModule {
 
   def scalaVersion = "3.2.1-RC1"
 
-  val modules: Seq[ScalaModule] = Seq(main, cats)
+  val modules: Seq[ScalaModule] = Seq(main, cats, circe)
 
   def docSources = T.sources {
     T.traverse(modules)(_.docSources)().flatten

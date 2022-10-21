@@ -17,3 +17,4 @@ subsection:
     index: modules/index.md
     subsection:
       - page: modules/cats.md
+      - page: modules/circe.md

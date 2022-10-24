@@ -2,7 +2,7 @@
 title: "Circe support"
 ---
 
-This module provides refined types Encoder/Decoder instances for [Circe](https://circe.github.io/circe/) 
+This module provides refined types Encoder/Decoder instances for [Circe](https://circe.github.io/circe/).
 
 ## Dependency
 
@@ -23,6 +23,8 @@ ivy"io.github.iltotore::iron-circe:version"
 Given Encoder/Decoder for Iron enables using refined types with any Circe feature including automatic derivation:
 
 ```scala
+import io.github.iltotore.iron.*, circeSupport.given, constraint.numeric.{given, *}, constraint.string.{given, *}
+
 import io.circe.*
 import io.circe.parser.*
 

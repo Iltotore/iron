@@ -27,6 +27,8 @@ These methods (`refineValidated`, `refineNec`, `refineNel`) are similar to exist
 The [User example](../reference/refinement.md) now looks like this:
 
 ```scala
+import io.github.iltotore.iron.*, catsSupport.*, constraint.numeric.{given, *}, constraint.string.{given, *}
+
 case class User(name: String :| Alphanumeric, age: Int :| Greater[0])
 
 def createUserAcc(name: String, age: Int): ValidatedNec[String, User] =

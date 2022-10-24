@@ -82,3 +82,12 @@ object circe extends SubModule {
     ivy"io.circe::circe-generic:0.14.3"
   )
 }
+
+object zioJson extends SubModule {
+
+  def artifactName = "iron-zio-json"
+
+  def ivyDeps = Agg(
+    ivy"dev.zio::zio-json:0.3.0"
+  )
+}

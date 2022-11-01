@@ -1,5 +1,7 @@
 package io.github.iltotore
 
+import io.github.iltotore.iron.macros
+
 import scala.annotation.implicitNotFound
 import scala.Console.{CYAN, RESET}
 import scala.compiletime.{codeOf, error}
@@ -15,6 +17,7 @@ import scala.util.NotGiven
 package object iron:
 
   export io.github.iltotore.iron.constraint.any.{*, given}
+  export io.github.iltotore.iron.macros.union.given
 
   /**
    * Union of all numerical primitives.

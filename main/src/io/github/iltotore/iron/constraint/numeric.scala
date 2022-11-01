@@ -43,7 +43,7 @@ object numeric:
    *
    * @tparam V the value the input must be greater than or equal to.
    */
-  type GreaterEqual[V] = (Greater[V] || StrictEqual[V]) DescribedAs ("Should be greater than or equal to " + V)
+  type GreaterEqual[V] = (Greater[V] | StrictEqual[V]) DescribedAs ("Should be greater than or equal to " + V)
 
   /**
    * Tests strict inferiority.
@@ -77,7 +77,7 @@ object numeric:
    *
    * @tparam V the value the input must be less than or equal to.
    */
-  type LessEqual[V] = (Less[V] || StrictEqual[V]) DescribedAs ("Should be less than or equal to " + V)
+  type LessEqual[V] = (Less[V] | StrictEqual[V]) DescribedAs ("Should be less than or equal to " + V)
 
   /**
    * Tests if the input is a multiple of V.

@@ -1,6 +1,6 @@
 package io.github.iltotore.iron.testing
 
-import io.github.iltotore.iron.*
+import io.github.iltotore.iron.{*, given}
 import utest.*
 
 object AnySuite extends TestSuite {
@@ -17,10 +17,10 @@ object AnySuite extends TestSuite {
       test - Dummy.assertRefine[Not[Literal[false]]]
     }
 
-    test("or") {
-      test - Dummy.assertRefine[Literal[true] || Literal[true]]
-      test - Dummy.assertRefine[Literal[true] || Literal[false]]
-      test - Dummy.assertNotRefine[Literal[false] || Literal[false]]
+    test("union") {
+      test - Dummy.assertRefine[Literal[true] | Literal[true]]
+      test - Dummy.assertRefine[Literal[true] | Literal[false]]
+      test - Dummy.assertNotRefine[Literal[false] | Literal[false]]
     }
 
     test("and") {

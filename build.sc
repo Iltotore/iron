@@ -52,6 +52,24 @@ object main extends ScalaModule with ScalafmtModule with PublishModule {
   }
 }
 
+object examples extends Module {
+
+  object formCats extends ScalaModule with ScalafmtModule {
+
+    def scalaVersion = main.scalaVersion
+
+    def moduleDeps = Seq(main, cats, circe)
+
+    def ivyDeps = Agg(
+      ivy"org.typelevel::cats-core:2.8.0",
+      ivy"io.circe::circe-core:0.14.3",
+      ivy"io.circe::circe-parser:0.14.3",
+      ivy"io.circe::circe-generic:0.14.3",
+      ivy"org.http4s::http4s-core:0.23.16"
+    )
+  }
+}
+
 trait SubModule extends ScalaModule with ScalafmtModule with PublishModule {
 
   def scalaVersion = main.scalaVersion

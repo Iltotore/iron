@@ -24,9 +24,9 @@ object AnySuite extends TestSuite:
     }
 
     test("and") {
-      test - Dummy.assertRefine[Literal[true] && Literal[true]]
-      test - Dummy.assertNotRefine[Literal[true] && Literal[false]]
-      test - Dummy.assertNotRefine[Literal[false] && Literal[false]]
+      test - Dummy.assertRefine[Literal[true] & Literal[true]]
+      test - Dummy.assertNotRefine[Literal[true] & Literal[false]]
+      test - Dummy.assertNotRefine[Literal[false] & Literal[false]]
     }
 
     test("strictEqual") {

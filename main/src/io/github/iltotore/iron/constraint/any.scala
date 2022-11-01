@@ -3,6 +3,7 @@ package io.github.iltotore.iron.constraint
 import io.github.iltotore.iron.{==>, Constraint, Implication}
 import io.github.iltotore.iron.compileTime.stringValue
 import io.github.iltotore.iron.macros.union.*
+import io.github.iltotore.iron.macros.intersection.*
 
 import scala.compiletime.{constValue, erasedValue, summonInline}
 import scala.compiletime.ops.any.ToString
@@ -110,38 +111,13 @@ object any:
 
   inline given [A, C](using inline u: IsUnion[C]): UnionConstraint[A, C] = new UnionConstraint
 
-  /**
-   * A constraint decorator acting like a boolean "and".
-   *
-   * @tparam C1 the left decorated constraint.
-   * @tparam C2 the right decorated constraint.
-   */
-  final class And[C1, C2]
+  class IntersectionConstraint[A, C] extends Constraint[A, C] :
 
-  /**
-   * Alias for [[And]].
-   */
-  type &&[C1, C2] = (C1, C2) match
-    case (Boolean, Boolean) => boolean.&&[C1, C2]
-    case _                  => And[C1, C2]
+    override inline def test(value: A): Boolean = intersectionCond[A, C](value)
 
-  class AndConstraint[A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using Impl1, Impl2) extends Constraint[A, And[C1, C2]]:
+    override inline def message: String = "combined"
 
-    override inline def test(value: A): Boolean =
-      summonInline[Impl1].test(value) && summonInline[Impl2].test(value)
-
-    override inline def message: String =
-      "(" + summonInline[Impl1].message + ") && (" + summonInline[Impl2].message + ")"
-
-  inline given [A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using
-      inline left: Impl1,
-      inline right: Impl2
-  ): AndConstraint[A, C1, C2, Impl1, Impl2] = new AndConstraint
-
-  /**
-   * (C1 and C2) implies C1.
-   */
-  given [C1, C2, C3](using (C1 ==> C3) | (C2 ==> C3)): (And[C1, C2] ==> C3) = Implication()
+  inline given [A, C](using inline i: IsIntersection[C]): IntersectionConstraint[A, C] = new IntersectionConstraint
 
   /**
    * Tests strict equality with the given value.

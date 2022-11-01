@@ -18,6 +18,7 @@ package object iron:
 
   export io.github.iltotore.iron.constraint.any.{*, given}
   export io.github.iltotore.iron.macros.union.given
+  export io.github.iltotore.iron.macros.intersection.given
 
   /**
    * Union of all numerical primitives.

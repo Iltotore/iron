@@ -3,7 +3,7 @@ package io.github.iltotore.iron.testing
 import utest.*
 import io.github.iltotore.iron.*, constraint.string.{*, given}
 
-object StringSuite extends TestSuite {
+object StringSuite extends TestSuite:
 
   val tests: Tests = Tests {
 
@@ -38,4 +38,3 @@ object StringSuite extends TestSuite {
       test - "".assertNotRefine[Match["[0-9]+"]]
     }
   }
-}

@@ -2,7 +2,7 @@ package io.github.iltotore.iron.testing
 import io.github.iltotore.iron.*, constraint.numeric.{*, given}
 import utest.*
 
-object NumericSuite extends TestSuite {
+object NumericSuite extends TestSuite:
 
   val tests: Tests = Tests {
 
@@ -39,4 +39,3 @@ object NumericSuite extends TestSuite {
       test - 3.assertNotRefine[Divide[2]]
     }
   }
-}

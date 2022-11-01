@@ -42,7 +42,7 @@ object main extends ScalaModule with ScalafmtModule with PublishModule {
     s"-social-links:github::${pomSettings().url}"
   )
 
-  object test extends Tests {
+  object test extends Tests with ScalafmtModule {
 
     def testFramework = "utest.runner.Framework"
 

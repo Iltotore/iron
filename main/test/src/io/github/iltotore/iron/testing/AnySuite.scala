@@ -3,7 +3,7 @@ package io.github.iltotore.iron.testing
 import io.github.iltotore.iron.{*, given}
 import utest.*
 
-object AnySuite extends TestSuite {
+object AnySuite extends TestSuite:
 
   val tests: Tests = Tests {
 
@@ -34,4 +34,3 @@ object AnySuite extends TestSuite {
       test - 1.assertNotRefine[StrictEqual[0]]
     }
   }
-}

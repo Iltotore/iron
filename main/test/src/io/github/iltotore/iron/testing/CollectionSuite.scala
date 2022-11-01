@@ -3,7 +3,7 @@ package io.github.iltotore.iron.testing
 import utest.*
 import io.github.iltotore.iron.*, constraint.collection.{*, given}
 
-object CollectionSuite extends TestSuite {
+object CollectionSuite extends TestSuite:
 
   val tests: Tests = Tests {
 
@@ -22,4 +22,3 @@ object CollectionSuite extends TestSuite {
       test - List(1, 2, 4).assertNotRefine[Contain[3]]
     }
   }
-}

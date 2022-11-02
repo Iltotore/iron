@@ -107,15 +107,15 @@ object any:
 
     override inline def test(value: A): Boolean = unionCond[A, C](value)
 
-    override inline def message: String = "combined"
+    override inline def message: String = unionMessage[A, C]
 
   inline given [A, C](using inline u: IsUnion[C]): UnionConstraint[A, C] = new UnionConstraint
 
-  class IntersectionConstraint[A, C] extends Constraint[A, C] :
+  class IntersectionConstraint[A, C] extends Constraint[A, C]:
 
     override inline def test(value: A): Boolean = intersectionCond[A, C](value)
 
-    override inline def message: String = "combined"
+    override inline def message: String = intersectionMessage[A, C]
 
   inline given [A, C](using inline i: IsIntersection[C]): IntersectionConstraint[A, C] = new IntersectionConstraint
 

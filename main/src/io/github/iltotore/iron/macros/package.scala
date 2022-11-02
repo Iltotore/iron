@@ -3,6 +3,10 @@ package io.github.iltotore.iron
 import scala.Console.{CYAN, RESET}
 import scala.quoted.*
 
+/**
+ * Internal macros.
+ * @see [[compileTime]] for public compile-time utilities
+ */
 package object macros:
 
   /**
@@ -19,8 +23,8 @@ package object macros:
    *   inline val a = false
    *   val b: Boolean = ???
    *
-   *   x && y //inlined to `false`
-   *   y || x //inlined to `false`
+   *   a && b //inlined to `false`
+   *   b && a //inlined to `false`
    * }}}
    */
   given FromExpr[Boolean] with

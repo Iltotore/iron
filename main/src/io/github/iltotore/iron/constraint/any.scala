@@ -53,9 +53,7 @@ object any:
 
     override inline def message: String = constValue[V]
 
-  inline given [A, C, Impl <: Constraint[A, C], V <: String](using
-      inline constraint: Impl
-  ): DescribedAsConstraint[A, C, Impl, V] =
+  inline given [A, C, Impl <: Constraint[A, C], V <: String](using inline constraint: Impl): DescribedAsConstraint[A, C, Impl, V] =
     new DescribedAsConstraint
 
   /**
@@ -89,9 +87,7 @@ object any:
     override inline def message: String =
       "!(" + summonInline[Impl].message + ")"
 
-  inline given [A, C, Impl <: Constraint[A, C]](using
-      inline constraint: Impl
-  ): NotConstraint[A, C, Impl] = new NotConstraint
+  inline given [A, C, Impl <: Constraint[A, C]](using inline constraint: Impl): NotConstraint[A, C, Impl] = new NotConstraint
 
   /**
    * Doubly inverted C implies C.

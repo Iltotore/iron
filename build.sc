@@ -19,7 +19,7 @@ object docs extends ScalaModule {
 
 object main extends ScalaModule with ScalafmtModule with PublishModule {
 
-  def scalaVersion = "3.2.1-RC1" //Target 3.2.1 once out
+  def scalaVersion = "3.2.1"
 
   def artifactName = "iron"
 

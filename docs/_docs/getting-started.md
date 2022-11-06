@@ -46,5 +46,9 @@ import io.github.iltotore.iron.constraint.numeric.{*, given}
 
 **Note: Don't forget the `given` import. It imports `Constraint` implicit instances. See [Importing Given](http://dotty.epfl.ch/docs/reference/contextual/given-imports.html).**
 
-You can find the list of all standard constraints in the [[constraint package summary|io.github.iltotore.iron.constraint]]
+## Going further
 
+You can find the list of all standard constraints in the [[constraint package summary|io.github.iltotore.iron.constraint]].
+
+Now that you know how to import Iron in your project, you should check the [references](reference/index.md), starting
+from [Iron Type](reference/iron-type.md)

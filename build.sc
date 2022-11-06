@@ -15,6 +15,12 @@ object docs extends ScalaModule {
   }
 
   def docResources = T.sources { millSourcePath }
+
+  def scalaDocOptions = Seq(
+    "-project", "Iron",
+    "-project-version", main.publishVersion(),
+    s"-social-links:github::${main.pomSettings().url}"
+  )
 }
 
 object main extends ScalaModule with ScalafmtModule with PublishModule {
@@ -34,12 +40,6 @@ object main extends ScalaModule with ScalafmtModule with PublishModule {
     developers = Seq(
       Developer("Iltotore", "Raphaël FROMENTIN", "https://github.com/Iltotore")
     )
-  )
-
-  def scalaDocOptions = Seq(
-    "-project", "Iron",
-    "-project-version", publishVersion(),
-    s"-social-links:github::${pomSettings().url}"
   )
 
   object test extends Tests with ScalafmtModule {

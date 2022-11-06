@@ -1,6 +1,7 @@
 package io.github.iltotore.iron.macros
 
 import scala.quoted.*
+import io.github.iltotore.iron.{Constraint, Implication, ==>}
 
 /**
  * Internal macros for union types
@@ -34,7 +35,7 @@ object union:
 
     val aTpe = TypeRepr.of[A]
 
-    val constraintTpe = TypeRepr.of[io.github.iltotore.iron.Constraint]
+    val constraintTpe = TypeRepr.of[Constraint]
 
     def rec(tpe: TypeRepr): Expr[Boolean] =
       tpe.dealias match
@@ -65,7 +66,7 @@ object union:
 
     val aTpe = TypeRepr.of[A]
 
-    val constraintTpe = TypeRepr.of[io.github.iltotore.iron.Constraint]
+    val constraintTpe = TypeRepr.of[Constraint]
 
     def rec(tpe: TypeRepr): Expr[String] =
       tpe.dealias match
@@ -81,3 +82,34 @@ object union:
             case isf: ImplicitSearchFailure => report.errorAndAbort(s"Could not find implicit $implTpe")
 
     '{ "(" + ${ rec(TypeRepr.of[C]) } + ")" }
+
+
+  /**
+   * [[Implication]] for union type.
+   * (C1 | C2) ==> C3 only if C1 ==> C3 and C2 ==> C3
+   *
+   * @tparam C1 the union constraint.
+   * @tparam C2 the target constraint.
+   * @return the [[Implication]] instance or a compile-time error
+   */
+  transparent inline def unionImplication[C1, C2]: (C1 ==> C2) = ${unionImplicationImpl[C1, C2]}
+
+  private def unionImplicationImpl[C1, C2](using Quotes, Type[C1], Type[C2]): Expr[C1 ==> C2] =
+    import quotes.reflect.*
+
+    val targetTpe = TypeRepr.of[C2]
+    val implicationTpe = TypeRepr.of[Implication]
+
+    def rec(tpe: TypeRepr): Boolean =
+      tpe.dealias match
+        case OrType(left, right) => rec(left) && rec(right)
+        case tpe =>
+
+          val implTpe = implicationTpe.appliedTo(List(tpe, targetTpe))
+
+          Implicits.search(implTpe) match
+            case _: ImplicitSearchSuccess => true
+            case _: ImplicitSearchFailure => false
+
+    if rec(TypeRepr.of[C1]) then '{Implication()}
+    else report.errorAndAbort("Cannot prove implication")

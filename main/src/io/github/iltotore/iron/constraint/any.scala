@@ -107,6 +107,8 @@ object any:
 
   inline given [A, C](using inline u: IsUnion[C]): UnionConstraint[A, C] = new UnionConstraint
 
+  transparent inline given [C1, C2](using IsUnion[C1]): (C1 ==> C2) = unionImplication[C1, C2]
+
   class IntersectionConstraint[A, C] extends Constraint[A, C]:
 
     override inline def test(value: A): Boolean = intersectionCond[A, C](value)

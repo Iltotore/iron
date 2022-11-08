@@ -1,3 +1,6 @@
+import $ivy.`io.chris-kipp::mill-ci-release::0.1.3`
+import io.kipp.mill.ci.release.CiReleaseModule
+
 import mill._, define._, scalalib._, scalalib.scalafmt._, scalalib.publish._
 
 object docs extends ScalaModule {
@@ -23,13 +26,11 @@ object docs extends ScalaModule {
   )
 }
 
-object main extends ScalaModule with ScalafmtModule with PublishModule {
+object main extends ScalaModule with ScalafmtModule with CiReleaseModule {
 
   def scalaVersion = "3.2.1"
 
   def artifactName = "iron"
-
-  def publishVersion = "2.0.0-RC1"
 
   def pomSettings = PomSettings(
     description = "Strong type constraints for Scala",
@@ -70,7 +71,7 @@ object examples extends Module {
   }
 }
 
-trait SubModule extends ScalaModule with ScalafmtModule with PublishModule {
+trait SubModule extends ScalaModule with ScalafmtModule with CiReleaseModule {
 
   def scalaVersion = main.scalaVersion
 

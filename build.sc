@@ -5,7 +5,7 @@ import mill._, define._, scalalib._, scalalib.scalafmt._, scalalib.publish._
 
 object docs extends ScalaModule {
 
-  def scalaVersion = "3.2.1-RC1"
+  def scalaVersion = "3.2.1"
 
   val modules: Seq[ScalaModule] = Seq(main, cats, circe)
 

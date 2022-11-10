@@ -1,6 +1,7 @@
 name: Release
 on:
   release:
+    branches: [dev/v2.0]
 jobs:
   publish:
     runs-on: ubuntu-latest
@@ -12,7 +13,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - run: ./millw -i io.kipp.mill.ci.release.ReleaseModule/publishAll
+      - run: chmod u+rx millw && ./millw -i io.kipp.mill.ci.release.ReleaseModule/publishAll
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}

@@ -88,3 +88,23 @@ Now testing the constraint:
 var x: Int :| Greater[5] = 6
 x = 3 //Compile-time error: Should be greater than 5
 ```
+
+## Constraint aliases
+
+In some cases, you can make your constraint out of existing ones.
+For example, a "greater or equal" constraint is just the `Greater` union `StrictEqual`.
+
+Like "classic" types, constraints can be aliased: 
+
+```scala
+type GreaterEqual[V] = Greater[V] | StrictEqual[V]
+```
+
+you can use the `DescribedAs` constraint enables attaching a custom description to our alias:
+
+```scala
+//Allows to concatenate string types.
+import io.github.iltotore.iron.compileTime.+
+
+type GreaterEqual[V] = (Greater[V] | StrictEqual[V]) DescribedAs ("Should be greater or equal to " + V)
+```

@@ -4,10 +4,10 @@ title: "Implication"
 
 # Implication
 
-Implications are a compile-time mechanism to allow casting from a refined type to another.
-They are analogous to [logical implication](https://en.wikipedia.org/wiki/Material_conditional).
+Implication is a compile-time mechanism to allow casting from a refined type to another.
+It is analogous to [logical implication](https://en.wikipedia.org/wiki/Material_conditional).
 
-Implications are represented in Iron by `Implication[C1, C2]` or its alias `C1 ==> C2`.
+Implication is represented in Iron by `Implication[C1, C2]` or its alias `C1 ==> C2`.
 It should be read as "C1 implies C2".
 
 For example, the following code compiles due to [transitivity](https://en.wikipedia.org/wiki/Transitive_relation):
@@ -69,17 +69,6 @@ val x: Int :| Greater[1] = ???
 //Assuming that Greater[1] ==> Greater[0]
 val y: Int :| Not[Not[Greater[0]]] = x //(Greater[1] ==> Greater[0]) ==> (Greater[1] ==> Not[Not[Greater[0]]])
 ```
-
-Dependencies are also used to create more "complex" implications. Taking an example from
-[[any|io.github.iltotore.iron.constraint.any]]:
-
-```scala
-given [C1, C2, C3](using (C1 ==> C2) | (C1 ==> C3)): (C1 ==> Or[C2, C3]) = Implication()
-```
-
-**Note: `|` is not the `Or` constraint alias but Scala 3's union type.**
-
-`C1` implies `C2 || C3` if C1 implies whether `C2` or `C3` (or both).
 
 ### Type operators
 

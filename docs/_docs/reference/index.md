@@ -4,7 +4,7 @@ title: Reference
 
 # Iron references
 
-Find detailed documentation about Iron's main concepts.
+Find detailed documentation about the main concepts of Iron.
 
 ## Data types
 

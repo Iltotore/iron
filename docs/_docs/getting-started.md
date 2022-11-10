@@ -27,7 +27,7 @@ ivy"io.github.iltotore::iron:version"
 The following import is often used:
 
 ```scala
-import io.github.iltotore.iron.*
+import io.github.iltotore.iron.{given, *}
 ```
 
 This import contains bases to make Iron work including:
@@ -43,14 +43,29 @@ Standard constraints are split in different objects stored in the package `io.gi
 For example, you can import standard number-related constraints using:
 
 ```scala
-import io.github.iltotore.iron.constraint.numeric.{*, given}
+import io.github.iltotore.iron.constraint.numeric.{given, *}
+```
+
+When having multiple imports from Iron, this style is often used in Iron codebase or documentation:
+
+```scala
+import io.github.iltotore.iron.{given, *}, constraint.numeric.{given, *}
+```
+
+instead of:
+
+```scala
+import io.github.iltotore.iron.{given, *}
+import io.github.iltotore.iron.constraint.numeric.{given, *}
 ```
 
 **Note: Don't forget the `given` import. It imports `Constraint` implicit instances. See [Importing Given](http://dotty.epfl.ch/docs/reference/contextual/given-imports.html).**
 
-## Going further
+## Next steps
 
 You can find the list of all standard constraints in the [[constraint package summary|io.github.iltotore.iron.constraint]].
 
-Now that you know how to import Iron in your project, you should check the [references](reference/index.md), starting
-from [Iron Type](reference/iron-type.md)
+Now that you know how to import Iron in your project, you should check the [references](reference/index.md):
+- [Iron Type](reference/iron-type.md): the core data type of Iron.
+- [Constraint](reference/constraint.md): to create your own constraints.
+- [Refinement Methods](reference/refinement.md): to use constraints and refine values.

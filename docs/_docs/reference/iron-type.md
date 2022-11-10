@@ -7,12 +7,12 @@ title: "Iron Type"
 Refined types are represented in Iron by `IronType[A, C]` where:
 
 - `A` is the base type
-- `C` is the constraint (or "refinement") attached to `A`.
+- `C` is the [constraint](constraint.md) (or "refinement") attached to `A`.
 
 For example, `IronType[Int, Greater[0]]` represents an `Int` that should be greater than zero
 (see [[Greater reference|io.github.iltotore.iron.constraint.numeric.Greater]]).
 
-A more concise alias `:|` is often used instead: `Int :| Greater[0]` is equivalent to `IronType[Int, Greater[0]]`.
+A more concise alias `A :| C` is often used instead. For instance, `Int :| Greater[0]` is equivalent to `IronType[Int, Greater[0]]`.
 This alias is close to the
 mathematical [predicate operator](https://en.wikipedia.org/wiki/Set-builder_notation#Sets_defined_by_a_predicate) `|`
 used in set builders.
@@ -36,3 +36,6 @@ desugars to
 ```scala
 val x: Int = ???
 ```
+
+For further details about type refinement, see [Refinement Methods](refinement.md).
+To create custom constraints, see [Constraint reference](constraint.md).

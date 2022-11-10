@@ -8,9 +8,9 @@ Find detailed documentation about Iron's main concepts.
 
 ## Data types
 
-- [Iron Type](iron-type.md)
-- [Constraint](constraint.md)
-- [Implication](implication.md)
+- [Iron Type](iron-type.md): a constrained type.
+- [Constraint](constraint.md): a type constraint.
+- [Implication](implication.md) a logical implication between two constraints.
 
 ## Miscellaneous
 

@@ -1,6 +1,8 @@
 ---
-title: "Refinement"
+title: "Refinement Methods"
 ---
+
+# Refinement Methods
 
 Iron provides multiple ways at compile time or runtime to refine a type depending on the use case.
 

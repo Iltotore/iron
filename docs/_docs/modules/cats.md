@@ -1,6 +1,8 @@
 ---
-title: "Cats support"
+title: "Cats Support"
 ---
+
+# Cats Support
 
 This module provides quality of life method for [Cats](https://typelevel.org/cats/). It contains refinement methods using Cats' `Validated`, `ValidatedNec` and `ValidatedNel`.
 

@@ -1,6 +1,8 @@
 ---
-title: "Circe support"
+title: "Circe Support"
 ---
+
+# Circe Support
 
 This module provides refined types Encoder/Decoder instances for [Circe](https://circe.github.io/circe/).
 

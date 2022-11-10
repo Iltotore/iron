@@ -2,6 +2,8 @@
 title: "ZIO JSON Support"
 ---
 
+# ZIO JSON Support
+
 This module provides refined types Encoder/Decoder instances for [ZIO JSON](https://zio.github.io/zio-json/).
 
 ## Dependency

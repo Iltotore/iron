@@ -2,6 +2,8 @@
 title: "Constraint"
 ---
 
+# Constraint
+
 In Iron, a constraint consist of a type, called "dummy" or "proxy" type, associated with a given
 instance of [[Constraint|io.github.iltotore.iron.Constraint]].
 

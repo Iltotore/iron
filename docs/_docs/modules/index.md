@@ -2,7 +2,7 @@
 title: Modules
 ---
 
-# Iron modules
+# Iron Modules
 
 Find documentation about Iron's external modules.
 

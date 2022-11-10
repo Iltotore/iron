@@ -2,6 +2,8 @@
 title: "Implication"
 ---
 
+# Implication
+
 Implications are a compile-time mechanism to allow casting from a refined type to another.
 They are analogous to [logical implication](https://en.wikipedia.org/wiki/Material_conditional).
 

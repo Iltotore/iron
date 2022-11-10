@@ -2,6 +2,8 @@
 title: "Iron Type"
 ---
 
+# Iron Type
+
 Refined types are represented in Iron by `IronType[A, C]` where:
 
 - `A` is the base type

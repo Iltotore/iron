@@ -61,12 +61,18 @@ object examples extends Module {
 
     def moduleDeps = Seq(main, cats, circe)
 
+    val circeVersion = "0.14.3"
+    val http4sVersion = "0.23.16"
+
     def ivyDeps = Agg(
       ivy"org.typelevel::cats-core:2.8.0",
-      ivy"io.circe::circe-core:0.14.3",
-      ivy"io.circe::circe-parser:0.14.3",
-      ivy"io.circe::circe-generic:0.14.3",
-      ivy"org.http4s::http4s-core:0.23.16"
+      ivy"io.circe::circe-core:$circeVersion",
+      ivy"io.circe::circe-parser:$circeVersion",
+      ivy"io.circe::circe-generic:$circeVersion",
+      ivy"org.http4s::http4s-core:$http4sVersion",
+      ivy"org.http4s::http4s-dsl:$http4sVersion",
+      ivy"org.http4s::http4s-ember-server:$http4sVersion",
+      ivy"org.http4s::http4s-circe:$http4sVersion",
     )
   }
 }
@@ -96,9 +102,7 @@ object circe extends SubModule {
   def artifactName = "iron-circe"
 
   def ivyDeps = Agg(
-    ivy"io.circe::circe-core:0.14.3",
-    ivy"io.circe::circe-parser:0.14.3",
-    ivy"io.circe::circe-generic:0.14.3"
+    ivy"io.circe::circe-core:0.14.3"
   )
 }
 

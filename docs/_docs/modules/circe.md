@@ -8,7 +8,7 @@ This module provides refined types Encoder/Decoder instances for [Circe](https:/
 
 ## Dependency
 
-SBT: 
+SBT:
 
 ```scala
 libraryDependencies += "io.github.iltotore" %% "iron-circe" % "version"
@@ -25,7 +25,8 @@ ivy"io.github.iltotore::iron-circe:version"
 Given Encoder/Decoder for Iron enables using refined types with any Circe feature including automatic derivation:
 
 ```scala
-import io.github.iltotore.iron.*, circeSupport.given, constraint.numeric.{given, *}, constraint.string.{given, *}
+import io.github.iltotore.iron.*, constraint.numeric.{given, *}, constraint.string.{given, *}
+import io.github.iltotore.iron.circe.given
 
 import io.circe.*
 import io.circe.parser.*

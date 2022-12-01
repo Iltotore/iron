@@ -4,11 +4,11 @@ title: "Cats Support"
 
 # Cats Support
 
-This module provides quality of life method for [Cats](https://typelevel.org/cats/). It contains refinement methods using Cats' `Validated`, `ValidatedNec` and `ValidatedNel`.
+This module provides typeclass instances for [Cats](https://typelevel.org/cats/). Furthermore, it contains refinement methods using Cats' `Validated`, `ValidatedNec` and `ValidatedNel`.
 
 ## Dependency
 
-SBT: 
+SBT:
 
 ```scala
 libraryDependencies += "io.github.iltotore" %% "iron-cats" % "version"
@@ -29,7 +29,9 @@ These methods (`refineValidated`, `refineNec`, `refineNel`) are similar to exist
 The [User example](../reference/refinement.md) now looks like this:
 
 ```scala
-import io.github.iltotore.iron.*, catsSupport.*, constraint.numeric.{given, *}, constraint.string.{given, *}
+import cats.syntax.all.*
+import io.github.iltotore.iron.*, constraint.numeric.{given, *}, constraint.string.{given, *}
+import io.github.iltotore.iron.cats.*
 
 case class User(name: String :| Alphanumeric, age: Int :| Greater[0])
 
@@ -62,4 +64,18 @@ def createUserAcc(name: String, age: Int): ValidatedNec[String, User] =
 createUserAcc("Iltotore", 18) //Valid(User(Iltotore,18))
 createUserAcc("Il_totore", 18) //Invalid(Chain(Username should be alphanumeric))
 createUserAcc("Il_totore", -18) //Invalid(Chain(Username should be alphanumeric, Age should be positive))
+```
+
+Leveraging typeclass instances via Cats' syntax.
+
+```scala
+import io.github.iltotore.iron.cats.given
+
+val name1: String :| Alphanumeric = "Martin"
+val name2: String :| Alphanumeric = "George"
+val age1: Int :| Greater[0] = 60
+
+name1.show // Martin
+name1 |+| name2 // MartinGeorge
+age1 === 49 // false
 ```

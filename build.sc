@@ -75,6 +75,20 @@ object examples extends Module {
       ivy"org.http4s::http4s-circe:$http4sVersion",
     )
   }
+
+  object formZio extends ScalaModule with ScalafmtModule {
+
+    def scalaVersion = main.scalaVersion
+
+    def moduleDeps = Seq(main, zioJson)
+
+    def ivyDeps = Agg(
+      ivy"dev.zio::zio-test:2.0.4",
+      ivy"dev.zio::zio-json:0.3.0",
+      ivy"dev.zio::zio-http:0.0.3"
+    )
+
+  }
 }
 
 trait SubModule extends ScalaModule with ScalafmtModule with CiReleaseModule {

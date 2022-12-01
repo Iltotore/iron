@@ -5,7 +5,7 @@ import io.circe.{Decoder, DecodingFailure, Encoder, HCursor}
 /**
  * Implicit [[Encoder]]s and [[Decoder]]s for refined types.
  */
-package object circeSupport:
+object circe:
 
   /**
    * A [[Decoder]] for refined types. Decodes to the underlying type then checks the constraint.

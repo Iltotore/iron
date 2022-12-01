@@ -2,7 +2,7 @@ package io.github.iltotore.iron
 
 import zio.json.{JsonDecoder, JsonEncoder}
 
-package object zioJsonSupport:
+object zioJson:
 
   inline given [A, C](using inline decoder: JsonDecoder[A], constraint: Constraint[A, C]): JsonDecoder[A :| C] =
     decoder.mapOrFail(_.refineEither)

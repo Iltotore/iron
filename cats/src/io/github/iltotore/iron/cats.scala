@@ -1,8 +1,21 @@
 package io.github.iltotore.iron
 
 import _root_.cats.{Eq, Monoid, Order, Semigroup, Show}
-import _root_.cats.data.{NonEmptyChain, NonEmptyList, Validated, ValidatedNec, ValidatedNel}
-import _root_.cats.kernel.{Band, BoundedSemilattice, CommutativeGroup, CommutativeMonoid, CommutativeSemigroup, Group, Hash, LowerBounded, PartialOrder, Semilattice, UpperBounded}
+import _root_.cats.data.{EitherNec, EitherNel, NonEmptyChain, NonEmptyList, Validated, ValidatedNec, ValidatedNel}
+import _root_.cats.kernel.{
+  Band,
+  BoundedSemilattice,
+  CommutativeGroup,
+  CommutativeMonoid,
+  CommutativeSemigroup,
+  Group,
+  Hash,
+  LowerBounded,
+  PartialOrder,
+  Semilattice,
+  UpperBounded
+}
+import _root_.cats.syntax.either.*
 import Validated.{Valid, Invalid}
 
 object cats:
@@ -14,11 +27,41 @@ object cats:
   extension [A](value: A)
 
     /**
+     * Refine the given value at runtime, resulting in an [[Either]].
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
+     * @see [[refineNec]], [[refineNel]].
+     */
+    inline def refineEither[B](using inline constraint: Constraint[A, B]): Either[String, A :| B] =
+      Either.cond(constraint.test(value), value.asInstanceOf[A :| B], constraint.message)
+
+    /**
+     * Refine the given value at runtime, resulting in an [[EitherNec]].
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
+     * @see [[refineEither]], [[refineNel]].
+     */
+    inline def refineNec[B](using inline constraint: Constraint[A, B]): EitherNec[String, A :| B] =
+      refineEither[B].toEitherNec
+
+    /**
+     * Refine the given value at runtime, resulting in an [[EitherNel]].
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
+     * @see [[refineEither]], [[refineNec]].
+     */
+    inline def refineNel[B](using inline constraint: Constraint[A, B]): EitherNel[String, A :| B] =
+      refineEither[B].toEitherNel
+
+    /**
      * Refine the given value at runtime, resulting in a [[Validated]].
      *
      * @param constraint the constraint to test with the value to refine.
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing the constraint message.
-     * @see [[refineNec]], [[refineNel]].
+     * @see [[refineValidatedNec]], [[refineValidatedNel]].
      */
     inline def refineValidated[B](using inline constraint: Constraint[A, B]): Validated[String, A :| B] =
       Validated.cond(constraint.test(value), value.asInstanceOf[A :| B], constraint.message)
@@ -28,9 +71,9 @@ object cats:
      *
      * @param constraint the constraint to test with the value to refine.
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyChain]] of error messages.
-     * @see [[refineValidated]], [[refineNel]].
+     * @see [[refineValidated]], [[refineValidatedNel]].
      */
-    inline def refineNec[B](using inline constraint: Constraint[A, B]): ValidatedNec[String, A :| B] =
+    inline def refineValidatedNec[B](using inline constraint: Constraint[A, B]): ValidatedNec[String, A :| B] =
       Validated.condNec(constraint.test(value), value.asInstanceOf[A :| B], constraint.message)
 
     /**
@@ -38,9 +81,9 @@ object cats:
      *
      * @param constraint the constraint to test with the value to refine.
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyList]] of error messages.
-     * @see [[refineValidated]], [[refineNec]].
+     * @see [[refineValidated]], [[refineValidatedNec]].
      */
-    inline def refineNel[B](using inline constraint: Constraint[A, B]): ValidatedNel[String, A :| B] =
+    inline def refineValidatedNel[B](using inline constraint: Constraint[A, B]): ValidatedNel[String, A :| B] =
       Validated.condNel(constraint.test(value), value.asInstanceOf[A :| B], constraint.message)
 
 private object IronCatsInstances:

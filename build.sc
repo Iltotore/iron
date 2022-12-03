@@ -55,6 +55,17 @@ object main extends ScalaModule with ScalafmtModule with CiReleaseModule {
 
 object examples extends Module {
 
+  object catsValidation extends ScalaModule with ScalafmtModule {
+
+    def scalaVersion = main.scalaVersion
+
+    def moduleDeps = Seq(main, cats)
+
+    def ivyDeps = Agg(
+      ivy"org.typelevel::cats-effect:3.4.2"
+    )
+  }
+
   object formCats extends ScalaModule with ScalafmtModule {
 
     def scalaVersion = main.scalaVersion

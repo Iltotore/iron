@@ -11,8 +11,6 @@ import org.http4s.implicits.*
 import org.http4s.circe.CirceEntityEncoder.* //To Encode a Map as Json in Response
 import org.http4s.circe.DecodingFailures
 
-import Account.given //Account entity codec
-
 object HttpServer:
 
   /**

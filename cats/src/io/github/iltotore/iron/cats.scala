@@ -27,16 +27,6 @@ object cats:
   extension [A](value: A)
 
     /**
-     * Refine the given value at runtime, resulting in an [[Either]].
-     *
-     * @param constraint the constraint to test with the value to refine.
-     * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
-     * @see [[refineNec]], [[refineNel]].
-     */
-    inline def refineEither[B](using inline constraint: Constraint[A, B]): Either[String, A :| B] =
-      Either.cond(constraint.test(value), value.asInstanceOf[A :| B], constraint.message)
-
-    /**
      * Refine the given value at runtime, resulting in an [[EitherNec]].
      *
      * @param constraint the constraint to test with the value to refine.
@@ -44,7 +34,7 @@ object cats:
      * @see [[refineEither]], [[refineNel]].
      */
     inline def refineNec[B](using inline constraint: Constraint[A, B]): EitherNec[String, A :| B] =
-      refineEither[B].toEitherNec
+      value.refineEither[B].toEitherNec
 
     /**
      * Refine the given value at runtime, resulting in an [[EitherNel]].
@@ -54,7 +44,7 @@ object cats:
      * @see [[refineEither]], [[refineNec]].
      */
     inline def refineNel[B](using inline constraint: Constraint[A, B]): EitherNel[String, A :| B] =
-      refineEither[B].toEitherNel
+      value.refineEither[B].toEitherNel
 
     /**
      * Refine the given value at runtime, resulting in a [[Validated]].

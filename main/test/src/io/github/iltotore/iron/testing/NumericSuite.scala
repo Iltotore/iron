@@ -1,15 +1,10 @@
 package io.github.iltotore.iron.testing
 
-import io.github.iltotore.iron.{*, given}
+import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.*
 import utest.*
 
 object NumericSuite extends TestSuite:
-
-  type GtEqual[V] = (Greater[V] | StrictEqual[V]) DescribedAs ("Should be greater than or equal to V")
-
-  summon[Constraint[Int, Greater[0]]]
-  summon[Constraint[Int, GtEqual[0]]]
 
   val tests: Tests = Tests {
 

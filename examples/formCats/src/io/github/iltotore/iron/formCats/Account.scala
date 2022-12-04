@@ -5,7 +5,7 @@ import cats.effect.IO
 import io.circe.*
 import io.circe.generic.auto.*
 
-import io.github.iltotore.iron.{*, given}
+import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.*
 import io.github.iltotore.iron.circe.given
 import io.github.iltotore.iron.constraint.all.*

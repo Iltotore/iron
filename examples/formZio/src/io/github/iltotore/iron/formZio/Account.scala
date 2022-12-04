@@ -1,4 +1,4 @@
-import io.github.iltotore.iron.{*, given}
+import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 
 import io.github.iltotore.iron.zioJson.given

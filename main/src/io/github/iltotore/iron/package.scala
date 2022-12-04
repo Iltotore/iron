@@ -1,8 +1,6 @@
 package io.github.iltotore.iron
 
 import io.github.iltotore.iron.macros
-import io.github.iltotore.iron.macros.union.*
-import io.github.iltotore.iron.macros.intersection.*
 
 import scala.annotation.implicitNotFound
 import scala.Console.{CYAN, RESET}
@@ -18,8 +16,6 @@ import scala.util.NotGiven
  */
 
 export io.github.iltotore.iron.constraint.any.*
-export io.github.iltotore.iron.macros.union.given
-export io.github.iltotore.iron.macros.intersection.given
 
 /**
  * Union of all numerical primitives.
@@ -107,24 +103,6 @@ object Implication:
    * @tparam C2 any constraint parent of [[C1]]
    */
   given [C1, C2](using C1 <:< C2): (C1 ==> C2) = Implication()
-
-class UnionConstraint[A, C] extends Constraint[A, C]:
-
-  override inline def test(value: A): Boolean = unionCond[A, C](value)
-
-  override inline def message: String = unionMessage[A, C]
-
-inline given [A, C](using inline u: IsUnion[C]): UnionConstraint[A, C] = new UnionConstraint
-
-transparent inline given [C1, C2](using IsUnion[C1]): (C1 ==> C2) = unionImplication[C1, C2]
-
-class IntersectionConstraint[A, C] extends Constraint[A, C]:
-
-  override inline def test(value: A): Boolean = intersectionCond[A, C](value)
-
-  override inline def message: String = intersectionMessage[A, C]
-
-inline given [A, C](using inline i: IsIntersection[C]): IntersectionConstraint[A, C] = new IntersectionConstraint
 
 /**
  * Implicitly cast a constrained value to another if verified.

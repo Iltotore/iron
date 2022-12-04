@@ -51,6 +51,15 @@ ivy"io.github.iltotore::iron:version"
 
 **Note: replace `version` with the version of Iron.**
 
+### Platform support
+
+| Module        | JVM | JS  | Native |
+|---------------|-----|-----|--------|
+| iron          | ✔️  | ✔️  | ✔️     |
+| iron-cats     | ✔️  | ✔️  | ✔️     |
+| iron-circe    | ✔️  | ✔️  | ✔️     |
+| iron-zio-json | ✔️  | ✔️  | ❌      |
+
 ## Useful links
 
 - [Website](https://iltotore.github.io/iron/docs/index.html)

@@ -1,11 +1,78 @@
 import $ivy.`io.chris-kipp::mill-ci-release::0.1.3`
 import io.kipp.mill.ci.release.CiReleaseModule
 
-import mill._, define._, scalalib._, scalalib.scalafmt._, scalalib.publish._
+import mill._, define._
+import scalalib._, scalalib.scalafmt._, scalalib.publish._, scalajslib._, scalanativelib._
+
+object versions {
+  val scala = "3.2.1"
+  val scalaJS = "1.12.0"
+  val scalaNative = "0.4.9"
+}
+
+trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { outer =>
+
+  def scalaVersion = versions.scala
+
+  def pomSettings =
+    PomSettings(
+      description = "Strong type constraints for Scala",
+      organization = "io.github.iltotore",
+      url = "https://github.com/Iltotore/iron",
+      licenses = Seq(License.`Apache-2.0`),
+      versionControl = VersionControl.github("Iltotore", "iron"),
+      developers = Seq(
+        Developer("Iltotore", "Raphaël FROMENTIN", "https://github.com/Iltotore")
+      )
+    )
+
+  trait Tests extends super.Tests {
+
+    def testFramework = "utest.runner.Framework"
+
+    def ivyDeps = Agg(
+      ivy"com.lihaoyi::utest:0.8.1"
+    )
+  }
+
+  trait CrossModule extends ScalaModule with ScalafmtModule with CiReleaseModule  {
+
+    def segment: String
+
+    def sources = T.sources(outer.sources() :+ PathRef(millSourcePath / s"src-$segment"))
+
+    def scalaVersion = outer.scalaVersion
+
+    def moduleDeps = outer.moduleDeps
+
+    def ivyDeps = outer.ivyDeps
+
+    def artifactName = outer.artifactName
+
+    def publishVersion = outer.publishVersion
+
+    def pomSettings = outer.pomSettings
+
+  }
+
+  trait JSCrossModule extends CrossModule with ScalaJSModule {
+
+    def segment = "js"
+
+    def scalaJSVersion = versions.scalaJS
+  }
+
+  trait NativeCrossModule extends CrossModule with ScalaNativeModule {
+
+    def segment = "native"
+
+    def scalaNativeVersion = versions.scalaNative
+  }
+}
 
 object docs extends ScalaModule {
 
-  def scalaVersion = "3.2.1"
+  def scalaVersion = versions.scala
 
   val modules: Seq[ScalaModule] = Seq(main, cats, circe)
 
@@ -26,38 +93,21 @@ object docs extends ScalaModule {
   )
 }
 
-object main extends ScalaModule with ScalafmtModule with CiReleaseModule {
-
-  def scalaVersion = "3.2.1"
+object main extends BaseModule {
 
   def artifactName = "iron"
 
-  def pomSettings = PomSettings(
-    description = "Strong type constraints for Scala",
-    organization = "io.github.iltotore",
-    url = "https://github.com/Iltotore/iron",
-    licenses = Seq(License.`Apache-2.0`),
-    versionControl = VersionControl.github("Iltotore", "iron"),
-    developers = Seq(
-      Developer("Iltotore", "Raphaël FROMENTIN", "https://github.com/Iltotore")
-    )
-  )
+  object test extends Tests
 
-  object test extends Tests with ScalafmtModule {
-
-    def testFramework = "utest.runner.Framework"
-
-    def ivyDeps = Agg(
-      ivy"com.lihaoyi::utest:0.8.1"
-    )
-  }
+  object js extends JSCrossModule
+  object native extends NativeCrossModule
 }
 
 object examples extends Module {
 
   object catsValidation extends ScalaModule with ScalafmtModule {
 
-    def scalaVersion = main.scalaVersion
+    def scalaVersion = versions.scala
 
     def moduleDeps = Seq(main, cats)
 
@@ -68,7 +118,7 @@ object examples extends Module {
 
   object formCats extends ScalaModule with ScalafmtModule {
 
-    def scalaVersion = main.scalaVersion
+    def scalaVersion = versions.scala
 
     def moduleDeps = Seq(main, cats, circe)
 
@@ -89,7 +139,7 @@ object examples extends Module {
 
   object formZio extends ScalaModule with ScalafmtModule {
 
-    def scalaVersion = main.scalaVersion
+    def scalaVersion = versions.scala
 
     def moduleDeps = Seq(main, zioJson)
 
@@ -102,15 +152,14 @@ object examples extends Module {
   }
 }
 
-trait SubModule extends ScalaModule with ScalafmtModule with CiReleaseModule {
-
-  def scalaVersion = main.scalaVersion
-
-  def publishVersion = main.publishVersion
-
-  def pomSettings = main.pomSettings
+trait SubModule extends BaseModule {
 
   def moduleDeps = Seq(main)
+
+  trait NativeCrossModule extends super.NativeCrossModule {
+    def transitiveIvyDeps = T { super.transitiveIvyDeps().filter(d => !(d.dep.module.name.value == "scala3-library")) }
+  }
+
 }
 
 object cats extends SubModule {
@@ -118,8 +167,12 @@ object cats extends SubModule {
   def artifactName = "iron-cats"
 
   def ivyDeps = Agg(
-    ivy"org.typelevel::cats-core:2.8.0"
+    ivy"org.typelevel::cats-core::2.8.0"
   )
+
+  object js extends JSCrossModule
+
+  object native extends NativeCrossModule
 }
 
 object circe extends SubModule {
@@ -127,8 +180,12 @@ object circe extends SubModule {
   def artifactName = "iron-circe"
 
   def ivyDeps = Agg(
-    ivy"io.circe::circe-core:0.14.3"
+    ivy"io.circe::circe-core::0.14.3"
   )
+
+  object js extends JSCrossModule
+
+  object native extends NativeCrossModule
 }
 
 object zioJson extends SubModule {
@@ -136,6 +193,8 @@ object zioJson extends SubModule {
   def artifactName = "iron-zio-json"
 
   def ivyDeps = Agg(
-    ivy"dev.zio::zio-json:0.3.0"
+    ivy"dev.zio::zio-json::0.3.0"
   )
+
+  object js extends JSCrossModule
 }

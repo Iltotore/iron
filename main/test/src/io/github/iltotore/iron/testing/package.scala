@@ -7,11 +7,12 @@ package object testing:
 
   final class Literal[V]
 
-  inline given [A, V <: Boolean]: Constraint[A, Literal[V]] with
+  object Literal:
+    inline given [A, V <: Boolean]: Constraint[A, Literal[V]] with
 
-    override inline def test(value: A): Boolean = constValue[V]
+      override inline def test(value: A): Boolean = constValue[V]
 
-    override inline def message: String = stringValue[V]
+      override inline def message: String = stringValue[V]
 
   extension [A](value: A)
 

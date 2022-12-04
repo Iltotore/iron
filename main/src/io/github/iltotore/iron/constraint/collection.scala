@@ -5,6 +5,7 @@ import io.github.iltotore.iron.compileTime.*
 
 import scala.compiletime.constValue
 import scala.compiletime.ops.string.Length
+import scala.quoted.*
 
 /**
  * Collection-related constraints.
@@ -20,24 +21,12 @@ object collection:
    */
   final class MinLength[V <: Int]
 
-  inline given [V <: Int, I <: Iterable[?]]: Constraint[I, MinLength[V]] with
-
-    override inline def test(value: I): Boolean = value.size >= constValue[V]
-
-    override inline def message: String = "Should contain atleast " + stringValue[V] + " elements"
-
   /**
    * Tests maximum length. Supports [[Iterable]] and [[String]] by default.
    *
    * @tparam V the maximum length of the tested input
    */
   final class MaxLength[V <: Int]
-
-  inline given [V <: Int, I <: Iterable[?]]: Constraint[I, MaxLength[V]] with
-
-    override inline def test(value: I): Boolean = value.size <= constValue[V]
-
-    override inline def message: String = "Should contain at most " + stringValue[V] + " elements"
 
   /**
    * Tests if the given collection contains a specific value.
@@ -46,8 +35,56 @@ object collection:
    */
   final class Contain[V]
 
-  inline given [A, V <: A, I <: Iterable[A]]: Constraint[I, Contain[V]] with
+  object MinLength:
+    inline given [V <: Int, I <: Iterable[?]]: Constraint[I, MinLength[V]] with
 
-    override inline def test(value: I): Boolean = value.iterator.contains(constValue[V])
+      override inline def test(value: I): Boolean = value.size >= constValue[V]
 
-    override inline def message: String = "Should contain at most " + stringValue[V] + " elements"
+      override inline def message: String = "Should contain atleast " + stringValue[V] + " elements"
+
+    inline given [V <: Int]: Constraint[String, MinLength[V]] with
+
+      override inline def test(value: String): Boolean = ${ checkMinLength('value, '{ constValue[V] }) }
+
+      override inline def message: String = "Should have a min length of " + stringValue[V]
+
+    private def checkMinLength(expr: Expr[String], lengthExpr: Expr[Int])(using Quotes): Expr[Boolean] =
+      (expr.value, lengthExpr.value) match
+        case (Some(value), Some(minLength)) => Expr(value.length >= minLength)
+        case _                              => '{ ${ expr }.length >= $lengthExpr }
+
+  object MaxLength:
+    inline given [V <: Int, I <: Iterable[?]]: Constraint[I, MaxLength[V]] with
+
+      override inline def test(value: I): Boolean = value.size <= constValue[V]
+
+      override inline def message: String = "Should contain at most " + stringValue[V] + " elements"
+
+    inline given [V <: Int]: Constraint[String, MaxLength[V]] with
+
+      override inline def test(value: String): Boolean = ${ checkMaxLength('value, '{ constValue[V] }) }
+
+      override inline def message: String = "Should have a max length of " + stringValue[V]
+
+    private def checkMaxLength(expr: Expr[String], lengthExpr: Expr[Int])(using Quotes): Expr[Boolean] =
+      (expr.value, lengthExpr.value) match
+        case (Some(value), Some(maxLength)) => Expr(value.length <= maxLength)
+        case _                              => '{ ${ expr }.length <= $lengthExpr }
+
+  object Contain:
+    inline given [A, V <: A, I <: Iterable[A]]: Constraint[I, Contain[V]] with
+
+      override inline def test(value: I): Boolean = value.iterator.contains(constValue[V])
+
+      override inline def message: String = "Should contain at most " + stringValue[V] + " elements"
+
+    inline given [V <: String]: Constraint[String, Contain[V]] with
+
+      override inline def test(value: String): Boolean = ${ checkContain('value, '{ constValue[V] }) }
+
+      override inline def message: String = "Should contain the string " + constValue[V]
+
+    private def checkContain(expr: Expr[String], partExpr: Expr[String])(using Quotes): Expr[Boolean] =
+      (expr.value, partExpr.value) match
+        case (Some(value), Some(part)) => Expr(value.contains(part))
+        case _                         => '{ ${ expr }.contains($partExpr) }

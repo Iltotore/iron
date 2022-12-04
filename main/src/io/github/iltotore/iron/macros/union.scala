@@ -83,7 +83,6 @@ object union:
 
     '{ "(" + ${ rec(TypeRepr.of[C]) } + ")" }
 
-
   /**
    * [[Implication]] for union type.
    * (C1 | C2) ==> C3 only if C1 ==> C3 and C2 ==> C3
@@ -92,7 +91,7 @@ object union:
    * @tparam C2 the target constraint.
    * @return the [[Implication]] instance or a compile-time error
    */
-  transparent inline def unionImplication[C1, C2]: (C1 ==> C2) = ${unionImplicationImpl[C1, C2]}
+  transparent inline def unionImplication[C1, C2]: (C1 ==> C2) = ${ unionImplicationImpl[C1, C2] }
 
   private def unionImplicationImpl[C1, C2](using Quotes, Type[C1], Type[C2]): Expr[C1 ==> C2] =
     import quotes.reflect.*
@@ -104,12 +103,11 @@ object union:
       tpe.dealias match
         case OrType(left, right) => rec(left) && rec(right)
         case tpe =>
-
           val implTpe = implicationTpe.appliedTo(List(tpe, targetTpe))
 
           Implicits.search(implTpe) match
             case _: ImplicitSearchSuccess => true
             case _: ImplicitSearchFailure => false
 
-    if rec(TypeRepr.of[C1]) then '{Implication()}
+    if rec(TypeRepr.of[C1]) then '{ Implication() }
     else report.errorAndAbort("Cannot prove implication")

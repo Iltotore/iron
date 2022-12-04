@@ -105,6 +105,17 @@ object main extends BaseModule {
 
 object examples extends Module {
 
+  object catsValidation extends ScalaModule with ScalafmtModule {
+
+    def scalaVersion = versions.scala
+
+    def moduleDeps = Seq(main, cats)
+
+    def ivyDeps = Agg(
+      ivy"org.typelevel::cats-effect:3.4.2"
+    )
+  }
+
   object formCats extends ScalaModule with ScalafmtModule {
 
     def scalaVersion = versions.scala

@@ -1,7 +1,7 @@
 package io.github.iltotore.iron.macros
 
-import scala.quoted.*
 import io.github.iltotore.iron.{Constraint, Implication, ==>}
+import scala.quoted.*
 
 /**
  * Internal macros for union types
@@ -18,14 +18,15 @@ object union:
   // the only instance for IsUnion used to avoid overhead
   val isUnionSingleton: IsUnion[Any] = new IsUnion
 
-  transparent inline given [A]: IsUnion[A] = ${ isUnionImpl[A] }
+  object IsUnion:
+    transparent inline given [A]: IsUnion[A] = ${ isUnionImpl[A] }
 
-  private def isUnionImpl[A](using Quotes, Type[A]): Expr[IsUnion[A]] =
-    import quotes.reflect.*
-    val tpe: TypeRepr = TypeRepr.of[A]
-    tpe.dealias match
-      case o: OrType => ('{ isUnionSingleton.asInstanceOf[IsUnion[A]] }).asExprOf[IsUnion[A]]
-      case other     => report.errorAndAbort(s"${tpe.show} is not a Union")
+    private def isUnionImpl[A](using Quotes, Type[A]): Expr[IsUnion[A]] =
+      import quotes.reflect.*
+      val tpe: TypeRepr = TypeRepr.of[A]
+      tpe.dealias match
+        case o: OrType => ('{ isUnionSingleton.asInstanceOf[IsUnion[A]] }).asExprOf[IsUnion[A]]
+        case other     => report.errorAndAbort(s"${tpe.show} is not a Union")
 
   transparent inline def unionCond[A, C](value: A): Boolean = ${ unionCondImpl[A, C]('value) }
 

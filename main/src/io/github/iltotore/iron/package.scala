@@ -2,7 +2,6 @@ package io.github.iltotore.iron
 
 import io.github.iltotore.iron.macros
 
-import scala.annotation.implicitNotFound
 import scala.Console.{CYAN, RESET}
 import scala.compiletime.{codeOf, error}
 import scala.language.implicitConversions
@@ -72,37 +71,6 @@ implicit inline def autoRefine[A, C](inline value: A)(using inline constraint: C
   inline if !macros.isConstant(value) then macros.nonConstantError(value)
   macros.assertCondition(value, constraint.test(value), constraint.message)
   value
-
-/**
- * An algebraic implication between two constraints (e.g transitivity for [[package.constraint.numeric.Greater]]).
- *
- * @tparam C1 the assumed constraint.
- * @tparam C2 the constraint implied by `C1`.
- */
-@implicitNotFound("Could not prove that ${C1} implies ${C2}")
-final class Implication[C1, C2]
-
-/**
- * Alias for [[Implication]]. Similar to the mathematical implication symbol, often represented by an arrow.
- */
-type ==>[C1, C2] = Implication[C1, C2]
-
-object Implication:
-  /**
-   * The "self" implication "C ==> C".
-   *
-   * @tparam C any constraint.
-   */
-  given [C]: (C ==> C) = Implication()
-
-  /**
-   * If [[C1]] is a subtype of [[C2]] then [[C1]] implies [[C2]].
-   * Used for union constraint `C1 ==> C1 | C2`
-   *
-   * @tparam C1 any constraint
-   * @tparam C2 any constraint parent of [[C1]]
-   */
-  given [C1, C2](using C1 <:< C2): (C1 ==> C2) = Implication()
 
 /**
  * Implicitly cast a constrained value to another if verified.

@@ -1,6 +1,6 @@
 package io.github.iltotore.iron.constraint
 
-import io.github.iltotore.iron.constraint.any.{*, given}
+import io.github.iltotore.iron.constraint.any.*
 import io.github.iltotore.iron.compileTime.*
 import io.github.iltotore.iron.{==>, Constraint, Implication, IntNumber, Number}
 

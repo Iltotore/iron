@@ -1,7 +1,7 @@
 package io.github.iltotore.iron.testing
 
 import io.github.iltotore.iron.*
-import io.github.iltotore.iron.constraint.string.*
+import io.github.iltotore.iron.constraint.all.*
 import utest.*
 
 object StringSuite extends TestSuite:

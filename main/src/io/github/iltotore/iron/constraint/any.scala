@@ -8,7 +8,7 @@ import scala.compiletime.ops.any.ToString
 import scala.compiletime.ops.boolean
 
 /**
- * Constraints working for any type (e.g [[any.StrictEqual]]) and constraint operations (e.g [[any.Not]], [[any.Or]]...).
+ * Constraints working for any type (e.g [[any.StrictEqual]]) and constraint operations (e.g [[any.Not]]...).
  */
 object any:
 

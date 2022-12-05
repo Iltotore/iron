@@ -1,7 +1,8 @@
 package io.github.iltotore.iron.constraint
 
 import io.github.iltotore.iron.Constraint
-import io.github.iltotore.iron.constraint.any.{*, given}
+import io.github.iltotore.iron.constraint.any.*
+import io.github.iltotore.iron.constraint.collection.*
 import io.github.iltotore.iron.compileTime.*
 import scala.compiletime.constValue
 import scala.quoted.*
@@ -12,8 +13,6 @@ import scala.quoted.*
  * @see [[collection]]
  */
 object string:
-  export io.github.iltotore.iron.constraint.collection.{MinLength, MaxLength, Contain}
-
   /**
    * Tests if the given input is lower-cased.
    */

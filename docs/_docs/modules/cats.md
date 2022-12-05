@@ -22,28 +22,30 @@ ivy"io.github.iltotore::iron-cats:version"
 
 ## Accumulative error handling
 
-Cats enables accumulative error handling via [Validated](http://typelevel.org/cats/datatypes/validated.html). Iron provides refinement methods that return a `Validated`, `ValidatedNec` or `ValidatedNel` to easily combine runtime refinement with this failure accumulation.
+Cats enables accumulative error handling via [Validated](http://typelevel.org/cats/datatypes/validated.html). Iron provides refinement methods that return an `Either`, `EitherNec` or `EitherNel` to easily combine runtime refinements with failure accumulation. There are also variants that return a `Validated`, `ValidatedNec` or `ValidatedNel`.
 
-These methods (`refineValidated`, `refineNec`, `refineNel`) are similar to existing `refineEither` and `refineOption`.
+These methods are similar to `refineEither` and `refineOption` defined in the core module.
 
 The [User example](../reference/refinement.md) now looks like this:
 
 ```scala
+import cats.data.EitherNec
 import cats.syntax.all.*
-import io.github.iltotore.iron.*, constraint.numeric.{given, *}, constraint.string.{given, *}
+import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.*
+import io.github.iltotore.iron.constraint.all.*
 
 case class User(name: String :| Alphanumeric, age: Int :| Greater[0])
 
-def createUserAcc(name: String, age: Int): ValidatedNec[String, User] =
+def createUserAcc(name: String, age: Int): EitherNec[String, User] =
 (
     name.refineNec[Username],
     age.refineNec[Age]
-).mapN(User.apply)
+).parMapN(User.apply)
 
-createUserAcc("Iltotore", 18) //Valid(User(Iltotore,18))
-createUserAcc("Il_totore", 18) //Invalid(Chain(Should be alphanumeric))
-createUserAcc("Il_totore", -18) //Invalid(Chain(Should be alphanumeric, Should be greater than 0))
+createUserAcc("Iltotore", 18) //Right(User(Iltotore,18))
+createUserAcc("Il_totore", 18) //Left(Chain(Should be alphanumeric))
+createUserAcc("Il_totore", -18) //Left(Chain(Should be alphanumeric, Should be greater than 0))
 ```
 
 Or with custom messages:
@@ -55,15 +57,15 @@ type Age = Greater[0] DescribedAs "Age should be positive"
 
 case class User(name: String :| Username, age: Int :| Age)
 
-def createUserAcc(name: String, age: Int): ValidatedNec[String, User] =
+def createUserAcc(name: String, age: Int): EitherNec[String, User] =
 (
     name.refineNec[Username],
     age.refineNec[Age]
-).mapN(User.apply)
+).parMapN(User.apply)
 
-createUserAcc("Iltotore", 18) //Valid(User(Iltotore,18))
-createUserAcc("Il_totore", 18) //Invalid(Chain(Username should be alphanumeric))
-createUserAcc("Il_totore", -18) //Invalid(Chain(Username should be alphanumeric, Age should be positive))
+createUserAcc("Iltotore", 18) //Right(User(Iltotore,18))
+createUserAcc("Il_totore", 18) //Left(Chain(Username should be alphanumeric))
+createUserAcc("Il_totore", -18) //Left(Chain(Username should be alphanumeric, Age should be positive))
 ```
 
 Leveraging typeclass instances via Cats' syntax.

@@ -25,7 +25,8 @@ ivy"io.github.iltotore::iron-circe:version"
 Given Encoder/Decoder for Iron enables using refined types with any Circe feature including automatic derivation:
 
 ```scala
-import io.github.iltotore.iron.*, constraint.numeric.{given, *}, constraint.string.{given, *}
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
 import io.github.iltotore.iron.circe.given
 
 import io.circe.*

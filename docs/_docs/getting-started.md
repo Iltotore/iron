@@ -43,23 +43,15 @@ Standard constraints are split in different objects stored in the package `io.gi
 For example, you can import standard number-related constraints using:
 
 ```scala
-import io.github.iltotore.iron.constraint.numeric.{given, *}
+import io.github.iltotore.iron.constraint.numeric.*
 ```
 
-When having multiple imports from Iron, this style is often used in Iron codebase or documentation:
+When having multiple imports from Iron, this style is often preferred in Iron codebase or documentation:
 
 ```scala
-import io.github.iltotore.iron.{given, *}, constraint.numeric.{given, *}
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
 ```
-
-instead of:
-
-```scala
-import io.github.iltotore.iron.{given, *}
-import io.github.iltotore.iron.constraint.numeric.{given, *}
-```
-
-**Note: Don't forget the `given` import. It imports `Constraint` implicit instances. See [Importing Given](http://dotty.epfl.ch/docs/reference/contextual/given-imports.html).**
 
 ## Next steps
 

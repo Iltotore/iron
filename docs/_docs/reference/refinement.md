@@ -13,7 +13,8 @@ Unconstrained values are automatically cast to their refined form if they satisf
 ```scala
 //This import will be assumed in next examples.
 
-import io.github.iltotore.iron.*, constraint.numeric.{*, given}
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.*
 
 val x: Int :| Greater[0] = 5
 ```
@@ -53,7 +54,8 @@ val x: Int :| Greater[0] = value //OK
 Sometimes, you want to refine a value that is not available at compile time. For example in the case of form validation.
 
 ```scala
-import io.github.iltotore.iron.*, constraint.string.{*, given}
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.string.*
 
 val runtimeString: String = ???
 val username: String :| Alphanumeric = runtimeString
@@ -75,7 +77,8 @@ Iron also provides methods similar to `refine` but returning an `Option` (`refin
 an `Either` (`refineEither`), useful for data validation:
 
 ```scala
-import io.github.iltotore.iron.*, constraint.numeric.{*, given}, constraint.string.{*, given}
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
 
 case class User(name: String :| Alphanumeric, age: Int :| Greater[0])
 

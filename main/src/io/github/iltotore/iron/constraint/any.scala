@@ -8,7 +8,7 @@ import scala.compiletime.ops.any.ToString
 import scala.compiletime.ops.boolean
 
 /**
- * Constraints working for any type (e.g [[any.StrictEqual]]) and constraint operations (e.g [[any.Not]]...).
+ * Constraints working for any type (e.g [[any.StrictEqual]]).
  */
 object any:
 
@@ -28,19 +28,6 @@ object any:
    * }}}
    */
   final class DescribedAs[C, V <: String]
-
-  /**
-   * A constraint decorator acting like a boolean "not".
-   * @tparam C the decorated constraint.
-   */
-  final class Not[C]
-
-  /**
-   * Alias for [[Not]].
-   */
-  type ![C] = C match
-    case Boolean => boolean.![C]
-    case _       => Not[C]
 
   /**
    * Tests strict equality with the given value.
@@ -68,27 +55,6 @@ object any:
      * A constraint C1 implies its "described" form.
      */
     given [C1, C2, V <: String](using C1 ==> C2): (C1 ==> (C2 DescribedAs V)) = Implication()
-
-  object Not:
-    class NotConstraint[A, C, Impl <: Constraint[A, C]](using Impl) extends Constraint[A, Not[C]]:
-
-      override inline def test(value: A): Boolean =
-        !summonInline[Impl].test(value)
-
-      override inline def message: String =
-        "!(" + summonInline[Impl].message + ")"
-
-    inline given [A, C, Impl <: Constraint[A, C]](using inline constraint: Impl): NotConstraint[A, C, Impl] = new NotConstraint
-
-    /**
-     * Doubly inverted C implies C.
-     */
-    given [C1, C2](using C1 ==> C2): (Not[Not[C1]] ==> C2) = Implication()
-
-    /**
-     * C implies doubly inverted C.
-     */
-    given [C1, C2](using C1 ==> C2): (C1 ==> Not[Not[C2]]) = Implication()
 
   object StrictEqual:
     inline given [A, V <: A]: Constraint[A, StrictEqual[V]] with

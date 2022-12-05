@@ -1,6 +1,7 @@
 package io.github.iltotore.iron.testing
 
 import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.operators.Not
 import utest.*
 
 object AnySuite extends TestSuite:

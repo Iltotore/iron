@@ -1,6 +1,6 @@
 package io.github.iltotore.iron.testing
 
-import io.github.iltotore.iron.{*, given}
+import io.github.iltotore.iron.*
 import utest.*
 
 object AnySuite extends TestSuite:

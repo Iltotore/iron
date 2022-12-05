@@ -1,7 +1,8 @@
 package io.github.iltotore.iron.testing
 
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.collection.*
 import utest.*
-import io.github.iltotore.iron.*, constraint.collection.{*, given}
 
 object CollectionSuite extends TestSuite:
 

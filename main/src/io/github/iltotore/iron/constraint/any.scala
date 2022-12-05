@@ -2,33 +2,15 @@ package io.github.iltotore.iron.constraint
 
 import io.github.iltotore.iron.{==>, Constraint, Implication}
 import io.github.iltotore.iron.compileTime.stringValue
-import io.github.iltotore.iron.macros.union.*
-import io.github.iltotore.iron.macros.intersection.*
 
-import scala.compiletime.{constValue, erasedValue, summonInline}
+import scala.compiletime.{constValue, summonInline}
 import scala.compiletime.ops.any.ToString
 import scala.compiletime.ops.boolean
 
 /**
- * Constraints working for any type (e.g [[any.StrictEqual]]) and constraint operations (e.g [[any.Not]], [[any.Or]]...).
+ * Constraints working for any type (e.g [[any.StrictEqual]]) and constraint operators (e.g [[any.Not]]...).
  */
 object any:
-
-  /**
-   * The "self" implication "C ==> C".
-   *
-   * @tparam C any constraint.
-   */
-  given [C]: (C ==> C) = Implication()
-
-  /**
-   * If [[C1]] is a subtype of [[C2]] then [[C1]] implies [[C2]].
-   * Used for union constraint `C1 ==> C1 | C2`
-   *
-   * @tparam C1 any constraint
-   * @tparam C2 any constraint parent of [[C1]]
-   */
-  given [C1, C2](using C1 <:< C2): (C1 ==> C2) = Implication()
 
   /**
    * A constraint decorator with a custom description.
@@ -47,25 +29,6 @@ object any:
    */
   final class DescribedAs[C, V <: String]
 
-  class DescribedAsConstraint[A, C, Impl <: Constraint[A, C], V <: String](using Impl) extends Constraint[A, DescribedAs[C, V]]:
-
-    override inline def test(value: A): Boolean = summonInline[Impl].test(value)
-
-    override inline def message: String = constValue[V]
-
-  inline given [A, C, Impl <: Constraint[A, C], V <: String](using inline constraint: Impl): DescribedAsConstraint[A, C, Impl, V] =
-    new DescribedAsConstraint
-
-  /**
-   * A described constraint C1 implies C1.
-   */
-  given [C1, C2, V <: String](using C1 ==> C2): ((C1 DescribedAs V) ==> C2) = Implication()
-
-  /**
-   * A constraint C1 implies its "described" form.
-   */
-  given [C1, C2, V <: String](using C1 ==> C2): (C1 ==> (C2 DescribedAs V)) = Implication()
-
   /**
    * A constraint decorator acting like a boolean "not".
    * @tparam C the decorated constraint.
@@ -79,44 +42,6 @@ object any:
     case Boolean => boolean.![C]
     case _       => Not[C]
 
-  class NotConstraint[A, C, Impl <: Constraint[A, C]](using Impl) extends Constraint[A, Not[C]]:
-
-    override inline def test(value: A): Boolean =
-      !summonInline[Impl].test(value)
-
-    override inline def message: String =
-      "!(" + summonInline[Impl].message + ")"
-
-  inline given [A, C, Impl <: Constraint[A, C]](using inline constraint: Impl): NotConstraint[A, C, Impl] = new NotConstraint
-
-  /**
-   * Doubly inverted C implies C.
-   */
-  given [C1, C2](using C1 ==> C2): (Not[Not[C1]] ==> C2) = Implication()
-
-  /**
-   * C implies doubly inverted C.
-   */
-  given [C1, C2](using C1 ==> C2): (C1 ==> Not[Not[C2]]) = Implication()
-
-  class UnionConstraint[A, C] extends Constraint[A, C]:
-
-    override inline def test(value: A): Boolean = unionCond[A, C](value)
-
-    override inline def message: String = unionMessage[A, C]
-
-  inline given [A, C](using inline u: IsUnion[C]): UnionConstraint[A, C] = new UnionConstraint
-
-  transparent inline given [C1, C2](using IsUnion[C1]): (C1 ==> C2) = unionImplication[C1, C2]
-
-  class IntersectionConstraint[A, C] extends Constraint[A, C]:
-
-    override inline def test(value: A): Boolean = intersectionCond[A, C](value)
-
-    override inline def message: String = intersectionMessage[A, C]
-
-  inline given [A, C](using inline i: IsIntersection[C]): IntersectionConstraint[A, C] = new IntersectionConstraint
-
   /**
    * Tests strict equality with the given value.
    *
@@ -124,8 +49,50 @@ object any:
    */
   final class StrictEqual[V]
 
-  inline given [A, V <: A]: Constraint[A, StrictEqual[V]] with
+  object DescribedAs:
+    class DescribedAsConstraint[A, C, Impl <: Constraint[A, C], V <: String](using Impl) extends Constraint[A, DescribedAs[C, V]]:
 
-    override inline def test(value: A): Boolean = value == constValue[V]
+      override inline def test(value: A): Boolean = summonInline[Impl].test(value)
 
-    override inline def message: String = "Should strictly equal to " + constValue[ToString[V]]
+      override inline def message: String = constValue[V]
+
+    inline given [A, C, Impl <: Constraint[A, C], V <: String](using inline constraint: Impl): DescribedAsConstraint[A, C, Impl, V] =
+      new DescribedAsConstraint
+
+    /**
+     * A described constraint C1 implies C1.
+     */
+    given [C1, C2, V <: String](using C1 ==> C2): ((C1 DescribedAs V) ==> C2) = Implication()
+
+    /**
+     * A constraint C1 implies its "described" form.
+     */
+    given [C1, C2, V <: String](using C1 ==> C2): (C1 ==> (C2 DescribedAs V)) = Implication()
+
+  object Not:
+    class NotConstraint[A, C, Impl <: Constraint[A, C]](using Impl) extends Constraint[A, Not[C]]:
+
+      override inline def test(value: A): Boolean =
+        !summonInline[Impl].test(value)
+
+      override inline def message: String =
+        "!(" + summonInline[Impl].message + ")"
+
+    inline given [A, C, Impl <: Constraint[A, C]](using inline constraint: Impl): NotConstraint[A, C, Impl] = new NotConstraint
+
+    /**
+     * Doubly inverted C implies C.
+     */
+    given [C1, C2](using C1 ==> C2): (Not[Not[C1]] ==> C2) = Implication()
+
+    /**
+     * C implies doubly inverted C.
+     */
+    given [C1, C2](using C1 ==> C2): (C1 ==> Not[Not[C2]]) = Implication()
+
+  object StrictEqual:
+    inline given [A, V <: A]: Constraint[A, StrictEqual[V]] with
+
+      override inline def test(value: A): Boolean = value == constValue[V]
+
+      override inline def message: String = "Should strictly equal to " + constValue[ToString[V]]

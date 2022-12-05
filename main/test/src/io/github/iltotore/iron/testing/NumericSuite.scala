@@ -1,5 +1,7 @@
 package io.github.iltotore.iron.testing
-import io.github.iltotore.iron.*, constraint.numeric.{*, given}
+
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.*
 import utest.*
 
 object NumericSuite extends TestSuite:

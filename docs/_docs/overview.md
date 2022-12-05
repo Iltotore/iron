@@ -39,8 +39,8 @@ To fix this caveat, you have to write an assertion/guard condition with the foll
 Refined types solve both problems by ensuring that constraints are checked compile time or __explicitly__ at runtime.
 
 ```scala
-//Note: the `given` import is important!
-import io.github.iltotore.iron.{given, *}, constraint.numeric.{given, *}
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.*
 
 case class User(age: Int :| Greater[0])
 

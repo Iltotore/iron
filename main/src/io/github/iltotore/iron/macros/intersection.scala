@@ -17,16 +17,16 @@ object intersection:
   // Placeholder instance
   val isIntersectionSingleton: IsIntersection[Any] = new IsIntersection
 
-  transparent inline given [A]: IsIntersection[A] = ${ isIntersectionImpl[A] }
+  object IsIntersection:
+    transparent inline given [A]: IsIntersection[A] = ${ isIntersectionImpl[A] }
 
-  private def isIntersectionImpl[A](using Quotes, Type[A]): Expr[IsIntersection[A]] =
+    private def isIntersectionImpl[A](using Quotes, Type[A]): Expr[IsIntersection[A]] =
+      import quotes.reflect.*
 
-    import quotes.reflect.*
-
-    val tpe: TypeRepr = TypeRepr.of[A]
-    tpe.dealias match
-      case i: AndType => ('{ isIntersectionSingleton.asInstanceOf[IsIntersection[A]] }).asExprOf[IsIntersection[A]]
-      case other      => report.errorAndAbort(s"${tpe.show} is not a Intersection")
+      val tpe: TypeRepr = TypeRepr.of[A]
+      tpe.dealias match
+        case i: AndType => ('{ isIntersectionSingleton.asInstanceOf[IsIntersection[A]] }).asExprOf[IsIntersection[A]]
+        case other      => report.errorAndAbort(s"${tpe.show} is not a Intersection")
 
   transparent inline def intersectionCond[A, C](value: A): Boolean = ${ intersectionCondImpl[A, C]('value) }
 

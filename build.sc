@@ -43,8 +43,6 @@ trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { 
 
     def scalaVersion = outer.scalaVersion
 
-    def moduleDeps = outer.moduleDeps
-
     def ivyDeps = outer.ivyDeps
 
     def artifactName = outer.artifactName
@@ -60,6 +58,7 @@ trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { 
     def segment = "js"
 
     def scalaJSVersion = versions.scalaJS
+
   }
 
   trait NativeCrossModule extends CrossModule with ScalaNativeModule {
@@ -173,8 +172,15 @@ trait SubModule extends BaseModule {
 
   def moduleDeps = Seq(main)
 
+  trait JSCrossModule extends super.JSCrossModule {
+    def moduleDeps = Seq(main.js)
+  }
+
   trait NativeCrossModule extends super.NativeCrossModule {
+
     def transitiveIvyDeps = T { super.transitiveIvyDeps().filter(d => !(d.dep.module.name.value == "scala3-library")) }
+
+    def moduleDeps = Seq(main.native)
   }
 
 }

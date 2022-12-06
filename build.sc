@@ -170,6 +170,13 @@ object cats extends SubModule {
     ivy"org.typelevel::cats-core::2.8.0"
   )
 
+  object test extends Tests {
+    def ivyDeps = Agg(
+      ivy"com.lihaoyi::utest:0.8.1",
+      ivy"org.typelevel::kittens:3.0.0"
+    )
+  }
+
   object js extends JSCrossModule
 
   object native extends NativeCrossModule

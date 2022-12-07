@@ -75,7 +75,7 @@ object cats extends IronCatsInstances:
     inline def refineValidatedNel[B](using inline constraint: Constraint[A, B]): ValidatedNel[String, A :| B] =
       Validated.condNel(constraint.test(value), value.asInstanceOf[A :| B], constraint.message)
 
-private trait IronCatsInstances extends IronCatsLowPriority0:
+private trait IronCatsInstances extends IronCatsLowPriority:
   inline given [A, B](using inline ev: Band[A]): Band[A :| B] = ev.asInstanceOf[Band[A :| B]]
   inline given [A, B](using inline ev: BoundedSemilattice[A]): BoundedSemilattice[A :| B] = ev.asInstanceOf[BoundedSemilattice[A :| B]]
   inline given [A, B](using inline ev: CommutativeGroup[A]): CommutativeGroup[A :| B] = ev.asInstanceOf[CommutativeGroup[A :| B]]
@@ -92,5 +92,5 @@ private trait IronCatsInstances extends IronCatsLowPriority0:
   inline given [A, B](using inline ev: Show[A]): Show[A :| B] = ev.asInstanceOf[Show[A :| B]]
   inline given [A, B](using inline ev: UpperBounded[A]): UpperBounded[A :| B] = ev.asInstanceOf[UpperBounded[A :| B]]
 
-private trait IronCatsLowPriority0:
+private trait IronCatsLowPriority:
   inline given [A, B](using inline ev: Hash[A]): Hash[A :| B] = ev.asInstanceOf[Hash[A :| B]]

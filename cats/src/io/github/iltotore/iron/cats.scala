@@ -18,8 +18,7 @@ import _root_.cats.kernel.{
 import _root_.cats.syntax.either.*
 import Validated.{Valid, Invalid}
 
-object cats:
-  export IronCatsInstances.given
+object cats extends IronCatsInstances:
 
   /**
    * Utility methods for the Cats library.
@@ -76,7 +75,7 @@ object cats:
     inline def refineValidatedNel[B](using inline constraint: Constraint[A, B]): ValidatedNel[String, A :| B] =
       Validated.condNel(constraint.test(value), value.asInstanceOf[A :| B], constraint.message)
 
-private object IronCatsInstances:
+private trait IronCatsInstances extends IronCatsLowPriority:
   inline given [A, B](using inline ev: Band[A]): Band[A :| B] = ev.asInstanceOf[Band[A :| B]]
   inline given [A, B](using inline ev: BoundedSemilattice[A]): BoundedSemilattice[A :| B] = ev.asInstanceOf[BoundedSemilattice[A :| B]]
   inline given [A, B](using inline ev: CommutativeGroup[A]): CommutativeGroup[A :| B] = ev.asInstanceOf[CommutativeGroup[A :| B]]
@@ -84,7 +83,6 @@ private object IronCatsInstances:
   inline given [A, B](using inline ev: CommutativeSemigroup[A]): CommutativeSemigroup[A :| B] = ev.asInstanceOf[CommutativeSemigroup[A :| B]]
   inline given [A, B](using inline ev: Eq[A]): Eq[A :| B] = ev.asInstanceOf[Eq[A :| B]]
   inline given [A, B](using inline ev: Group[A]): Group[A :| B] = ev.asInstanceOf[Group[A :| B]]
-  inline given [A, B](using inline ev: Hash[A]): Hash[A :| B] = ev.asInstanceOf[Hash[A :| B]]
   inline given [A, B](using inline ev: LowerBounded[A]): LowerBounded[A :| B] = ev.asInstanceOf[LowerBounded[A :| B]]
   inline given [A, B](using inline ev: Monoid[A]): Monoid[A :| B] = ev.asInstanceOf[Monoid[A :| B]]
   inline given [A, B](using inline ev: Order[A]): Order[A :| B] = ev.asInstanceOf[Order[A :| B]]
@@ -93,3 +91,6 @@ private object IronCatsInstances:
   inline given [A, B](using inline ev: Semilattice[A]): Semilattice[A :| B] = ev.asInstanceOf[Semilattice[A :| B]]
   inline given [A, B](using inline ev: Show[A]): Show[A :| B] = ev.asInstanceOf[Show[A :| B]]
   inline given [A, B](using inline ev: UpperBounded[A]): UpperBounded[A :| B] = ev.asInstanceOf[UpperBounded[A :| B]]
+
+private trait IronCatsLowPriority:
+  inline given [A, B](using inline ev: Hash[A]): Hash[A :| B] = ev.asInstanceOf[Hash[A :| B]]

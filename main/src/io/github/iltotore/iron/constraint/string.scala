@@ -49,6 +49,11 @@ object string:
   type UUIDLike =
     Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"] DescribedAs "Should be an UUID"
 
+  /**
+   * Tests if the input contains at least 1 non-whitespace character
+   */
+  final class NonEmpty
+
   object LowerCase:
     inline given Constraint[String, LowerCase] with
 
@@ -84,3 +89,15 @@ object string:
       (valueExpr.value, regexExpr.value) match
         case (Some(value), Some(regex)) => Expr(value.matches(regex))
         case _                          => '{ $valueExpr.matches($regexExpr) }
+
+  object NonEmpty:
+    inline given Constraint[String, NonEmpty] with
+
+      override inline def test(value: String): Boolean = ${ checkNonEmpty('value) }
+
+      override inline def message: String = "Should contain at least 1 non-whitespace character"
+
+    def checkNonEmpty(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
+      valueExpr.value match
+        case Some(value) => Expr(value.exists(!_.isWhitespace))
+        case _           => '{ ! $valueExpr.exists(!_.isWhitespace) }

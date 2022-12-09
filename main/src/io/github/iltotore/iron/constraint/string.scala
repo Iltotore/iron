@@ -52,7 +52,7 @@ object string:
   /**
    * Tests if the input contains at least 1 non-whitespace character
    */
-  final class NonEmpty
+  final class NotBlank
 
   object LowerCase:
     inline given Constraint[String, LowerCase] with
@@ -90,14 +90,14 @@ object string:
         case (Some(value), Some(regex)) => Expr(value.matches(regex))
         case _                          => '{ $valueExpr.matches($regexExpr) }
 
-  object NonEmpty:
-    inline given Constraint[String, NonEmpty] with
+  object NotBlank:
+    inline given Constraint[String, NotBlank] with
 
-      override inline def test(value: String): Boolean = ${ checkNonEmpty('value) }
+      override inline def test(value: String): Boolean = ${ checkNotBlank('value) }
 
       override inline def message: String = "Should contain at least 1 non-whitespace character"
 
-    def checkNonEmpty(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
+    def checkNotBlank(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
       valueExpr.value match
         case Some(value) => Expr(value.exists(!_.isWhitespace))
         case _           => '{ ! $valueExpr.exists(!_.isWhitespace) }

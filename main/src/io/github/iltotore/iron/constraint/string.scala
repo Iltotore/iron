@@ -50,9 +50,9 @@ object string:
     Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"] DescribedAs "Should be an UUID"
 
   /**
-   * Tests if the input contains at least 1 non-whitespace character
+   * Tests if the input is empty or contains whitespace characters only
    */
-  final class NotBlank
+  final class Blank
 
   object LowerCase:
     inline given Constraint[String, LowerCase] with
@@ -90,14 +90,14 @@ object string:
         case (Some(value), Some(regex)) => Expr(value.matches(regex))
         case _                          => '{ $valueExpr.matches($regexExpr) }
 
-  object NotBlank:
-    inline given Constraint[String, NotBlank] with
+  object Blank:
+    inline given Constraint[String, Blank] with
 
-      override inline def test(value: String): Boolean = ${ checkNotBlank('value) }
+      override inline def test(value: String): Boolean = ${ check('value) }
 
-      override inline def message: String = "Should contain at least 1 non-whitespace character"
+      override inline def message: String = "Should be empty or contain only whitespace characters"
 
-    def checkNotBlank(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
+    private def check(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
       valueExpr.value match
-        case Some(value) => Expr(value.exists(!_.isWhitespace))
-        case _           => '{ ! $valueExpr.exists(!_.isWhitespace) }
+        case Some(value) => Expr(value.forall(_.isWhitespace))
+        case _           => '{ $valueExpr.forall(_.isWhitespace) }

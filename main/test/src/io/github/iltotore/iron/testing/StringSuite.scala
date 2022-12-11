@@ -40,10 +40,10 @@ object StringSuite extends TestSuite:
     }
 
     test("not blank") {
-      test - "foo ".assertRefine[NotBlank]
-      test - " foo".assertRefine[NotBlank]
-      test - "".assertNotRefine[NotBlank]
-      test - " ".assertNotRefine[NotBlank]
-      test - " \n \t ".assertNotRefine[NotBlank]
+      test - "".assertRefine[Blank]
+      test - " ".assertRefine[Blank]
+      test - " \n \t ".assertRefine[Blank]
+      test - "foo ".assertNotRefine[Blank]
+      test - " foo".assertNotRefine[Blank]
     }
   }

@@ -39,7 +39,7 @@ object StringSuite extends TestSuite:
       test - "".assertNotRefine[Match["[0-9]+"]]
     }
 
-    test("not blank") {
+    test("blank") {
       test - "".assertRefine[Blank]
       test - " ".assertRefine[Blank]
       test - " \n \t ".assertRefine[Blank]

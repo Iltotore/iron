@@ -24,13 +24,13 @@ object StringSuite extends TestSuite:
     }
 
     test("lowercase") {
-      test - "abc".assertRefine[LowerCase]
-      test - "ABC".assertNotRefine[LowerCase]
+      test - "abc 123 \n".assertRefine[LowerCase]
+      test - "ABC 123 \n".assertNotRefine[LowerCase]
     }
 
     test("uppercase") {
-      test - "abc".assertNotRefine[UpperCase]
-      test - "ABC".assertRefine[UpperCase]
+      test - "abc 123 \n".assertNotRefine[UpperCase]
+      test - "ABC 123 \n".assertRefine[UpperCase]
     }
 
     test("match") {

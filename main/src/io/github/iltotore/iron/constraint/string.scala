@@ -63,8 +63,8 @@ object string:
 
     def checkLowerCase(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
       valueExpr.value match
-        case Some(value) => Expr(value.forall(_.isLower))
-        case None        => '{ $valueExpr.forall(_.isLower) }
+        case Some(value) => Expr(value.forall(v => !v.isLetter || v.isLower))
+        case None        => '{ $valueExpr.forall(v => !v.isLetter || v.isLower) }
 
   object UpperCase:
     inline given Constraint[String, UpperCase] with
@@ -75,8 +75,8 @@ object string:
 
     private def checkUpperCase(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
       valueExpr.value match
-        case Some(value) => Expr(value.forall(_.isUpper))
-        case None        => '{ $valueExpr.forall(_.isUpper) }
+        case Some(value) => Expr(value.forall(v => !v.isLetter || v.isUpper))
+        case None        => '{ $valueExpr.forall(v => !v.isLetter || v.isUpper) }
 
   object Match:
     inline given [V <: String]: Constraint[String, Match[V]] with

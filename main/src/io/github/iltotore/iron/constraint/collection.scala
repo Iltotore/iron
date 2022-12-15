@@ -38,7 +38,7 @@ object collection:
   object MinLength:
     inline given [V <: Int, I <: Iterable[?]]: Constraint[I, MinLength[V]] with
 
-      override inline def test(value: I): Boolean = value.size >= constValue[V]
+      override inline def test(value: I): Boolean = value.sizeCompare(constValue[V]) >= 0
 
       override inline def message: String = "Should contain atleast " + stringValue[V] + " elements"
 
@@ -56,7 +56,7 @@ object collection:
   object MaxLength:
     inline given [V <: Int, I <: Iterable[?]]: Constraint[I, MaxLength[V]] with
 
-      override inline def test(value: I): Boolean = value.size <= constValue[V]
+      override inline def test(value: I): Boolean = value.sizeCompare(constValue[V]) <= 0
 
       override inline def message: String = "Should contain at most " + stringValue[V] + " elements"
 

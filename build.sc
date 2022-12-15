@@ -150,6 +150,23 @@ object examples extends Module {
     )
 
   }
+
+  object formJsoniter extends ScalaModule with ScalafmtModule {
+
+    def scalaVersion = versions.scala
+
+    def moduleDeps = Seq(main, jsoniter)
+
+    val jsoniterVersion = "2.19.1"
+
+    def ivyDeps = Agg(
+      ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-core:$jsoniterVersion",
+    )
+
+    def compileIvyDeps = Agg(
+      ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:$jsoniterVersion"
+    )
+  }
 }
 
 trait SubModule extends BaseModule {
@@ -204,4 +221,31 @@ object zioJson extends SubModule {
   )
 
   object js extends JSCrossModule
+}
+
+object jsoniter extends SubModule {
+
+  def artifactName = "iron-jsoniter"
+
+  val jsoniterVersion = "2.19.1"
+
+  private val jsoniterMacros = ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:$jsoniterVersion"
+
+  def ivyDeps = Agg(
+    ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-core::$jsoniterVersion"
+  )
+
+  def compileIvyDeps = Agg(jsoniterMacros)
+
+  object js extends JSCrossModule {
+    def compileIvyDeps = Agg(jsoniterMacros)
+  }
+
+  object native extends NativeCrossModule {
+    def compileIvyDeps = Agg(jsoniterMacros)
+  }
+
+  object test extends Tests {
+    def compileIvyDeps = Agg(jsoniterMacros)
+  }
 }

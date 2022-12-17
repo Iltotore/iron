@@ -39,6 +39,22 @@ object StringSuite extends TestSuite:
       test - "".assertNotRefine[Match["[0-9]+"]]
     }
 
+    test("url") {
+      test - "localhost".assertRefine[URLLike]
+      test - "example.com".assertRefine[URLLike]
+      test - "http://example.com/".assertRefine[URLLike]
+      test - "https://example.com/".assertRefine[URLLike]
+      test - "file://example.com/".assertRefine[URLLike]
+      test - "mysql:jdbc://example.com/".assertRefine[URLLike]
+      test - "http://example.com/index.html".assertRefine[URLLike]
+      test - "http://example.com/#section".assertRefine[URLLike]
+      test - "http://example.com/?q=with%20space".assertRefine[URLLike]
+      test - "http://example.com/?q=with+space".assertRefine[URLLike]
+      test - "/example.com".assertNotRefine[URLLike]
+      test - "://example.com".assertNotRefine[URLLike]
+      test - "http:///".assertNotRefine[URLLike]
+    }
+
     test("blank") {
       test - "".assertRefine[Blank]
       test - " ".assertRefine[Blank]

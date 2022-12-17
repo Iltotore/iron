@@ -44,11 +44,11 @@ object collection:
 
     inline given [V <: Int]: Constraint[String, MinLength[V]] with
 
-      override inline def test(value: String): Boolean = ${ checkMinLength('value, '{ constValue[V] }) }
+      override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }
 
       override inline def message: String = "Should have a min length of " + stringValue[V]
 
-    private def checkMinLength(expr: Expr[String], lengthExpr: Expr[Int])(using Quotes): Expr[Boolean] =
+    private def check(expr: Expr[String], lengthExpr: Expr[Int])(using Quotes): Expr[Boolean] =
       (expr.value, lengthExpr.value) match
         case (Some(value), Some(minLength)) => Expr(value.length >= minLength)
         case _                              => '{ ${ expr }.length >= $lengthExpr }
@@ -80,11 +80,11 @@ object collection:
 
     inline given [V <: String]: Constraint[String, Contain[V]] with
 
-      override inline def test(value: String): Boolean = ${ checkContain('value, '{ constValue[V] }) }
+      override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }
 
       override inline def message: String = "Should contain the string " + constValue[V]
 
-    private def checkContain(expr: Expr[String], partExpr: Expr[String])(using Quotes): Expr[Boolean] =
+    private def check(expr: Expr[String], partExpr: Expr[String])(using Quotes): Expr[Boolean] =
       (expr.value, partExpr.value) match
         case (Some(value), Some(part)) => Expr(value.contains(part))
         case _                         => '{ ${ expr }.contains($partExpr) }

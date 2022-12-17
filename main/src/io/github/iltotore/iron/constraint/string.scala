@@ -59,11 +59,11 @@ object string:
   object LowerCase:
     inline given Constraint[String, LowerCase] with
 
-      override inline def test(value: String): Boolean = ${ checkLowerCase('value) }
+      override inline def test(value: String): Boolean = ${ check('value) }
 
       override inline def message: String = "Should be lower cased"
 
-    def checkLowerCase(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
+    private def check(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
       valueExpr.value match
         case Some(value) => Expr(value.forall(v => !v.isLetter || v.isLower))
         case None        => '{ $valueExpr.forall(v => !v.isLetter || v.isLower) }
@@ -71,11 +71,11 @@ object string:
   object UpperCase:
     inline given Constraint[String, UpperCase] with
 
-      override inline def test(value: String): Boolean = ${ checkUpperCase('value) }
+      override inline def test(value: String): Boolean = ${ check('value) }
 
       override inline def message: String = "Should be upper cased"
 
-    private def checkUpperCase(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
+    private def check(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
       valueExpr.value match
         case Some(value) => Expr(value.forall(v => !v.isLetter || v.isUpper))
         case None        => '{ $valueExpr.forall(v => !v.isLetter || v.isUpper) }
@@ -83,11 +83,11 @@ object string:
   object Match:
     inline given [V <: String]: Constraint[String, Match[V]] with
 
-      override inline def test(value: String): Boolean = ${ checkMatch('value, '{ constValue[V] }) }
+      override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }
 
       override inline def message: String = "Should match " + constValue[V]
 
-    def checkMatch(valueExpr: Expr[String], regexExpr: Expr[String])(using Quotes): Expr[Boolean] =
+    private def check(valueExpr: Expr[String], regexExpr: Expr[String])(using Quotes): Expr[Boolean] =
       (valueExpr.value, regexExpr.value) match
         case (Some(value), Some(regex)) => Expr(value.matches(regex))
         case _                          => '{ $valueExpr.matches($regexExpr) }

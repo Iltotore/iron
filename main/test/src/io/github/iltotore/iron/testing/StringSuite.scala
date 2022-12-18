@@ -41,7 +41,9 @@ object StringSuite extends TestSuite:
 
     test("url") {
       test - "localhost".assertRefine[URLLike]
+      test - "localhost:8080".assertRefine[URLLike]
       test - "example.com".assertRefine[URLLike]
+      test - "example.com:8080".assertRefine[URLLike]
       test - "http://example.com/".assertRefine[URLLike]
       test - "https://example.com/".assertRefine[URLLike]
       test - "file://example.com/".assertRefine[URLLike]

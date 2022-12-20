@@ -13,6 +13,16 @@ import scala.compiletime.ops.boolean
 object any:
 
   /**
+   * An always-valid constraint.
+   */
+  final class True
+
+  /**
+   * An always-invalid constraint.
+   */
+  final class False
+
+  /**
    * A constraint decorator with a custom description.
    *
    * @tparam C the decorated constraint.
@@ -48,6 +58,32 @@ object any:
    * @tparam V the value the input must be equal to.
    */
   final class StrictEqual[V]
+
+  object True:
+
+    inline given [A]: Constraint[A, True] with
+
+      override inline def test(value: A): Boolean = true
+
+      override inline def message: String = "Always valid"
+
+    /**
+     * True implies Not[False]
+     */
+    given (True ==> Not[False]) = Implication()
+
+  object False:
+
+    inline given [A]: Constraint[A, False] with
+
+      override inline def test(value: A): Boolean = false
+
+      override inline def message: String = "Always invalid"
+
+    /**
+     * False implies Not[True]
+     */
+    given (False ==> Not[True]) = Implication()
 
   object DescribedAs:
     class DescribedAsConstraint[A, C, Impl <: Constraint[A, C], V <: String](using Impl) extends Constraint[A, DescribedAs[C, V]]:

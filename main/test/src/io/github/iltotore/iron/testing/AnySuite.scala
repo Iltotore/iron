@@ -18,8 +18,14 @@ object AnySuite extends TestSuite:
     }
 
     test("not") {
-      test - Dummy.assertNotRefine[Not[True]]
       test - Dummy.assertRefine[Not[False]]
+      test - Dummy.assertNotRefine[Not[True]]
+    }
+
+    test("xor") {
+      test - Dummy.assertRefine[Xor[True, False]]
+      test - Dummy.assertNotRefine[Xor[True, True]]
+      test - Dummy.assertNotRefine[Xor[False, False]]
     }
 
     test("union") {

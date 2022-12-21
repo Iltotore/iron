@@ -34,7 +34,7 @@ object AnySuite extends TestSuite:
       test - Dummy.assertNotRefine[False | False]
     }
 
-    test("and") {
+    test("intersection") {
       test - Dummy.assertRefine[True & True]
       test - Dummy.assertNotRefine[True & False]
       test - Dummy.assertNotRefine[False & False]

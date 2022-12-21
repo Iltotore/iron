@@ -7,26 +7,37 @@ object AnySuite extends TestSuite:
 
   val tests: Tests = Tests {
 
+    test("constant") {
+      test("true") - Dummy.assertRefine[True]
+      test("false") - Dummy.assertNotRefine[False]
+    }
+
     test("describedAs") {
-      test - Dummy.assertRefine[Literal[true] DescribedAs "test"]
-      test - Dummy.assertNotRefine[Literal[false] DescribedAs "test"]
+      test - Dummy.assertRefine[True DescribedAs "test"]
+      test - Dummy.assertNotRefine[False DescribedAs "test"]
     }
 
     test("not") {
-      test - Dummy.assertNotRefine[Not[Literal[true]]]
-      test - Dummy.assertRefine[Not[Literal[false]]]
+      test - Dummy.assertRefine[Not[False]]
+      test - Dummy.assertNotRefine[Not[True]]
+    }
+
+    test("xor") {
+      test - Dummy.assertRefine[Xor[True, False]]
+      test - Dummy.assertNotRefine[Xor[True, True]]
+      test - Dummy.assertNotRefine[Xor[False, False]]
     }
 
     test("union") {
-      test - Dummy.assertRefine[Literal[true] | Literal[true]]
-      test - Dummy.assertRefine[Literal[true] | Literal[false]]
-      test - Dummy.assertNotRefine[Literal[false] | Literal[false]]
+      test - Dummy.assertRefine[True | True]
+      test - Dummy.assertRefine[True | False]
+      test - Dummy.assertNotRefine[False | False]
     }
 
-    test("and") {
-      test - Dummy.assertRefine[Literal[true] & Literal[true]]
-      test - Dummy.assertNotRefine[Literal[true] & Literal[false]]
-      test - Dummy.assertNotRefine[Literal[false] & Literal[false]]
+    test("intersection") {
+      test - Dummy.assertRefine[True & True]
+      test - Dummy.assertNotRefine[True & False]
+      test - Dummy.assertNotRefine[False & False]
     }
 
     test("strictEqual") {

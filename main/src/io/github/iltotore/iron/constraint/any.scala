@@ -13,6 +13,16 @@ import scala.compiletime.ops.boolean
 object any:
 
   /**
+   * An always-valid constraint.
+   */
+  final class True
+
+  /**
+   * An always-invalid constraint.
+   */
+  final class False
+
+  /**
    * A constraint decorator with a custom description.
    *
    * @tparam C the decorated constraint.
@@ -43,11 +53,44 @@ object any:
     case _       => Not[C]
 
   /**
+   * A constraint operator acting like a boolean "xor".
+   * @tparam C1 the left constraint.
+   * @tparam C2 the right constraint.
+   */
+  final class Xor[C1, C2]
+
+  /**
    * Tests strict equality with the given value.
    *
    * @tparam V the value the input must be equal to.
    */
   final class StrictEqual[V]
+
+  object True:
+
+    inline given [A]: Constraint[A, True] with
+
+      override inline def test(value: A): Boolean = true
+
+      override inline def message: String = "Always valid"
+
+    /**
+     * True implies Not[False]
+     */
+    given (True ==> Not[False]) = Implication()
+
+  object False:
+
+    inline given [A]: Constraint[A, False] with
+
+      override inline def test(value: A): Boolean = false
+
+      override inline def message: String = "Always invalid"
+
+    /**
+     * False implies Not[True]
+     */
+    given (False ==> Not[True]) = Implication()
 
   object DescribedAs:
     class DescribedAsConstraint[A, C, Impl <: Constraint[A, C], V <: String](using Impl) extends Constraint[A, DescribedAs[C, V]]:
@@ -89,6 +132,17 @@ object any:
      * C implies doubly inverted C.
      */
     given [C1, C2](using C1 ==> C2): (C1 ==> Not[Not[C2]]) = Implication()
+
+  object Xor:
+
+    class XorConstraint[A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]] extends Constraint[A, Xor[C1, C2]]:
+
+      override inline def test(value: A): Boolean = summonInline[Impl1].test(value) != summonInline[Impl2].test(value)
+
+      override inline def message: String = "(" + summonInline[Impl1].message + " xor " + summonInline[Impl2].message + ")"
+
+    inline given [A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using inline impl1: Impl1, impl2: Impl2): XorConstraint[A, C1, C2, Impl1, Impl2] =
+      new XorConstraint
 
   object StrictEqual:
     inline given [A, V <: A]: Constraint[A, StrictEqual[V]] with

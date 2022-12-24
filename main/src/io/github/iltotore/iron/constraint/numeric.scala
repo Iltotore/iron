@@ -73,7 +73,14 @@ object numeric:
       override inline def test(value: Double): Boolean = value > constValue[V]
 
     given [V1, V2](using V1 > V2 =:= true): (Greater[V1] ==> Greater[V2]) = Implication()
+
     given [V1, V2](using V1 > V2 =:= true): (StrictEqual[V1] ==> Greater[V2]) = Implication()
+
+    given notLess[V1, V2](using V1 >= V2 =:= true): (Greater[V1] ==> Not[Less[V2]]) = Implication()
+
+    given notEq[V1, V2](using V1 >= V2 =:= true): (Greater[V1] ==> Not[StrictEqual[V2]]) = Implication()
+
+    given [V1, V2](using V1 >= V2 =:= true): (StrictEqual[V2] ==> Not[Greater[V1]]) = Implication()
 
   object Less:
     private trait LessConstraint[A, V] extends Constraint[A, Less[V]]:
@@ -94,6 +101,12 @@ object numeric:
     given [V1, V2](using V1 < V2 =:= true): (Less[V1] ==> Less[V2]) = Implication()
 
     given [V1, V2](using V1 < V2 =:= true): (StrictEqual[V1] ==> Less[V2]) = Implication()
+
+    given notGreater[V1, V2](using V1 <= V2 =:= true): (Less[V1] ==> Not[Greater[V2]]) = Implication()
+
+    given notEq[V1, V2](using V1 <= V2 =:= true): (Less[V1] ==> Not[StrictEqual[V2]]) = Implication()
+
+    given [V1, V2](using V1 <= V2 =:= true): (StrictEqual[V2] ==> Not[Less[V1]]) = Implication()
 
   object Multiple:
     private trait MultipleConstraint[A, V] extends Constraint[A, Multiple[V]]:

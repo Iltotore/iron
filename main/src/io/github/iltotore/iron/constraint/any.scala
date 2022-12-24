@@ -132,6 +132,8 @@ object any:
      * C implies doubly inverted C.
      */
     given [C1, C2](using C1 ==> C2): (C1 ==> Not[Not[C2]]) = Implication()
+    
+    given [C1, C2](using C1 ==> C2): (Not[C1] ==> Not[C2]) = Implication()
 
   object Xor:
 
@@ -143,6 +145,21 @@ object any:
 
     inline given [A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using inline impl1: Impl1, impl2: Impl2): XorConstraint[A, C1, C2, Impl1, Impl2] =
       new XorConstraint
+
+    /**
+     * Xor[C1, C2] <=> Xor[C2, C1].
+     */
+    given [C1, C2]: (Xor[C1, C2] ==> Xor[C2, C1]) = Implication()
+
+    /**
+     * C1 implies Xor[C1, C2] if C1 and C2 are exclusives.
+     */
+    given left[C1, C2, C3](using C1 ==> Not[C2], C1 ==> C3): (C1 ==> Xor[C3, C2]) = Implication()
+
+    /**
+     * C1 implies Xor[C2, C1] if C1 and C2 are exclusives.
+     */
+    given right[C1, C2, C3](using C1 ==> Not[C2], C1 ==> C3): (C1 ==> Xor[C2, C3]) = Implication()
 
   object StrictEqual:
     inline given [A, V <: A]: Constraint[A, StrictEqual[V]] with

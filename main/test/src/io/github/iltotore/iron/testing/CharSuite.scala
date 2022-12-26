@@ -9,17 +9,17 @@ object CharSuite extends TestSuite:
   val tests: Tests = Tests {
 
     test("blank") { //See https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Character.html#isWhitespace(char)
-      test - ' '.assertRefine[Blank]
-      test - '\t'.assertRefine[Blank]
-      test - '\n'.assertRefine[Blank]
-      test - '\u000B'.assertRefine[Blank]
-      test - '\f'.assertRefine[Blank]
-      test - '\r'.assertRefine[Blank]
-      test - '\u001C'.assertRefine[Blank]
-      test - '\u001D'.assertRefine[Blank]
-      test - '\u001E'.assertRefine[Blank]
-      test - '\u001F'.assertRefine[Blank]
-      test - 'a'.assertNotRefine[Blank]
+      test - ' '.assertRefine[Whitespace]
+      test - '\t'.assertRefine[Whitespace]
+      test - '\n'.assertRefine[Whitespace]
+      test - '\u000B'.assertRefine[Whitespace]
+      test - '\f'.assertRefine[Whitespace]
+      test - '\r'.assertRefine[Whitespace]
+      test - '\u001C'.assertRefine[Whitespace]
+      test - '\u001D'.assertRefine[Whitespace]
+      test - '\u001E'.assertRefine[Whitespace]
+      test - '\u001F'.assertRefine[Whitespace]
+      test - 'a'.assertNotRefine[Whitespace]
     }
 
     test("lowercase") {

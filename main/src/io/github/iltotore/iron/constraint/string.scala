@@ -4,7 +4,7 @@ import io.github.iltotore.iron.Constraint
 import io.github.iltotore.iron.constraint.any.*
 import io.github.iltotore.iron.constraint.collection.*
 import io.github.iltotore.iron.compileTime.*
-import io.github.iltotore.iron.constraint.char.{Digit, Letter, LowerCase, UpperCase}
+import io.github.iltotore.iron.constraint.char.{Digit, Letter, LowerCase, UpperCase, Whitespace}
 
 import scala.compiletime.constValue
 import scala.quoted.*
@@ -17,12 +17,17 @@ import scala.quoted.*
 object string:
 
   /**
-   * Tests if all characters of the input are lower cased.
+   * Tests if the input only contains whitespaces.
+   */
+  type Blank = ForAll[Whitespace] DescribedAs "Should only contain whitespaces"
+
+  /**
+   * Tests if all letters of the input are lower cased.
    */
   type LettersLowerCase = ForAll[Not[Letter] | LowerCase] DescribedAs "All letters should be lower cased"
 
   /**
-   * Tests if all characters of the input are upper cased.
+   * Tests if all letters of the input are upper cased.
    */
   type LettersUpperCase = ForAll[Not[Letter] | UpperCase] DescribedAs "All letters should be upper cased"
 

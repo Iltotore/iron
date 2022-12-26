@@ -11,7 +11,7 @@ object char:
   /**
    * Tests if the input is whitespace.
    */
-  final class Blank
+  final class Whitespace
 
   /**
    * Tests if the given input is lower-cased.
@@ -38,9 +38,9 @@ object char:
    */
   type Special = Not[Digit] & Not[Letter]
 
-  object Blank:
+  object Whitespace:
 
-    inline given Constraint[Char, Blank] with
+    inline given Constraint[Char, Whitespace] with
 
       override inline def test(value: Char): Boolean = ${ check('value) }
 

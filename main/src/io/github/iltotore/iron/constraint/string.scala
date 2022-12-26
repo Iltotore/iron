@@ -13,15 +13,6 @@ import scala.quoted.*
  * @see [[collection]]
  */
 object string:
-  /**
-   * Tests if the given input is lower-cased.
-   */
-  final class LowerCase
-
-  /**
-   * Tests if the input is upper-cased.
-   */
-  final class UpperCase
 
   /**
    * Tests if the input matches the given regex.
@@ -51,35 +42,6 @@ object string:
   type UUIDLike =
     Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"] DescribedAs "Should be an UUID"
 
-  /**
-   * Tests if the input is empty or contains whitespace characters only
-   */
-  final class Blank
-
-  object LowerCase:
-    inline given Constraint[String, LowerCase] with
-
-      override inline def test(value: String): Boolean = ${ check('value) }
-
-      override inline def message: String = "Should be lower cased"
-
-    private def check(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
-      valueExpr.value match
-        case Some(value) => Expr(value.forall(v => !v.isLetter || v.isLower))
-        case None        => '{ $valueExpr.forall(v => !v.isLetter || v.isLower) }
-
-  object UpperCase:
-    inline given Constraint[String, UpperCase] with
-
-      override inline def test(value: String): Boolean = ${ check('value) }
-
-      override inline def message: String = "Should be upper cased"
-
-    private def check(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
-      valueExpr.value match
-        case Some(value) => Expr(value.forall(v => !v.isLetter || v.isUpper))
-        case None        => '{ $valueExpr.forall(v => !v.isLetter || v.isUpper) }
-
   object Match:
     inline given [V <: String]: Constraint[String, Match[V]] with
 
@@ -91,15 +53,3 @@ object string:
       (valueExpr.value, regexExpr.value) match
         case (Some(value), Some(regex)) => Expr(value.matches(regex))
         case _                          => '{ $valueExpr.matches($regexExpr) }
-
-  object Blank:
-    inline given Constraint[String, Blank] with
-
-      override inline def test(value: String): Boolean = ${ check('value) }
-
-      override inline def message: String = "Should be empty or contain only whitespace characters"
-
-    private def check(valueExpr: Expr[String])(using Quotes): Expr[Boolean] =
-      valueExpr.value match
-        case Some(value) => Expr(value.forall(_.isWhitespace))
-        case _           => '{ $valueExpr.forall(_.isWhitespace) }

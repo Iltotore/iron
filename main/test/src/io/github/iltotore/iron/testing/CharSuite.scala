@@ -51,10 +51,10 @@ object CharSuite extends TestSuite:
     }
 
     test("special") {
-      test - ' '.assertRefine[IsSpecial]
-      test - '%'.assertRefine[IsSpecial]
-      test - 'a'.assertNotRefine[IsSpecial]
-      test - 'A'.assertNotRefine[IsSpecial]
-      test - '1'.assertNotRefine[IsSpecial]
+      test - ' '.assertRefine[Special]
+      test - '%'.assertRefine[Special]
+      test - 'a'.assertNotRefine[Special]
+      test - 'A'.assertNotRefine[Special]
+      test - '1'.assertNotRefine[Special]
     }
   }

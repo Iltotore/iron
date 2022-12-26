@@ -36,7 +36,7 @@ object char:
   /**
    * Tests if the input is neither a digit or a letter.
    */
-  type IsSpecial = Not[Digit] & Not[Letter]
+  type Special = Not[Digit] & Not[Letter]
 
   object Blank:
 

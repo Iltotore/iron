@@ -1,6 +1,6 @@
 package io.github.iltotore.iron.constraint
 
-import io.github.iltotore.iron.Constraint
+import io.github.iltotore.iron.{:|, ==>, Constraint, Implication}
 import io.github.iltotore.iron.compileTime.*
 
 import scala.compiletime.{constValue, summonInline}

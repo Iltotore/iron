@@ -101,7 +101,7 @@ object collection:
 
       override inline def test(value: I): Boolean = value.forall(summonInline[Impl].test(_))
 
-      override inline def message: String = "For each element: (" + summonInline[Impl] + ")"
+      override inline def message: String = "For each element: (" + summonInline[Impl].message + ")"
 
     inline given [A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): ForAllIterable[A, I, C, Impl] =
       new ForAllIterable

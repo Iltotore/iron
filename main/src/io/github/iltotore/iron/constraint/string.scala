@@ -4,6 +4,8 @@ import io.github.iltotore.iron.Constraint
 import io.github.iltotore.iron.constraint.any.*
 import io.github.iltotore.iron.constraint.collection.*
 import io.github.iltotore.iron.compileTime.*
+import io.github.iltotore.iron.constraint.char.{Digit, Letter, LowerCase, UpperCase}
+
 import scala.compiletime.constValue
 import scala.quoted.*
 
@@ -15,16 +17,26 @@ import scala.quoted.*
 object string:
 
   /**
+   * Tests if all characters of the input are lower cased.
+   */
+  type LettersLowerCase = ForAll[Not[Letter] | LowerCase] DescribedAs "All letters should be lower cased"
+
+  /**
+   * Tests if all characters of the input are upper cased.
+   */
+  type LettersUpperCase = ForAll[Not[Letter] | UpperCase] DescribedAs "All letters should be upper cased"
+
+  /**
+   * Tests if the input only contains alphanumeric characters.
+   */
+  type Alphanumeric = ForAll[Digit | Letter] DescribedAs "Should be alphanumeric"
+
+  /**
    * Tests if the input matches the given regex.
    *
    * @tparam V the pattern to match against the input.
    */
   final class Match[V <: String]
-
-  /**
-   * Tests if the input only contains alphanumeric characters.
-   */
-  type Alphanumeric = Match["^[a-zA-Z0-9]+"] DescribedAs "Should be alphanumeric"
 
   /**
    * Tests if the input is a valid URL.

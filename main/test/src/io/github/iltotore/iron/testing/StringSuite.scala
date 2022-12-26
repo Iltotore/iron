@@ -24,13 +24,13 @@ object StringSuite extends TestSuite:
     }
 
     test("lowercase") {
-      test - "abc 123 \n".assertRefine[LowerCase]
-      test - "ABC 123 \n".assertNotRefine[LowerCase]
+      test - "abc 123 \n".assertRefine[LettersLowerCase]
+      test - "ABC 123 \n".assertNotRefine[LettersLowerCase]
     }
 
     test("uppercase") {
-      test - "abc 123 \n".assertNotRefine[UpperCase]
-      test - "ABC 123 \n".assertRefine[UpperCase]
+      test - "abc 123 \n".assertNotRefine[LettersUpperCase]
+      test - "ABC 123 \n".assertRefine[LettersUpperCase]
     }
 
     test("match") {
@@ -57,11 +57,4 @@ object StringSuite extends TestSuite:
       test - "http:///".assertNotRefine[URLLike]
     }
 
-    test("blank") {
-      test - "".assertRefine[Blank]
-      test - " ".assertRefine[Blank]
-      test - " \n \t ".assertRefine[Blank]
-      test - "foo ".assertNotRefine[Blank]
-      test - " foo".assertNotRefine[Blank]
-    }
   }

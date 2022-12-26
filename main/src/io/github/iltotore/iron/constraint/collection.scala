@@ -3,7 +3,7 @@ package io.github.iltotore.iron.constraint
 import io.github.iltotore.iron.Constraint
 import io.github.iltotore.iron.compileTime.*
 
-import scala.compiletime.constValue
+import scala.compiletime.{constValue, summonInline}
 import scala.compiletime.ops.string.Length
 import scala.quoted.*
 
@@ -34,6 +34,12 @@ object collection:
    * @tparam V the value the input must contain.
    */
   final class Contain[V]
+
+  /**
+   * Tests if each element satisfies the given constraint.
+   * @tparam C the constraint to test against each element.
+   */
+  final class ForAll[C]
 
   object MinLength:
     inline given [V <: Int, I <: Iterable[?]]: Constraint[I, MinLength[V]] with
@@ -88,3 +94,38 @@ object collection:
       (expr.value, partExpr.value) match
         case (Some(value), Some(part)) => Expr(value.contains(part))
         case _                         => '{ ${ expr }.contains($partExpr) }
+
+  object ForAll:
+
+    class ForAllIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, ForAll[C]]:
+
+      override inline def test(value: I): Boolean = value.forall(summonInline[Impl].test(_))
+
+      override inline def message: String = "For each element: (" + summonInline[Impl] + ")"
+
+    inline given [A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): ForAllIterable[A, I, C, Impl] =
+      new ForAllIterable
+
+    class ForAllString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, ForAll[C]]:
+
+      override inline def test(value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
+
+      override inline def message: String = "For each element: (" + summonInline[Impl].message + ")"
+
+    inline given forAllString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): ForAllString[C, Impl] = new ForAllString
+
+    private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+
+      import quotes.reflect.*
+
+      def testChar(char: Expr[Char]): Expr[Boolean] = // Using quotes directly causes a "deferred inline error"
+        Apply(Select.unique(constraintExpr.asTerm, "test"), List(char.asTerm)).asExprOf[Boolean]
+
+      expr.value match
+        case Some(value) =>
+          value
+            .map(Expr.apply)
+            .map(testChar)
+            .foldLeft(Expr(true))((e, t) => '{ $e && $t })
+
+        case None => '{ $expr.forall(c => ${ testChar('c) }) }

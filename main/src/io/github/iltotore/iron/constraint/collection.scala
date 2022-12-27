@@ -54,6 +54,12 @@ object collection:
    */
   final class Head[C]
 
+  /**
+   * Tests if the last element of the passed input satisfies the given constraint.
+   * @tparam C the constraint to test against the last element.
+   */
+  final class Last[C]
+
   object MinLength:
     inline given [V <: Int, I <: Iterable[?]]: Constraint[I, MinLength[V]] with
 
@@ -193,7 +199,7 @@ object collection:
 
     inline given headString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): HeadString[C, Impl] = new HeadString
 
-    def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+    private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       expr.value match
         case Some(value) =>
           value.headOption match
@@ -202,3 +208,32 @@ object collection:
         case None => '{ $expr.headOption.exists(head => ${ applyConstraint('{ head }, constraintExpr) }) }
 
     given [C1, C2](using C1 ==> C2): (Head[C1] ==> Exists[C2]) = Implication()
+
+  object Last:
+
+    class LastIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Last[C]]:
+
+      override inline def test(value: I): Boolean = value.lastOption.exists(summonInline[Impl].test(_))
+
+      override inline def message: String = "Last: (" + summonInline[Impl].message + ")"
+
+    inline given[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): LastIterable[A, I, C, Impl] =
+      new LastIterable
+
+    class LastString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, Last[C]]:
+
+      override inline def test(value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
+
+      override inline def message: String = "Last: (" + summonInline[Impl].message + ")"
+
+    inline given lastString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): LastString[C, Impl] = new LastString
+
+    private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      expr.value match
+        case Some(value) =>
+          value.lastOption match
+            case Some(last) => applyConstraint(Expr(last), constraintExpr)
+            case None => Expr(false)
+        case None => '{ $expr.lastOption.exists(last => ${ applyConstraint('{ last }, constraintExpr) }) }
+
+    given[C1, C2](using C1 ==> C2): (Last[C1] ==> Exists[C2]) = Implication()

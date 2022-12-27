@@ -1,7 +1,7 @@
 package io.github.iltotore.iron.constraint
 
 import io.github.iltotore.iron.{:|, ==>, Constraint, Implication}
-import io.github.iltotore.iron.compileTime.{*, given}
+import io.github.iltotore.iron.compileTime.*
 
 import scala.compiletime.{constValue, summonInline}
 import scala.compiletime.ops.string.Length
@@ -47,6 +47,12 @@ object collection:
    * @tparam C the constraint to test against each element.
    */
   final class Exists[C]
+
+  /**
+   * Tests if the head of the passed input satisfies the given constraint.
+   * @tparam C the constraint to test against the first element (head).
+   */
+  final class Head[C]
 
   object MinLength:
     inline given [V <: Int, I <: Iterable[?]]: Constraint[I, MinLength[V]] with
@@ -125,17 +131,16 @@ object collection:
 
       import quotes.reflect.*
 
-      def testChar(char: Expr[Char]): Expr[Boolean] = // Using quotes directly causes a "deferred inline error"
-        Apply(Select.unique(constraintExpr.asTerm, "test"), List(char.asTerm)).asExprOf[Boolean]
-
       expr.value match
         case Some(value) =>
           value
             .map(Expr.apply)
-            .map(testChar)
+            .map(applyConstraint(_, constraintExpr))
             .foldLeft(Expr(true))((e, t) => '{ $e && $t })
 
-        case None => '{ $expr.forall(c => ${ testChar('c) }) }
+        case None => '{ $expr.forall(c => ${ applyConstraint('c, constraintExpr) }) }
+
+    given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Exists[C2]) = Implication()
 
   object Exists:
 
@@ -145,7 +150,7 @@ object collection:
 
       override inline def message: String = "At least one: (" + summonInline[Impl].message + ")"
 
-    inline given[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): ExistsIterable[A, I, C, Impl] =
+    inline given [A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): ExistsIterable[A, I, C, Impl] =
       new ExistsIterable
 
     class ExistsString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, Exists[C]]:
@@ -160,16 +165,40 @@ object collection:
 
       import quotes.reflect.*
 
-      def testChar(char: Expr[Char]): Expr[Boolean] = // Using quotes directly causes a "deferred inline error"
-        Apply(Select.unique(constraintExpr.asTerm, "test"), List(char.asTerm)).asExprOf[Boolean]
-
       expr.value match
         case Some(value) =>
           value
             .map(Expr.apply)
-            .map(testChar)
+            .map(applyConstraint(_, constraintExpr))
             .foldLeft(Expr(false))((e, t) => '{ $e || $t })
 
-        case None => '{ $expr.exists(c => ${ testChar('c) }) }
+        case None => '{ $expr.exists(c => ${ applyConstraint('c, constraintExpr) }) }
 
-    given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Exists[C2]) = Implication()
+  object Head:
+
+    class HeadIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Head[C]]:
+
+      override inline def test(value: I): Boolean = value.headOption.exists(summonInline[Impl].test(_))
+
+      override inline def message: String = "Head: (" + summonInline[Impl].message + ")"
+
+    inline given [A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): HeadIterable[A, I, C, Impl] =
+      new HeadIterable
+
+    class HeadString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, Head[C]]:
+
+      override inline def test(value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
+
+      override inline def message: String = "Head: (" + summonInline[Impl].message + ")"
+
+    inline given headString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): HeadString[C, Impl] = new HeadString
+
+    def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      expr.value match
+        case Some(value) =>
+          value.headOption match
+            case Some(head) => applyConstraint(Expr(head), constraintExpr)
+            case None       => Expr(false)
+        case None => '{ $expr.headOption.exists(head => ${ applyConstraint('{ head }, constraintExpr) }) }
+
+    given [C1, C2](using C1 ==> C2): (Head[C1] ==> Exists[C2]) = Implication()

@@ -61,4 +61,20 @@ object CollectionSuite extends TestSuite:
         test - "".assertNotRefine[Exists[IsA]]
       }
     }
+
+    test("head") {
+      test("iterable") {
+        test - List('a', 'b', 'c').assertRefine[Head[IsA]]
+        test - List('c', 'b', 'a').assertNotRefine[Head[IsA]]
+        test - List('b', 'b', 'c').assertNotRefine[Head[IsA]]
+        test - Nil.assertNotRefine[Head[IsA]]
+      }
+
+      test("string") {
+        test - "abc".assertRefine[Head[IsA]]
+        test - "cba".assertNotRefine[Head[IsA]]
+        test - "bbc".assertNotRefine[Head[IsA]]
+        test - "".assertNotRefine[Head[IsA]]
+      }
+    }
   }

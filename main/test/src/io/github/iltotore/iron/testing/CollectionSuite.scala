@@ -45,4 +45,20 @@ object CollectionSuite extends TestSuite:
         test - "abc".assertNotRefine[ForAll[IsA]]
       }
     }
+
+    test("exists") {
+      test("iterable") {
+        test - List('a', 'a', 'a').assertRefine[Exists[IsA]]
+        test - List('a', 'b', 'c').assertRefine[Exists[IsA]]
+        test - List('b', 'b', 'c').assertNotRefine[Exists[IsA]]
+        test - Nil.assertNotRefine[Exists[IsA]]
+      }
+
+      test("string") {
+        test - "aaa".assertRefine[Exists[IsA]]
+        test - "abc".assertRefine[Exists[IsA]]
+        test - "bbc".assertNotRefine[Exists[IsA]]
+        test - "".assertNotRefine[Exists[IsA]]
+      }
+    }
   }

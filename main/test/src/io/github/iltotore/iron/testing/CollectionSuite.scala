@@ -32,7 +32,6 @@ object CollectionSuite extends TestSuite:
     }
 
     test("forAll") {
-
       test("iterable") {
         test - Nil.assertRefine[ForAll[IsA]]
         test - List('a', 'a', 'a').assertRefine[ForAll[IsA]]
@@ -43,6 +42,42 @@ object CollectionSuite extends TestSuite:
         test - "".assertRefine[ForAll[IsA]]
         test - "aaa".assertRefine[ForAll[IsA]]
         test - "abc".assertNotRefine[ForAll[IsA]]
+      }
+    }
+
+    test("init") {
+      test("iterable") {
+        test - Nil.assertRefine[Init[IsA]]
+        test - List('b').assertRefine[Init[IsA]]
+        test - List('a', 'a', 'b').assertRefine[Init[IsA]]
+        test - List('a', 'a', 'a').assertRefine[Init[IsA]]
+        test - List('a', 'b', 'c').assertNotRefine[Init[IsA]]
+      }
+
+      test("string") {
+        test - "".assertRefine[Init[IsA]]
+        test - "b".assertRefine[Init[IsA]]
+        test - "aab".assertRefine[Init[IsA]]
+        test - "aaa".assertRefine[Init[IsA]]
+        test - "abc".assertNotRefine[Init[IsA]]
+      }
+    }
+
+    test("tail") {
+      test("iterable") {
+        test - Nil.assertRefine[Tail[IsA]]
+        test - List('b').assertRefine[Tail[IsA]]
+        test - List('b', 'a', 'a').assertRefine[Tail[IsA]]
+        test - List('a', 'a', 'a').assertRefine[Tail[IsA]]
+        test - List('a', 'b', 'c').assertNotRefine[Tail[IsA]]
+      }
+
+      test("string") {
+        test - "".assertRefine[Tail[IsA]]
+        test - "b".assertRefine[Tail[IsA]]
+        test - "baa".assertRefine[Tail[IsA]]
+        test - "aaa".assertRefine[Tail[IsA]]
+        test - "abc".assertNotRefine[Tail[IsA]]
       }
     }
 

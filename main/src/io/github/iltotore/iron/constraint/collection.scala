@@ -42,6 +42,19 @@ object collection:
   final class ForAll[C]
 
   /**
+   * Tests if each element except the last one satisfies the given constraint.
+   *
+   * @tparam C the constraint to test against the init.
+   */
+  final class Init[C]
+
+  /**
+   * Tests if each element except the first one satisfies the given constraint.
+   * @tparam C the constraint to test against the tail.
+   */
+  final class Tail[C]
+
+  /**
    * Tests if at least one element satisfies the given constraint.
    *
    * @tparam C the constraint to test against each element.
@@ -147,6 +160,82 @@ object collection:
         case None => '{ $expr.forall(c => ${ applyConstraint('c, constraintExpr) }) }
 
     given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Exists[C2]) = Implication()
+    given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Last[C2]) = Implication()
+    given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Init[C2]) = Implication()
+    given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Tail[C2]) = Implication()
+
+  object Init:
+
+    class InitIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Init[C]]:
+
+      override inline def test(value: I): Boolean = value.isEmpty || value.init.forall(summonInline[Impl].test(_))
+
+      override inline def message: String = "For each element except head: (" + summonInline[Impl].message + ")"
+
+    inline given[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): InitIterable[A, I, C, Impl] =
+      new InitIterable
+
+    class InitString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, Init[C]]:
+
+      override inline def test(value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
+
+      override inline def message: String = "For each element except last: (" + summonInline[Impl].message + ")"
+
+    inline given initString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): InitString[C, Impl] = new InitString
+
+    private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+
+      import quotes.reflect.*
+
+      expr.value match
+        case Some(value) =>
+          value
+            .init
+            .map(Expr.apply)
+            .map(applyConstraint(_, constraintExpr))
+            .foldLeft(Expr(true))((e, t) => '{ $e && $t })
+
+        case None => '{ $expr.init.forall(c => ${ applyConstraint('c, constraintExpr) }) }
+
+    given[C1, C2](using C1 ==> C2): (Init[C1] ==> Exists[C2]) = Implication()
+
+    given[C1, C2](using C1 ==> C2): (Init[C1] ==> Head[C2]) = Implication()
+
+  object Tail:
+
+    class TailIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Tail[C]]:
+
+      override inline def test(value: I): Boolean = value.isEmpty || value.tail.forall(summonInline[Impl].test(_))
+
+      override inline def message: String = "For each element: (" + summonInline[Impl].message + ")"
+
+    inline given[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): TailIterable[A, I, C, Impl] =
+      new TailIterable
+
+    class TailString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, Tail[C]]:
+
+      override inline def test(value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
+
+      override inline def message: String = "For each element: (" + summonInline[Impl].message + ")"
+
+    inline given tailString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): TailString[C, Impl] = new TailString
+
+    private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+
+      import quotes.reflect.*
+
+      expr.value match
+        case Some(value) =>
+          value
+            .tail
+            .map(Expr.apply)
+            .map(applyConstraint(_, constraintExpr))
+            .foldLeft(Expr(true))((e, t) => '{ $e && $t })
+
+        case None => '{ $expr.tail.forall(c => ${ applyConstraint('c, constraintExpr) }) }
+
+    given[C1, C2](using C1 ==> C2): (Tail[C1] ==> Exists[C2]) = Implication()
+    given[C1, C2](using C1 ==> C2): (Tail[C1] ==> Last[C2]) = Implication()
 
   object Exists:
 

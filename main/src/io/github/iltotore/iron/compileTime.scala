@@ -152,9 +152,7 @@ object compileTime:
    */
   inline def stringValue[A]: String = constValue[ToString[A]]
 
-  def applyConstraint[A, C, Impl <: Constraint[A, C]](expr: Expr[A], constraintExpr: Expr[Impl])(using
-      Quotes
-  ): Expr[Boolean] = // Using quotes directly causes a "deferred inline error"
+  def applyConstraint[A, C, Impl <: Constraint[A, C]](expr: Expr[A], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] = // Using quotes directly causes a "deferred inline error"
 
     import quotes.reflect.*
 

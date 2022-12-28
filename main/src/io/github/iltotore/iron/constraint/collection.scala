@@ -2,6 +2,8 @@ package io.github.iltotore.iron.constraint
 
 import io.github.iltotore.iron.{:|, ==>, Constraint, Implication}
 import io.github.iltotore.iron.compileTime.*
+import io.github.iltotore.iron.constraint.any.DescribedAs
+import io.github.iltotore.iron.constraint.numeric.{GreaterEqual, LessEqual}
 
 import scala.compiletime.{constValue, summonInline}
 import scala.compiletime.ops.string.Length
@@ -15,18 +17,24 @@ import scala.quoted.*
 object collection:
 
   /**
+   * Tests if the length of the passed input satisfies the given constraint.
+   * @tparam C the constraint to test on the given input.
+   */
+  final class Length[C]
+
+  /**
    * Tests minimum length. Supports [[Iterable]] and [[String]] by default.
    *
    * @tparam V the minimum length of the tested input
    */
-  final class MinLength[V <: Int]
+  type MinLength[V <: Int] = Length[GreaterEqual[V]] DescribedAs "Should have a minimum length of " + V
 
   /**
    * Tests maximum length. Supports [[Iterable]] and [[String]] by default.
    *
    * @tparam V the maximum length of the tested input
    */
-  final class MaxLength[V <: Int]
+  type MaxLength[V <: Int] = Length[LessEqual[V]] DescribedAs "Should have a maximum length of" + V
 
   /**
    * Tests if the given collection contains a specific value.
@@ -73,41 +81,33 @@ object collection:
    */
   final class Last[C]
 
-  object MinLength:
-    inline given [V <: Int, I <: Iterable[?]]: Constraint[I, MinLength[V]] with
+  object Length:
 
-      override inline def test(value: I): Boolean = value.sizeCompare(constValue[V]) >= 0
+    class LengthIterable[I <: Iterable[?], C, Impl <: Constraint[Int, C]](using Impl) extends Constraint[I, Length[C]]:
 
-      override inline def message: String = "Should contain atleast " + stringValue[V] + " elements"
+      override inline def test(value: I): Boolean = summonInline[Impl].test(value.size)
 
-    inline given [V <: Int]: Constraint[String, MinLength[V]] with
+      override inline def message: String = "Length: (" + summonInline[Impl].message + ")"
 
-      override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }
+    inline given[I <: Iterable[?], C, Impl <: Constraint[Int, C]](using inline impl: Impl): LengthIterable[I, C, Impl] =
+      new LengthIterable
 
-      override inline def message: String = "Should have a min length of " + stringValue[V]
+    class LengthString[C, Impl <: Constraint[Int, C]](using Impl) extends Constraint[String, Length[C]]:
 
-    private def check(expr: Expr[String], lengthExpr: Expr[Int])(using Quotes): Expr[Boolean] =
-      (expr.value, lengthExpr.value) match
-        case (Some(value), Some(minLength)) => Expr(value.length >= minLength)
-        case _                              => '{ ${ expr }.length >= $lengthExpr }
+      override inline def test(value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
 
-  object MaxLength:
-    inline given [V <: Int, I <: Iterable[?]]: Constraint[I, MaxLength[V]] with
+      override inline def message: String = "Length: (" + summonInline[Impl].message + ")"
 
-      override inline def test(value: I): Boolean = value.sizeCompare(constValue[V]) <= 0
+    inline given lengthString[C, Impl <: Constraint[Int, C]](using inline impl: Impl): LengthString[C, Impl] = new LengthString
 
-      override inline def message: String = "Should contain at most " + stringValue[V] + " elements"
+    private def checkString[C, Impl <: Constraint[Int, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
 
-    inline given [V <: Int]: Constraint[String, MaxLength[V]] with
+      import quotes.reflect.*
 
-      override inline def test(value: String): Boolean = ${ checkMaxLength('value, '{ constValue[V] }) }
+      expr.value match
+        case Some(value) => applyConstraint(Expr(value.length), constraintExpr)
 
-      override inline def message: String = "Should have a max length of " + stringValue[V]
-
-    private def checkMaxLength(expr: Expr[String], lengthExpr: Expr[Int])(using Quotes): Expr[Boolean] =
-      (expr.value, lengthExpr.value) match
-        case (Some(value), Some(maxLength)) => Expr(value.length <= maxLength)
-        case _                              => '{ ${ expr }.length <= $lengthExpr }
+        case None => applyConstraint('{$expr.length}, constraintExpr)
 
   object Contain:
     inline given [A, V <: A, I <: Iterable[A]]: Constraint[I, Contain[V]] with

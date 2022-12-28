@@ -2,6 +2,7 @@ package io.github.iltotore.iron.testing
 
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.collection.*
+import io.github.iltotore.iron.constraint.numeric.*
 import utest.*
 
 object CollectionSuite extends TestSuite:
@@ -16,9 +17,21 @@ object CollectionSuite extends TestSuite:
 
   val tests: Tests = Tests {
 
+    test("length") {
+      test("iterable") {
+        test - List(1, 2, 3, 4).assertRefine[Length[Greater[3]]]
+        test - List(1, 2, 3).assertNotRefine[Length[Greater[3]]]
+      }
+      
+      test("string") {
+        test - "1234".assertRefine[Length[Greater[3]]]
+        test - "123".assertNotRefine[Length[Greater[3]]]
+      }
+    }
+
     test("minLength") {
-      test - List(1, 2, 3).assertNotRefine[MinLength[4]]
       test - List(1, 2, 3, 4).assertRefine[MinLength[4]]
+      test - List(1, 2, 3).assertNotRefine[MinLength[4]]
     }
 
     test("maxLength") {

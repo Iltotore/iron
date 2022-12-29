@@ -41,6 +41,18 @@ object StringSuite extends TestSuite:
       test - " ".assertNotRefine[Alphanumeric]
     }
 
+    test("startWith") {
+      test - "abc".assertRefine[StartWith["abc"]]
+      test - "abc123".assertRefine[StartWith["abc"]]
+      test - "ab".assertNotRefine[StartWith["abc"]]
+    }
+
+    test("endWith") {
+      test - "abc".assertRefine[EndWith["abc"]]
+      test - "123abc".assertRefine[EndWith["abc"]]
+      test - "ab".assertNotRefine[EndWith["abc"]]
+    }
+
     test("match") {
       test - "998".assertRefine[Match["[0-9]+"]]
       test - "abc".assertNotRefine[Match["[0-9]+"]]

@@ -65,7 +65,7 @@ object CollectionSuite extends TestSuite:
       }
     }
 
-    test("contains") {
+    test("contain") {
       test("iterable") {
         test - List(1, 2, 3).assertRefine[Contain[3]]
         test - List(1, 2, 4).assertNotRefine[Contain[3]]

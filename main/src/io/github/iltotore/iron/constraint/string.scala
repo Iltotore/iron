@@ -45,6 +45,19 @@ object string:
   type Alphanumeric = ForAll[Digit | Letter] DescribedAs "Should be alphanumeric"
 
   /**
+   * Tests if the input starts with the given prefix.
+   * @tparam V the string to compare with the start of the input.
+   */
+  final class StartWith[V <: String]
+
+  /**
+   * Tests if the input ends with the given suffix.
+   *
+   * @tparam V the string to compare with the end of the input.
+   */
+  final class EndWith[V <: String]
+
+  /**
    * Tests if the input matches the given regex.
    *
    * @tparam V the pattern to match against the input.
@@ -70,8 +83,35 @@ object string:
   object Blank:
 
     given (Empty ==> Blank) = Implication()
+    
+  object StartWith:
+    
+    inline given [V <: String]: Constraint[String, StartWith[V]] with
+
+      override inline def test(value: String): Boolean = ${check('value, '{constValue[V]})}
+
+      override inline def message: String = "Should start with " + stringValue[V]
+    
+    private def check(expr: Expr[String], prefixExpr: Expr[String])(using Quotes): Expr[Boolean] =
+      (expr.value, prefixExpr.value) match
+        case (Some(value), Some(prefix)) => Expr(value.startsWith(prefix))
+        case _ => '{$expr.startsWith($prefixExpr)}
+
+  object EndWith:
+
+    inline given[V <: String]: Constraint[String, EndWith[V]] with
+
+      override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }
+
+      override inline def message: String = "Should end with " + stringValue[V]
+
+    private def check(expr: Expr[String], prefixExpr: Expr[String])(using Quotes): Expr[Boolean] =
+      (expr.value, prefixExpr.value) match
+        case (Some(value), Some(prefix)) => Expr(value.endsWith(prefix))
+        case _ => '{ $expr.endsWith($prefixExpr) }
 
   object Match:
+    
     inline given [V <: String]: Constraint[String, Match[V]] with
 
       override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }

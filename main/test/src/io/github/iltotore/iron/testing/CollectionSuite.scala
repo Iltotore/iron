@@ -46,10 +46,22 @@ object CollectionSuite extends TestSuite:
         test - List(1, 2, 3).assertRefine[MaxLength[3]]
         test - List(1, 2, 3, 4).assertNotRefine[MaxLength[3]]
       }
-      
+
       test("string") {
         test - "abc".assertRefine[MaxLength[3]]
         test - "abcd".assertNotRefine[MaxLength[3]]
+      }
+    }
+
+    test("empty") {
+      test("iterable") {
+        test - Nil.assertRefine[Empty]
+        test - List(1, 2, 3).assertNotRefine[Empty]
+      }
+
+      test("string") {
+        test - "".assertRefine[Empty]
+        test - "abc".assertNotRefine[Empty]
       }
     }
 
@@ -58,7 +70,7 @@ object CollectionSuite extends TestSuite:
         test - List(1, 2, 3).assertRefine[Contain[3]]
         test - List(1, 2, 4).assertNotRefine[Contain[3]]
       }
-      
+
       test("string") {
         test - "abc".assertRefine[Contain["c"]]
         test - "abd".assertNotRefine[Contain["c"]]

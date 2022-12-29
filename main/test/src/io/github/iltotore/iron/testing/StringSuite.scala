@@ -7,7 +7,13 @@ import utest.*
 object StringSuite extends TestSuite:
 
   val tests: Tests = Tests {
-    
+
+    test("blank") {
+      test - "".assertRefine[Blank]
+      test - " \t\n\u000B\f\r\u001C\u001D\u001E\u001F".assertRefine[Blank]
+      test - "a".assertNotRefine[Blank]
+    }
+
     test("lowercase") {
       test - "abc 123 \n".assertRefine[LettersLowerCase]
       test - "ABC 123 \n".assertNotRefine[LettersLowerCase]
@@ -16,6 +22,15 @@ object StringSuite extends TestSuite:
     test("uppercase") {
       test - "abc 123 \n".assertNotRefine[LettersUpperCase]
       test - "ABC 123 \n".assertRefine[LettersUpperCase]
+    }
+
+    test("alphanumeric") {
+      test - "abc".assertRefine[Alphanumeric]
+      test - "123".assertRefine[Alphanumeric]
+      test - "abc123".assertRefine[Alphanumeric]
+      test - "".assertRefine[Alphanumeric]
+      test - "abc123_".assertNotRefine[Alphanumeric]
+      test - " ".assertNotRefine[Alphanumeric]
     }
 
     test("match") {

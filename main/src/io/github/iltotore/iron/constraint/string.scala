@@ -48,7 +48,7 @@ object string:
    *
    * @note it only checks if the input fits the URL pattern. Not if the given URL exists/is accessible.
    */
-  type URLLike =
+  type ValidURL =
     Match[
       "((\\w+:)+\\/\\/)?(([-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6})|(localhost))(:\\d{1,5})?(\\/|\\/([-a-zA-Z0-9@:%_\\+.~#?&//=]*))?"
     ] DescribedAs "Should be an URL"
@@ -56,7 +56,7 @@ object string:
   /**
    * Tests if the input is a valid UUID.
    */
-  type UUIDLike =
+  type ValidUUID =
     Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"] DescribedAs "Should be an UUID"
 
   object Match:

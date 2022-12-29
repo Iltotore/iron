@@ -40,21 +40,21 @@ object StringSuite extends TestSuite:
     }
 
     test("url") {
-      test - "localhost".assertRefine[URLLike]
-      test - "localhost:8080".assertRefine[URLLike]
-      test - "example.com".assertRefine[URLLike]
-      test - "example.com:8080".assertRefine[URLLike]
-      test - "http://example.com/".assertRefine[URLLike]
-      test - "https://example.com/".assertRefine[URLLike]
-      test - "file://example.com/".assertRefine[URLLike]
-      test - "mysql:jdbc://example.com/".assertRefine[URLLike]
-      test - "http://example.com/index.html".assertRefine[URLLike]
-      test - "http://example.com/#section".assertRefine[URLLike]
-      test - "http://example.com/?q=with%20space".assertRefine[URLLike]
-      test - "http://example.com/?q=with+space".assertRefine[URLLike]
-      test - "/example.com".assertNotRefine[URLLike]
-      test - "://example.com".assertNotRefine[URLLike]
-      test - "http:///".assertNotRefine[URLLike]
+      test - "localhost".assertRefine[ValidURL]
+      test - "localhost:8080".assertRefine[ValidURL]
+      test - "example.com".assertRefine[ValidURL]
+      test - "example.com:8080".assertRefine[ValidURL]
+      test - "http://example.com/".assertRefine[ValidURL]
+      test - "https://example.com/".assertRefine[ValidURL]
+      test - "file://example.com/".assertRefine[ValidURL]
+      test - "mysql:jdbc://example.com/".assertRefine[ValidURL]
+      test - "http://example.com/index.html".assertRefine[ValidURL]
+      test - "http://example.com/#section".assertRefine[ValidURL]
+      test - "http://example.com/?q=with%20space".assertRefine[ValidURL]
+      test - "http://example.com/?q=with+space".assertRefine[ValidURL]
+      test - "/example.com".assertNotRefine[ValidURL]
+      test - "://example.com".assertNotRefine[ValidURL]
+      test - "http:///".assertNotRefine[ValidURL]
     }
 
   }

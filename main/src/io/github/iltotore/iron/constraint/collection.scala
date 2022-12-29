@@ -2,7 +2,7 @@ package io.github.iltotore.iron.constraint
 
 import io.github.iltotore.iron.{:|, ==>, Constraint, Implication}
 import io.github.iltotore.iron.compileTime.*
-import io.github.iltotore.iron.constraint.any.DescribedAs
+import io.github.iltotore.iron.constraint.any.{DescribedAs, StrictEqual}
 import io.github.iltotore.iron.constraint.numeric.{GreaterEqual, LessEqual}
 
 import scala.compiletime.{constValue, summonInline}
@@ -35,6 +35,11 @@ object collection:
    * @tparam V the maximum length of the tested input
    */
   type MaxLength[V <: Int] = Length[LessEqual[V]] DescribedAs "Should have a maximum length of" + V
+
+  /**
+   * Tests if the input is empty.
+   */
+  type Empty = Length[StrictEqual[0]] DescribedAs "Should be empty"
 
   /**
    * Tests if the given collection contains a specific value.
@@ -108,6 +113,8 @@ object collection:
         case Some(value) => applyConstraint(Expr(value.length), constraintExpr)
 
         case None => applyConstraint('{$expr.length}, constraintExpr)
+        
+    given [C1, C2](using C1 ==> C2): (Length[C1] ==> Length[C2]) = Implication()
 
   object Contain:
     inline given [A, V <: A, I <: Iterable[A]]: Constraint[I, Contain[V]] with

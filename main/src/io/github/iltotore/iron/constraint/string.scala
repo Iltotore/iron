@@ -1,6 +1,6 @@
 package io.github.iltotore.iron.constraint
 
-import io.github.iltotore.iron.Constraint
+import io.github.iltotore.iron.{==>, Constraint, Implication}
 import io.github.iltotore.iron.constraint.any.*
 import io.github.iltotore.iron.constraint.collection.*
 import io.github.iltotore.iron.compileTime.*
@@ -18,8 +18,16 @@ object string:
 
   /**
    * Tests if the input only contains whitespaces.
+   * @see [[Whitespace]]
    */
   type Blank = ForAll[Whitespace] DescribedAs "Should only contain whitespaces"
+
+  /**
+   * Tests if the input does not have leading or trailing whitespaces.
+   * @see [[Whitespace]]
+   */
+  type Trimmed = (Empty | Not[Head[Whitespace] | Last[Whitespace]]) DescribedAs
+    "Should not have leading or trailing whitespaces"
 
   /**
    * Tests if all letters of the input are lower cased.
@@ -37,6 +45,19 @@ object string:
   type Alphanumeric = ForAll[Digit | Letter] DescribedAs "Should be alphanumeric"
 
   /**
+   * Tests if the input starts with the given prefix.
+   * @tparam V the string to compare with the start of the input.
+   */
+  final class StartWith[V <: String]
+
+  /**
+   * Tests if the input ends with the given suffix.
+   *
+   * @tparam V the string to compare with the end of the input.
+   */
+  final class EndWith[V <: String]
+
+  /**
    * Tests if the input matches the given regex.
    *
    * @tparam V the pattern to match against the input.
@@ -48,7 +69,7 @@ object string:
    *
    * @note it only checks if the input fits the URL pattern. Not if the given URL exists/is accessible.
    */
-  type URLLike =
+  type ValidURL =
     Match[
       "((\\w+:)+\\/\\/)?(([-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,6})|(localhost))(:\\d{1,5})?(\\/|\\/([-a-zA-Z0-9@:%_\\+.~#?&//=]*))?"
     ] DescribedAs "Should be an URL"
@@ -56,10 +77,41 @@ object string:
   /**
    * Tests if the input is a valid UUID.
    */
-  type UUIDLike =
+  type ValidUUID =
     Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"] DescribedAs "Should be an UUID"
 
+  object Blank:
+
+    given (Empty ==> Blank) = Implication()
+    
+  object StartWith:
+    
+    inline given [V <: String]: Constraint[String, StartWith[V]] with
+
+      override inline def test(value: String): Boolean = ${check('value, '{constValue[V]})}
+
+      override inline def message: String = "Should start with " + stringValue[V]
+    
+    private def check(expr: Expr[String], prefixExpr: Expr[String])(using Quotes): Expr[Boolean] =
+      (expr.value, prefixExpr.value) match
+        case (Some(value), Some(prefix)) => Expr(value.startsWith(prefix))
+        case _ => '{$expr.startsWith($prefixExpr)}
+
+  object EndWith:
+
+    inline given[V <: String]: Constraint[String, EndWith[V]] with
+
+      override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }
+
+      override inline def message: String = "Should end with " + stringValue[V]
+
+    private def check(expr: Expr[String], prefixExpr: Expr[String])(using Quotes): Expr[Boolean] =
+      (expr.value, prefixExpr.value) match
+        case (Some(value), Some(prefix)) => Expr(value.endsWith(prefix))
+        case _ => '{ $expr.endsWith($prefixExpr) }
+
   object Match:
+    
     inline given [V <: String]: Constraint[String, Match[V]] with
 
       override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }

@@ -8,19 +8,18 @@ object StringSuite extends TestSuite:
 
   val tests: Tests = Tests {
 
-    test("minLength") {
-      test - "abc".assertNotRefine[MinLength[4]]
-      test - "abcd".assertRefine[MinLength[4]]
+    test("blank") {
+      test - "".assertRefine[Blank]
+      test - " \t\n\u000B\f\r\u001C\u001D\u001E\u001F".assertRefine[Blank]
+      test - "a".assertNotRefine[Blank]
     }
 
-    test("maxLength") {
-      test - "abc".assertRefine[MaxLength[3]]
-      test - "abcd".assertNotRefine[MaxLength[3]]
-    }
-
-    test("contains") {
-      test - "abc".assertRefine[Contain["c"]]
-      test - "abd".assertNotRefine[Contain["c"]]
+    test("trimmed") {
+      test - "".assertRefine[Trimmed]
+      test - "abc".assertRefine[Trimmed]
+      test - " ".assertNotRefine[Trimmed]
+      test - " abc ".assertNotRefine[Trimmed]
+      test - "abc\n".assertNotRefine[Trimmed]
     }
 
     test("lowercase") {
@@ -33,6 +32,27 @@ object StringSuite extends TestSuite:
       test - "ABC 123 \n".assertRefine[LettersUpperCase]
     }
 
+    test("alphanumeric") {
+      test - "abc".assertRefine[Alphanumeric]
+      test - "123".assertRefine[Alphanumeric]
+      test - "abc123".assertRefine[Alphanumeric]
+      test - "".assertRefine[Alphanumeric]
+      test - "abc123_".assertNotRefine[Alphanumeric]
+      test - " ".assertNotRefine[Alphanumeric]
+    }
+
+    test("startWith") {
+      test - "abc".assertRefine[StartWith["abc"]]
+      test - "abc123".assertRefine[StartWith["abc"]]
+      test - "ab".assertNotRefine[StartWith["abc"]]
+    }
+
+    test("endWith") {
+      test - "abc".assertRefine[EndWith["abc"]]
+      test - "123abc".assertRefine[EndWith["abc"]]
+      test - "ab".assertNotRefine[EndWith["abc"]]
+    }
+
     test("match") {
       test - "998".assertRefine[Match["[0-9]+"]]
       test - "abc".assertNotRefine[Match["[0-9]+"]]
@@ -40,21 +60,21 @@ object StringSuite extends TestSuite:
     }
 
     test("url") {
-      test - "localhost".assertRefine[URLLike]
-      test - "localhost:8080".assertRefine[URLLike]
-      test - "example.com".assertRefine[URLLike]
-      test - "example.com:8080".assertRefine[URLLike]
-      test - "http://example.com/".assertRefine[URLLike]
-      test - "https://example.com/".assertRefine[URLLike]
-      test - "file://example.com/".assertRefine[URLLike]
-      test - "mysql:jdbc://example.com/".assertRefine[URLLike]
-      test - "http://example.com/index.html".assertRefine[URLLike]
-      test - "http://example.com/#section".assertRefine[URLLike]
-      test - "http://example.com/?q=with%20space".assertRefine[URLLike]
-      test - "http://example.com/?q=with+space".assertRefine[URLLike]
-      test - "/example.com".assertNotRefine[URLLike]
-      test - "://example.com".assertNotRefine[URLLike]
-      test - "http:///".assertNotRefine[URLLike]
+      test - "localhost".assertRefine[ValidURL]
+      test - "localhost:8080".assertRefine[ValidURL]
+      test - "example.com".assertRefine[ValidURL]
+      test - "example.com:8080".assertRefine[ValidURL]
+      test - "http://example.com/".assertRefine[ValidURL]
+      test - "https://example.com/".assertRefine[ValidURL]
+      test - "file://example.com/".assertRefine[ValidURL]
+      test - "mysql:jdbc://example.com/".assertRefine[ValidURL]
+      test - "http://example.com/index.html".assertRefine[ValidURL]
+      test - "http://example.com/#section".assertRefine[ValidURL]
+      test - "http://example.com/?q=with%20space".assertRefine[ValidURL]
+      test - "http://example.com/?q=with+space".assertRefine[ValidURL]
+      test - "/example.com".assertNotRefine[ValidURL]
+      test - "://example.com".assertNotRefine[ValidURL]
+      test - "http:///".assertNotRefine[ValidURL]
     }
 
   }

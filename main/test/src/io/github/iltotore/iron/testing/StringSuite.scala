@@ -7,22 +7,7 @@ import utest.*
 object StringSuite extends TestSuite:
 
   val tests: Tests = Tests {
-
-    test("minLength") {
-      test - "abc".assertNotRefine[MinLength[4]]
-      test - "abcd".assertRefine[MinLength[4]]
-    }
-
-    test("maxLength") {
-      test - "abc".assertRefine[MaxLength[3]]
-      test - "abcd".assertNotRefine[MaxLength[3]]
-    }
-
-    test("contains") {
-      test - "abc".assertRefine[Contain["c"]]
-      test - "abd".assertNotRefine[Contain["c"]]
-    }
-
+    
     test("lowercase") {
       test - "abc 123 \n".assertRefine[LettersLowerCase]
       test - "ABC 123 \n".assertNotRefine[LettersLowerCase]

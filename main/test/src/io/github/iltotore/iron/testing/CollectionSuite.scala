@@ -30,18 +30,39 @@ object CollectionSuite extends TestSuite:
     }
 
     test("minLength") {
-      test - List(1, 2, 3, 4).assertRefine[MinLength[4]]
-      test - List(1, 2, 3).assertNotRefine[MinLength[4]]
+      test("iterable") {
+        test - List(1, 2, 3, 4).assertRefine[MinLength[4]]
+        test - List(1, 2, 3).assertNotRefine[MinLength[4]]
+      }
+
+      test("string") {
+        test - "abc".assertNotRefine[MinLength[4]]
+        test - "abcd".assertRefine[MinLength[4]]
+      }
     }
 
     test("maxLength") {
-      test - List(1, 2, 3).assertRefine[MaxLength[3]]
-      test - List(1, 2, 3, 4).assertNotRefine[MaxLength[3]]
+      test("iterable") {
+        test - List(1, 2, 3).assertRefine[MaxLength[3]]
+        test - List(1, 2, 3, 4).assertNotRefine[MaxLength[3]]
+      }
+      
+      test("string") {
+        test - "abc".assertRefine[MaxLength[3]]
+        test - "abcd".assertNotRefine[MaxLength[3]]
+      }
     }
 
     test("contains") {
-      test - List(1, 2, 3).assertRefine[Contain[3]]
-      test - List(1, 2, 4).assertNotRefine[Contain[3]]
+      test("iterable") {
+        test - List(1, 2, 3).assertRefine[Contain[3]]
+        test - List(1, 2, 4).assertNotRefine[Contain[3]]
+      }
+      
+      test("string") {
+        test - "abc".assertRefine[Contain["c"]]
+        test - "abd".assertNotRefine[Contain["c"]]
+      }
     }
 
     test("forAll") {

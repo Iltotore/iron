@@ -30,6 +30,40 @@ object NumericSuite extends TestSuite:
       test - -1.assertRefine[LessEqual[0]]
     }
 
+    test("interval") {
+      test("open") {
+        test - 1.assertRefine[Interval.Open[0, 2]]
+        test - 0.assertNotRefine[Interval.Open[0, 2]]
+        test - 2.assertNotRefine[Interval.Open[0, 2]]
+        test - -1.assertNotRefine[Interval.Open[0, 2]]
+        test - 3.assertNotRefine[Interval.Open[0, 2]]
+      }
+
+      test("openClosed") {
+        test - 1.assertRefine[Interval.OpenClosed[0, 2]]
+        test - 2.assertRefine[Interval.OpenClosed[0, 2]]
+        test - 0.assertNotRefine[Interval.OpenClosed[0, 2]]
+        test - -1.assertNotRefine[Interval.OpenClosed[0, 2]]
+        test - 3.assertNotRefine[Interval.OpenClosed[0, 2]]
+      }
+
+      test("closedOpen") {
+        test - 1.assertRefine[Interval.ClosedOpen[0, 2]]
+        test - 0.assertRefine[Interval.ClosedOpen[0, 2]]
+        test - 2.assertNotRefine[Interval.ClosedOpen[0, 2]]
+        test - -1.assertNotRefine[Interval.ClosedOpen[0, 2]]
+        test - 3.assertNotRefine[Interval.ClosedOpen[0, 2]]
+      }
+
+      test("closed") {
+        test - 1.assertRefine[Interval.Closed[0, 2]]
+        test - 2.assertRefine[Interval.Closed[0, 2]]
+        test - 0.assertRefine[Interval.Closed[0, 2]]
+        test - -1.assertNotRefine[Interval.Closed[0, 2]]
+        test - 3.assertNotRefine[Interval.Closed[0, 2]]
+      }
+    }
+
     test("multiple") {
       test - 1.assertNotRefine[Multiple[2]]
       test - 2.assertRefine[Multiple[2]]

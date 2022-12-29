@@ -40,6 +40,40 @@ object numeric:
    */
   type LessEqual[V] = (Less[V] | StrictEqual[V]) DescribedAs ("Should be less than or equal to " + V)
 
+  object Interval:
+
+    /**
+     * Tests if the input is included in `(V1, V2)`
+     * 
+     * @tparam V1 the lower bound, exclusive.
+     * @tparam V2 the upper bound, exclusive.
+     */
+    type Open[V1, V2] = (Greater[V1] & Less[V2]) DescribedAs ("Should be included in (" + V1 + ", " + V2 + ")")
+
+    /**
+     * Tests if the input is included in `(V1, V2]`
+     *
+     * @tparam V1 the lower bound, exclusive.
+     * @tparam V2 the upper bound, inclusive.
+     */
+    type OpenClosed[V1, V2] = (Greater[V1] & LessEqual[V2]) DescribedAs ("Should be included in (" + V1 + ", " + V2 + "]")
+
+    /**
+     * Tests if the input is included in `[V1, V2)`
+     *
+     * @tparam V1 the lower bound, inclusive.
+     * @tparam V2 the upper bound, exclusive.
+     */
+    type ClosedOpen[V1, V2] = (GreaterEqual[V1] & Less[V2]) DescribedAs ("Should be included in [" + V1 + ", " + V2 + ")")
+
+    /**
+     * Tests if the input is included in `[V1, V2]`
+     *
+     * @tparam V1 the lower bound, inclusive.
+     * @tparam V2 the upper bound, inclusive.
+     */
+    type Closed[V1, V2] = (GreaterEqual[V1] & LessEqual[V2]) DescribedAs ("Should be included in [" + V1 + ", " + V2 + "]")
+
   /**
    * Tests if the input is a multiple of V.
    *

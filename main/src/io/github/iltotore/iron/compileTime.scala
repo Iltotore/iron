@@ -1,7 +1,9 @@
 package io.github.iltotore.iron
 
 import scala.compiletime.constValue
-import scala.compiletime.ops.*, any.ToString
+import scala.compiletime.ops.*
+import scala.compiletime.ops.any.ToString
+import scala.quoted.*
 
 /**
  * Methods and types to ease compile-time operations.
@@ -149,3 +151,9 @@ object compileTime:
    * @return the String representation of the given type. Equivalent to `constValue[ToString[A]]`.
    */
   inline def stringValue[A]: String = constValue[ToString[A]]
+
+  def applyConstraint[A, C, Impl <: Constraint[A, C]](expr: Expr[A], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] = // Using quotes directly causes a "deferred inline error"
+
+    import quotes.reflect.*
+
+    Apply(Select.unique(constraintExpr.asTerm, "test"), List(expr.asTerm)).asExprOf[Boolean]

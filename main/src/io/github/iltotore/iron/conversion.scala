@@ -43,7 +43,7 @@ implicit inline def autoCastIron[A, C1, C2](inline value: A :| C1)(using C1 ==> 
  * @return the given value as instance of `I[A] :| ForAll[C2]`.
  * @see [[autoDistribute]]
  */
-implicit inline def autoFactorize[A, I[_] <: Iterable[_], C1, C2](inline iterable: I[A :| C1])(using C1 ==> C2): I[A] :| ForAll[C2] =
+implicit inline def autoFactorize[A, I[_] <: Iterable[?], C1, C2](inline iterable: I[A :| C1])(using C1 ==> C2): I[A] :| ForAll[C2] =
   iterable.asInstanceOf
 
 /**
@@ -57,5 +57,5 @@ implicit inline def autoFactorize[A, I[_] <: Iterable[_], C1, C2](inline iterabl
  * @return the given value as instance of `I[A :| C2]`.
  * @see [[autoFactorize]]
  */
-implicit inline def autoDistribute[A, I[_] <: Iterable[_], C1, C2](inline iterable: I[A] :| ForAll[C1])(using C1 ==> C2): I[A :| C2] =
+implicit inline def autoDistribute[A, I[_] <: Iterable[?], C1, C2](inline iterable: I[A] :| ForAll[C1])(using C1 ==> C2): I[A :| C2] =
   iterable.asInstanceOf

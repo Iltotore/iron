@@ -14,6 +14,14 @@ object StringSuite extends TestSuite:
       test - "a".assertNotRefine[Blank]
     }
 
+    test("trimmed") {
+      test - "".assertRefine[Trimmed]
+      test - "abc".assertRefine[Trimmed]
+      test - " ".assertNotRefine[Trimmed]
+      test - " abc ".assertNotRefine[Trimmed]
+      test - "abc\n".assertNotRefine[Trimmed]
+    }
+
     test("lowercase") {
       test - "abc 123 \n".assertRefine[LettersLowerCase]
       test - "ABC 123 \n".assertNotRefine[LettersLowerCase]

@@ -1,6 +1,6 @@
 package io.github.iltotore.iron.constraint
 
-import io.github.iltotore.iron.Constraint
+import io.github.iltotore.iron.{==>, Constraint, Implication}
 import io.github.iltotore.iron.constraint.any.*
 import io.github.iltotore.iron.constraint.collection.*
 import io.github.iltotore.iron.compileTime.*
@@ -18,8 +18,16 @@ object string:
 
   /**
    * Tests if the input only contains whitespaces.
+   * @see [[Whitespace]]
    */
   type Blank = ForAll[Whitespace] DescribedAs "Should only contain whitespaces"
+
+  /**
+   * Tests if the input does not have leading or trailing whitespaces.
+   * @see [[Whitespace]]
+   */
+  type Trimmed = (Empty | Not[Head[Whitespace] | Last[Whitespace]]) DescribedAs
+    "Should not have leading or trailing whitespaces"
 
   /**
    * Tests if all letters of the input are lower cased.
@@ -58,6 +66,10 @@ object string:
    */
   type ValidUUID =
     Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"] DescribedAs "Should be an UUID"
+
+  object Blank:
+
+    given (Empty ==> Blank) = Implication()
 
   object Match:
     inline given [V <: String]: Constraint[String, Match[V]] with

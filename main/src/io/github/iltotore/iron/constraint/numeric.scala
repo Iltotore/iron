@@ -37,6 +37,16 @@ object numeric:
    */
   type LessEqual[V] = (Less[V] | StrictEqual[V]) DescribedAs ("Should be less than or equal to " + V)
 
+  /**
+   * Tests if the input is strictly positive.
+   */
+  type Positive = Greater[0] DescribedAs "Should be strictly positive"
+
+  /**
+   * Tests if the input is strictly negative.
+   */
+  type Negative = Less[0] DescribedAs "Should be strictly negative"
+
   object Interval:
 
     /**

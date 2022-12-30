@@ -97,6 +97,16 @@ object numeric:
    */
   final class Divide[V]
 
+  /**
+   * Tests if the input is even (a multiple of 2).
+   */
+  type Even = Multiple[2]
+
+  /**
+   * Tests if the input is odd (not a multiple of 2).
+   */
+  type Odd = Not[Even]
+
   object Greater:
     private trait GreaterConstraint[A, V <: NumConstant] extends Constraint[A, Greater[V]]:
       override inline def message: String = "Should be greater than " + stringValue[V]

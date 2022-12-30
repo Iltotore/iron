@@ -16,17 +16,6 @@ import scala.util.NotGiven
 export io.github.iltotore.iron.constraint.any.*
 
 /**
- * Union of all numerical primitives.
- * This abstraction facilitates the creation of numerical constraints.
- */
-type Number = Byte | Short | Int | Long | Float | Double
-
-/**
- * Union of all integer primitives. This abstraction facilitates the creation of numerical constraints.
- */
-type IntNumber = Byte | Short | Int | Long
-
-/**
  * An Iron type (refined).
  *
  * @tparam A the underlying type.

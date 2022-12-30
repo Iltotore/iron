@@ -10,6 +10,8 @@ import scala.quoted.*
  */
 object compileTime:
 
+  type NumConstant = Int | Long | Float | Double
+
   /**
    * The zero number of the given type.
    * @tparam A the numerical primitive type.
@@ -145,12 +147,31 @@ object compileTime:
   type %[A, B] = NumOp[A, B, int.%, long.%, float.%, double.%]
 
   /**
+   * Polymorphic `ToDouble`.
+   *
+   * @tparam A the constant type to cast.
+   */
+  type ToDouble[A <: NumConstant] <: Double = A match
+    case Int => int.ToDouble[A]
+    case Long => long.ToDouble[A]
+    case Float => float.ToDouble[A]
+    case Double => A & Double
+
+  /**
+   * Get the `Double` value of the given type.
+   *
+   * @tparam A the type to convert to `Double`.
+   * @return the String representation of the given type. Equivalent to `constValue[ToDouble[A]]`.
+   */
+  transparent inline def doubleValue[A <: NumConstant]: Double = constValue[ToDouble[A]]
+
+  /**
    * Get the `String` value of the given type.
    *
    * @tparam A the type to convert to `String`.
    * @return the String representation of the given type. Equivalent to `constValue[ToString[A]]`.
    */
-  inline def stringValue[A]: String = constValue[ToString[A]]
+  transparent inline def stringValue[A]: String = constValue[ToString[A]]
 
   def applyConstraint[A, C, Impl <: Constraint[A, C]](expr: Expr[A], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] = // Using quotes directly causes a "deferred inline error"
 

@@ -107,6 +107,16 @@ object numeric:
    */
   type Odd = Not[Even]
 
+  /**
+   * Tests if the input is not a representable number.
+   */
+  final class NaN
+
+  /**
+   * Tests if the input is whether `+infinity` or `-infinity`.
+   */
+  final class Infinity
+
   object Greater:
     private trait GreaterConstraint[A, V <: NumConstant] extends Constraint[A, Greater[V]]:
       override inline def message: String = "Should be greater than " + stringValue[V]
@@ -192,3 +202,23 @@ object numeric:
 
     inline given [V <: NumConstant]: DivideConstraint[Double, V] with
       override inline def test(value: Double): Boolean = doubleValue[V] % value == 0
+
+  object NaN:
+    private trait NaNConstraint[A] extends Constraint[A, NaN]:
+      override inline def message: String = "Should be an unrepresentable number"
+
+    inline given NaNConstraint[Float] with
+      override inline def test(value: Float): Boolean = value.isNaN
+
+    inline given NaNConstraint[Double] with
+      override inline def test(value: Double): Boolean = value.isNaN
+
+  object Infinity:
+    private trait InfinityConstraint[A] extends Constraint[A, Infinity]:
+      override inline def message: String = "Should be -infinity or +infinity"
+
+    inline given InfinityConstraint[Float] with
+      override inline def test(value: Float): Boolean = value.isInfinity
+
+    inline given InfinityConstraint[Double] with
+      override inline def test(value: Double): Boolean = value.isInfinity

@@ -74,4 +74,20 @@ object NumericSuite extends TestSuite:
       test - 2.assertRefine[Divide[2]]
       test - 3.assertNotRefine[Divide[2]]
     }
+
+    test("nan") {
+      test - Float.NaN.assertRefine[NaN]
+      test - Double.NaN.assertRefine[NaN]
+      test - 0f.assertNotRefine[NaN]
+      test - 0d.assertNotRefine[NaN]
+    }
+
+    test("infinity") {
+      test - Float.PositiveInfinity.assertRefine[Infinity]
+      test - Float.NegativeInfinity.assertRefine[Infinity]
+      test - Double.PositiveInfinity.assertRefine[Infinity]
+      test - Double.NegativeInfinity.assertRefine[Infinity]
+      test - 0f.assertNotRefine[Infinity]
+      test - 0d.assertNotRefine[Infinity]
+    }
   }

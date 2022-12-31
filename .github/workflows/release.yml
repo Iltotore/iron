@@ -1,7 +1,8 @@
 name: Release
 on:
-  release:
-    branches: [dev/v2.0]
+  push:
+    tags:
+      - *
 jobs:
   publish:
     runs-on: ubuntu-latest

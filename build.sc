@@ -73,7 +73,7 @@ object docs extends ScalaModule {
 
   def scalaVersion = versions.scala
 
-  val modules: Seq[ScalaModule] = Seq(main, cats, circe)
+  val modules: Seq[ScalaModule] = Seq(main, cats, circe, jsoniter, zio, zioJson)
 
   def docSources = T.sources {
     T.traverse(modules)(_.docSources)().flatten
@@ -211,6 +211,20 @@ object circe extends SubModule {
 
   def ivyDeps = Agg(
     ivy"io.circe::circe-core::0.14.3"
+  )
+
+  object js extends JSCrossModule
+
+  object native extends NativeCrossModule
+}
+
+object zio extends SubModule {
+
+  def artifactName = "iron-zio"
+
+  def ivyDeps = Agg(
+    ivy"dev.zio::zio:2.0.5",
+    ivy"dev.zio::zio-prelude:1.0.0-RC16"
   )
 
   object js extends JSCrossModule

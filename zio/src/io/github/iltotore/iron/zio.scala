@@ -3,7 +3,7 @@ package io.github.iltotore.iron
 import _root_.zio.NonEmptyChunk
 import _root_.zio.prelude.{Debug, Equal, Hash, Ord, PartialOrd, Validation}
 
-object zio extends IronZIOInstances:
+object zio:
 
   extension [A](value: A)
 
@@ -16,14 +16,3 @@ object zio extends IronZIOInstances:
     inline def refineValidation[C](using inline constraint: Constraint[A, C]): Validation[String, A :| C] =
       Validation.fromPredicateWith(constraint.message)(value.asInstanceOf[A :| C])(constraint.test(_))
 
-trait IronZIOInstances extends IronZIOLowPriority:
-
-  inline given [A, C](using ev: Debug[A]): Debug[A :| C] = ev.asInstanceOf[Debug[A :| C]]
-  inline given [A, C](using ev: Equal[A]): Equal[A :| C] = ev.asInstanceOf[Equal[A :| C]]
-  inline given [A, C](using ev: PartialOrd[A]): PartialOrd[A :| C] = ev.asInstanceOf[PartialOrd[A :| C]]
-  inline given [A, C](using ev: Ord[A]): Ord[A :| C] = ev.asInstanceOf[Ord[A :| C]]
-
-
-trait IronZIOLowPriority:
-
-  inline given [A, C](using ev: Hash[A]): Hash[A :| C] = ev.asInstanceOf[Hash[A :| C]]

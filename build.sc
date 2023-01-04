@@ -223,13 +223,12 @@ object zio extends SubModule {
   def artifactName = "iron-zio"
 
   def ivyDeps = Agg(
-    ivy"dev.zio::zio:2.0.5",
-    ivy"dev.zio::zio-prelude:1.0.0-RC16"
+    ivy"dev.zio::zio::2.0.5",
+    ivy"dev.zio::zio-prelude::1.0.0-RC16"
   )
 
   object js extends JSCrossModule
 
-  object native extends NativeCrossModule
 }
 
 object zioJson extends SubModule {

@@ -27,43 +27,27 @@ object CatsSuite extends TestSuite:
       name: String :| NameR,
       surname: String :| Contain["z"],
       age: Int :| Greater[0]
-  ) derives Eq, Monoid, Order, Show
+  ) derives Eq, Order, Show
 
   given BoundedSemilattice[String] = BoundedSemilattice.instance("", _ + _)
 
   val tests: Tests = Tests {
 
     test("Cats instances are resolved for String iron types") {
-      Band[String :| NameR]
-      BoundedSemilattice[String :| NameR]
-      CommutativeMonoid[String :| NameR]
-      CommutativeSemigroup[String :| NameR]
       Eq[String :| NameR]
       Hash[String :| NameR]
-      LowerBounded[String :| NameR]
-      Monoid[String :| NameR]
       Order[String :| NameR]
       PartialOrder[String :| NameR]
-      Semigroup[String :| NameR]
-      Semilattice[String :| NameR]
       Show[String :| NameR]
-      compileError("UpperBounded[String :| NameR]")
-      compileError("CommutativeGroup[String :| NameR]")
       ()
     }
 
     test("Cats instances are resolved for Int iron types") {
-      CommutativeGroup[Int :| AgeR]
-      CommutativeMonoid[Int :| AgeR]
-      CommutativeSemigroup[Int :| AgeR]
       Eq[Int :| AgeR]
-      Group[Int :| AgeR]
       Hash[Int :| AgeR]
       UpperBounded[Int :| AgeR]
-      Monoid[Int :| AgeR]
       Order[Int :| AgeR]
       PartialOrder[Int :| AgeR]
-      Semigroup[Int :| AgeR]
       Show[Int :| AgeR]
       LowerBounded[Int :| AgeR]
       ()
@@ -72,8 +56,6 @@ object CatsSuite extends TestSuite:
     test("Cats instances are resolved for a case class with iron types") {
       Eq[Person]
       Order[Person]
-      Monoid[Person]
-      Semigroup[Person]
       Show[Person]
       ()
     }

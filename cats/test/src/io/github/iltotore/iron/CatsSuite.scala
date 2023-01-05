@@ -50,13 +50,11 @@ object CatsSuite extends TestSuite:
       PartialOrder[Int :| AgeR]
       Show[Int :| AgeR]
       LowerBounded[Int :| AgeR]
-      ()
     }
 
     test("Cats instances are resolved for a case class with iron types") {
       Eq[Person]
       Order[Person]
       Show[Person]
-      ()
     }
   }

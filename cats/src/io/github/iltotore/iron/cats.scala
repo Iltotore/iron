@@ -69,10 +69,15 @@ object cats extends IronCatsInstances:
  */
 private trait IronCatsInstances extends IronCatsLowPriority, IronCatsAlleyInstances:
   inline given [A, C](using inline ev: Eq[A]): Eq[A :| C] = ev.asInstanceOf[Eq[A :| C]]
+
   inline given [A, C](using inline ev: Order[A]): Order[A :| C] = ev.asInstanceOf[Order[A :| C]]
+
   inline given [A, C](using inline ev: PartialOrder[A]): PartialOrder[A :| C] = ev.asInstanceOf[PartialOrder[A :| C]]
+
   inline given [A, C](using inline ev: Show[A]): Show[A :| C] = ev.asInstanceOf[Show[A :| C]]
+
   inline given [A, C, V](using inline ev: LowerBounded[A], implication: C ==> Greater[V]): LowerBounded[A :| C] = ev.asInstanceOf[LowerBounded[A :| C]]
+
   inline given [A, C, V](using inline ev: UpperBounded[A], implication: C ==> Greater[V]): UpperBounded[A :| C] = ev.asInstanceOf[UpperBounded[A :| C]]
 
 /**
@@ -109,6 +114,9 @@ private trait IronCatsAlleyInstances:
       override def combine(a: A :| C, b: A :| C): A :| C = shift.shift(ev.combine(a, b)).asInstanceOf[A :| C]
 
   inline given negIntCommutativeMonoid[C](using C ==> Negative): CommutativeMonoid[Int :| C] = negMonoid
+
   inline given negLongCommutativeMonoid[C](using C ==> Negative): CommutativeMonoid[Long :| C] = negMonoid
+
   inline given negFloatCommutativeMonoid[C](using C ==> Negative): CommutativeMonoid[Float :| C] = negMonoid
+
   inline given negDoubleCommutativeMonoid[C](using C ==> Negative): CommutativeMonoid[Double :| C] = negMonoid

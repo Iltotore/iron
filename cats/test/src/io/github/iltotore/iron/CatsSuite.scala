@@ -5,7 +5,6 @@ import _root_.cats.kernel.*
 import _root_.cats.derived.*
 import _root_.cats.instances.all.*
 
-import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.given
 import io.github.iltotore.iron.constraint.all.*
 
@@ -56,5 +55,29 @@ object CatsSuite extends TestSuite:
       Eq[Person]
       Order[Person]
       Show[Person]
+    }
+
+    test("alley") {
+      test("commutativeMonoid") {
+        test("int") {
+          test("pos") - assert(CommutativeMonoid[Int :| Positive].combine(1, 5) == 6)
+          test("neg") - assert(CommutativeMonoid[Int :| Negative].combine(-1, -5) == -6)
+        }
+
+        test("long") {
+          test("pos") - assert(CommutativeMonoid[Long :| Positive].combine(1, 5) == 6)
+          test("neg") - assert(CommutativeMonoid[Long :| Negative].combine(-1, -5) == -6)
+        }
+
+        test("float") {
+          test("pos") - assert(CommutativeMonoid[Float :| Positive].combine(1, 5) == 6)
+          test("neg") - assert(CommutativeMonoid[Float :| Negative].combine(-1, -5) == -6)
+        }
+
+        test("double") {
+          test("pos") - assert(CommutativeMonoid[Double :| Positive].combine(1, 5) == 6)
+          test("neg") - assert(CommutativeMonoid[Double :| Negative].combine(-1, -5) == -6)
+        }
+      }
     }
   }

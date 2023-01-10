@@ -67,7 +67,7 @@ object cats extends IronCatsInstances:
 /**
  * Represent all Cats' typeclass instances for Iron.
  */
-private trait IronCatsInstances extends IronCatsLowPriority, IronCatsAlleyInstances:
+private trait IronCatsInstances extends IronCatsLowPriority:
   inline given [A, C](using inline ev: Eq[A]): Eq[A :| C] = ev.asInstanceOf[Eq[A :| C]]
 
   inline given [A, C](using inline ev: Order[A]): Order[A :| C] = ev.asInstanceOf[Order[A :| C]]
@@ -79,17 +79,6 @@ private trait IronCatsInstances extends IronCatsLowPriority, IronCatsAlleyInstan
   inline given [A, C, V](using inline ev: LowerBounded[A], implication: C ==> Greater[V]): LowerBounded[A :| C] = ev.asInstanceOf[LowerBounded[A :| C]]
 
   inline given [A, C, V](using inline ev: UpperBounded[A], implication: C ==> Greater[V]): UpperBounded[A :| C] = ev.asInstanceOf[UpperBounded[A :| C]]
-
-/**
- * Cats' instances for Iron that need to have a lower priority to avoid ambiguous implicits.
- */
-private trait IronCatsLowPriority:
-  inline given [A, C](using inline ev: Hash[A]): Hash[A :| C] = ev.asInstanceOf[Hash[A :| C]]
-
-/**
- * Arbitrary yet useful instances for some refined types.
- */
-private trait IronCatsAlleyInstances:
 
   private def posMonoid[A, C](using ev: CommutativeMonoid[A], shift: PosShift[A], implication: C ==> Positive): CommutativeMonoid[A :| C] =
     new CommutativeMonoid[A :| C]:
@@ -120,3 +109,9 @@ private trait IronCatsAlleyInstances:
   inline given negFloatCommutativeMonoid[C](using C ==> Negative): CommutativeMonoid[Float :| C] = negMonoid
 
   inline given negDoubleCommutativeMonoid[C](using C ==> Negative): CommutativeMonoid[Double :| C] = negMonoid
+
+/**
+ * Cats' instances for Iron that need to have a lower priority to avoid ambiguous implicits.
+ */
+private trait IronCatsLowPriority:
+  inline given [A, C](using inline ev: Hash[A]): Hash[A :| C] = ev.asInstanceOf[Hash[A :| C]]

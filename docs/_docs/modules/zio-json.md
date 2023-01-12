@@ -25,13 +25,13 @@ ivy"io.github.iltotore::iron-zio-json:version"
 Given Encoder/Decoder for Iron enables using refined types for JSON serialization/deserialization:
 
 ```scala
+import zio.json.*
+
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 import io.github.iltotore.iron.zioJson.given
 
-import zio.json.*
-
-case class User(name: String :| Alphanumeric, age: Int :| Greater[0])
+case class User(name: String :| Alphanumeric, age: Int :| Positive)
 
 given JsonCodec[User] = DeriveJsonCodec.gen
 

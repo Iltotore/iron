@@ -25,16 +25,16 @@ ivy"io.github.iltotore::iron-circe:version"
 Given Encoder/Decoder for Iron enables using refined types with any Circe feature including automatic derivation:
 
 ```scala
+import io.circe.*
+import io.circe.parser.*
+
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 import io.github.iltotore.iron.circe.given
 
-import io.circe.*
-import io.circe.parser.*
-
 type Username = Alphanumeric DescribedAs "Username should be alphanumeric"
 
-type Age = Greater[0] DescribedAs "Age should be positive"
+type Age = Positive DescribedAs "Age should be positive"
 
 case class User(name: String :| Username, age: Int :| Age)
 

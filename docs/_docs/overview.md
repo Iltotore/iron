@@ -42,7 +42,7 @@ Refined types solve both problems by ensuring that constraints are checked compi
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.*
 
-case class User(age: Int :| Greater[0])
+case class User(age: Int :| Positive)
 
 User(1) //Compiles
 User("1") //Does not compile

@@ -32,9 +32,16 @@ The [User example](../reference/refinement.md) now looks like this:
 
 
 ```scala
+import zio.prelude.Validation
+
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
+import io.github.iltotore.iron.zio.*
+
+
 type Username = Alphanumeric DescribedAs "Username should be alphanumeric"
 
-type Age = Greater[0] DescribedAs "Age should be positive"
+type Age = Positive DescribedAs "Age should be positive"
 
 case class User(name: String :| Username, age: Int :| Age)
 

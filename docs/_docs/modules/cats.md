@@ -31,11 +31,12 @@ The [User example](../reference/refinement.md) now looks like this:
 ```scala
 import cats.data.EitherNec
 import cats.syntax.all.*
+
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.*
 import io.github.iltotore.iron.constraint.all.*
 
-case class User(name: String :| Alphanumeric, age: Int :| Greater[0])
+case class User(name: String :| Alphanumeric, age: Int :| Positive)
 
 def createUserAcc(name: String, age: Int): EitherNec[String, User] =
 (
@@ -53,7 +54,7 @@ Or with custom messages:
 ```scala
 type Username = Alphanumeric DescribedAs "Username should be alphanumeric"
 
-type Age = Greater[0] DescribedAs "Age should be positive"
+type Age = Positive DescribedAs "Age should be positive"
 
 case class User(name: String :| Username, age: Int :| Age)
 

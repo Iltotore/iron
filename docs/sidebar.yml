@@ -18,5 +18,6 @@ subsection:
     subsection:
       - page: modules/cats.md
       - page: modules/circe.md
+      - page: modules/jsoniter.md
       - page: modules/zio.md
       - page: modules/zio-json.md

@@ -60,6 +60,7 @@ ivy"io.github.iltotore::iron:version"
 | iron          | ✔️  | ✔️  | ✔️     |
 | iron-cats     | ✔️  | ✔️  | ✔️     |
 | iron-circe    | ✔️  | ✔️  | ✔️     |
+| iron-jsoniter | ✔️  | ✔️  | ✔️     | 
 | iron-zio      | ✔️  | ✔️  | ❌      |
 | iron-zio-json | ✔️  | ✔️  | ❌      |
 

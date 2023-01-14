@@ -34,7 +34,7 @@ object collection:
    *
    * @tparam V the maximum length of the tested input
    */
-  type MaxLength[V <: Int] = Length[LessEqual[V]] DescribedAs "Should have a maximum length of" + V
+  type MaxLength[V <: Int] = Length[LessEqual[V]] DescribedAs "Should have a maximum length of " + V
 
   /**
    * Tests if the input is empty.

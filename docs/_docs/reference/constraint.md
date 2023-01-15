@@ -88,8 +88,8 @@ given PositiveConstraint[Double] with
 This constraint can now be used like any other:
 
 ```scala
-var x: Int :| Positive = 1
-x = 0 //Compile-time error: Should be strictly positive
+val x: Int :| Positive = 1
+val y: Int :| Positive = -1 //Compile-time error: Should be strictly positive
 ```
 
 ## Constraint parameters
@@ -120,6 +120,6 @@ This method is equivalent to `constValue[scala.compiletime.ops.any.ToString[V]]`
 Now testing the constraint:
 
 ```scala
-var x: Int :| Greater[5] = 6
-x = 3 //Compile-time error: Should be greater than 5
+val x: Int :| Greater[5] = 6
+val y: Int :| Greater[5] = 3 //Compile-time error: Should be greater than 5
 ```

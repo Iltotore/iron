@@ -9,6 +9,41 @@ instance of [[Constraint|io.github.iltotore.iron.Constraint]].
 
 See [Refinement](refinement.md) for usage.
 
+## Operations
+
+Usually, you can make your constraint out of existing ones. Iron provides several operators to help you to compose them. 
+
+### Union and intersection
+
+Type union `C1 | C2` and intersection `C1 & C2` respectively act as a boolean OR/AND in Iron. For example, [[GreaterEqual|io.github.iltotore.iron.constraint.numeric.GreaterEqual]] is just a union of [[Greater|io.github.iltotore.iron.constraint.numeric.Greater]] and [[StrictEqual|io.github.iltotore.iron.constraint.numeric.StrictEqual]]:
+
+```scala
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.{Greater, StrictEqual}
+
+type GreaterEqual[V] = Greater[V] | StrictEqual[V]
+
+val x: Int :| GreaterEqual[0] = 1 //OK
+val y: Int :| GreaterEqual[0] = 1 //OK
+val z: Int :| GreaterEqual[0] = -1 //Compile-time error: (Should be greater than 0 | Should strictly equal to 0)
+```
+
+Same goes for intersection:
+
+```scala
+type Between[Min, Max] = GreaterEqual[Min] & LessEqual[Max]
+```
+
+### Other operations
+
+Most constraint operators provided by Iron are "normal" constraints taking another constraint as parameter.
+
+Here is a list of the most used operators:
+- [[Not\[C\]|io.github.iltotore.iron.constraint.any.Not]]: like a boolean "not". Negate the result of the `C` constraint.
+- [[DescribedAs\[C, V\]|io.github.iltotore.iron.constraint.any.DescribedAs]]: attach a custom description `V` to `C`.
+- [[ForAll\[C\]|io.github.iltotore.iron.constraint.collection.ForAll]]: check if the `C` constraint passes for all elements of a collection/String
+- [[Exists\[C\]|io.github.iltotore.iron.constraint.collection.Exists]]: check if the `C` constraint passes for at least one element of a collection/String
+
 ## Dummy type
 
 Usually, the dummy type is represented by a final class. Note that this class (or whatever entity you choose as a dummy)
@@ -53,8 +88,8 @@ given PositiveConstraint[Double] with
 This constraint can now be used like any other:
 
 ```scala
-var x: Int :| Positive = 1
-x = 0 //Compile-time error: Should be strictly positive
+val x: Int :| Positive = 1
+val y: Int :| Positive = -1 //Compile-time error: Should be strictly positive
 ```
 
 ## Constraint parameters
@@ -85,26 +120,6 @@ This method is equivalent to `constValue[scala.compiletime.ops.any.ToString[V]]`
 Now testing the constraint:
 
 ```scala
-var x: Int :| Greater[5] = 6
-x = 3 //Compile-time error: Should be greater than 5
-```
-
-## Constraint aliases
-
-In some cases, you can make your constraint out of existing ones.
-For example, a "greater or equal" constraint is just the `Greater` union `StrictEqual`.
-
-Like "classic" types, constraints can be aliased: 
-
-```scala
-type GreaterEqual[V] = Greater[V] | StrictEqual[V]
-```
-
-you can use the `DescribedAs` constraint enables attaching a custom description to our alias:
-
-```scala
-//Allows to concatenate string types.
-import io.github.iltotore.iron.compileTime.+
-
-type GreaterEqual[V] = (Greater[V] | StrictEqual[V]) DescribedAs ("Should be greater or equal to " + V)
+val x: Int :| Greater[5] = 6
+val y: Int :| Greater[5] = 3 //Compile-time error: Should be greater than 5
 ```

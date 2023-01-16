@@ -1,4 +1,4 @@
-![logo](/logo.png?raw=true)
+![logo](https://github.com/Iltotore/iron/tree/main/logo.png?raw=true)
 
 [![Scala version support](https://index.scala-lang.org/iltotore/iron/iron/latest-by-scala-version.svg)](https://index.scala-lang.org/iltotore/iron/iron)
 [![CI](https://github.com/Iltotore/iron/actions/workflows/ci.yml/badge.svg)](https://github.com/Iltotore/iron/actions/workflows/ci.yml)

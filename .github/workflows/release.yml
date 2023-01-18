@@ -14,7 +14,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - run: chmod u+rx millw && ./millw -i io.kipp.mill.ci.release.ReleaseModule/publishAll
+      - run: ./millw -i io.kipp.mill.ci.release.ReleaseModule/publishAll
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}

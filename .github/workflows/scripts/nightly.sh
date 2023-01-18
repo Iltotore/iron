@@ -15,7 +15,7 @@ new_commits=$(git log --since "$yesterday")
 if [ "$new_commits" ]
 then
   echo "New changes!"
-  chmod u+rx millw && ./millw -i io.kipp.mill.ci.release.ReleaseModule/publishAll
+  ./millw -i io.kipp.mill.ci.release.ReleaseModule/publishAll
 else
   echo "No changes"
 fi

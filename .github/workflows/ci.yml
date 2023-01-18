@@ -28,7 +28,7 @@ jobs:
           java-version: '17'
           
       - name: Build project
-        run: chmod u+rx millw && ./millw -i __.compile
+        run: ./millw -i __.compile
 
       - name: Test project
         run: ./millw -i __.test

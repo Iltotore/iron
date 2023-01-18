@@ -13,7 +13,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - run: chmod u+x .github/workflows/scripts/nightly.sh && .github/workflows/scripts/nightly.sh
+      - run: .github/workflows/scripts/nightly.sh
         env:
           PGP_PASSPHRASE: ${{ secrets.PGP_PASSPHRASE }}
           PGP_SECRET: ${{ secrets.PGP_SECRET }}

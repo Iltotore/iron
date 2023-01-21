@@ -64,6 +64,14 @@ ivy"io.github.iltotore::iron:version"
 | iron-zio      | ✔️  | ✔️  | ❌      |
 | iron-zio-json | ✔️  | ✔️  | ❌      |
 
+## Adopters
+
+Here is a non-exhaustive list of projects using Iron.
+
+[Submit a PR](https://github.com/Iltotore/iron/pulls?q=is%3Apr+is%3Aopen+sort%3Aupdated-desc) to add your project or company to the list.
+
+- [gvolpe/trading](https://github.com/gvolpe/trading/) ([book](https://leanpub.com/feda))
+
 ## Useful links
 
 - [Website](https://iltotore.github.io/iron/docs/index.html)

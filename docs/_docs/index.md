@@ -14,8 +14,8 @@ This website contains documentation and tutorial to take Iron in hand.
 
 ## Examples
 
-- [Cats Form](https://github.com/Iltotore/iron/tree/dev/v2.0/examples/formCats)
-- [ZIO Form](https://github.com/Iltotore/iron/tree/dev/v2.0/examples/formZio)
+- [Cats Form](https://github.com/Iltotore/iron/tree/main/examples/formCats)
+- [ZIO Form](https://github.com/Iltotore/iron/tree/main/examples/formZio)
 
 ## Useful links
 

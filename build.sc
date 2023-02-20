@@ -268,3 +268,16 @@ object jsoniter extends SubModule {
     def compileIvyDeps = Agg(jsoniterMacros)
   }
 }
+
+object scalacheck extends SubModule {
+
+  def artifactName = "iron-scalacheck"
+
+  def ivyDeps = Agg(
+    ivy"org.scalacheck::scalacheck:1.17.0"
+  )
+
+  object js extends JSCrossModule
+
+  object native extends NativeCrossModule
+}

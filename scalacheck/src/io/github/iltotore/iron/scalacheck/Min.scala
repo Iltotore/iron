@@ -8,7 +8,7 @@ object Min:
 
   def apply[A](x: A): Min[A] = new Min[A]:
 
-    def value: A = x
+    override def value: A = x
 
   given Min[Int] = Min(Int.MinValue)
   given Min[Long] = Min(Long.MinValue)

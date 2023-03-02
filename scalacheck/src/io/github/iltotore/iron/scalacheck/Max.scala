@@ -8,7 +8,7 @@ object Max:
 
   def apply[A](x: A): Max[A] = new Max[A]:
 
-    def value: A = x
+    override def value: A = x
 
   given Max[Int] = Max(Int.MaxValue)
   given Max[Long] = Max(Long.MaxValue)

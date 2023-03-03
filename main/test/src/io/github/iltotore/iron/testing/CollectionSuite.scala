@@ -22,7 +22,7 @@ object CollectionSuite extends TestSuite:
         test - List(1, 2, 3, 4).assertRefine[Length[Greater[3]]]
         test - List(1, 2, 3).assertNotRefine[Length[Greater[3]]]
       }
-      
+
       test("string") {
         test - "1234".assertRefine[Length[Greater[3]]]
         test - "123".assertNotRefine[Length[Greater[3]]]
@@ -62,6 +62,20 @@ object CollectionSuite extends TestSuite:
       test("string") {
         test - "".assertRefine[Empty]
         test - "abc".assertNotRefine[Empty]
+      }
+    }
+
+    test("fixedLength") {
+      test("iterable") {
+        test - List(1, 2, 3).assertRefine[FixedLength[3]]
+        test - List(1, 2).assertNotRefine[FixedLength[3]]
+        test - List(1, 2, 3, 4).assertNotRefine[FixedLength[3]]
+      }
+
+      test("string") {
+        test - "abc".assertRefine[FixedLength[3]]
+        test - "ab".assertNotRefine[FixedLength[3]]
+        test - "abcd".assertNotRefine[FixedLength[3]]
       }
     }
 

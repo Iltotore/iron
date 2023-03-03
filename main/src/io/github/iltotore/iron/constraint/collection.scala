@@ -42,6 +42,11 @@ object collection:
   type Empty = Length[StrictEqual[0]] DescribedAs "Should be empty"
 
   /**
+   * Tests exact length. Supports [[Iterable]] and [[String]] by default.
+   */
+  type FixedLength[V <: Int] = Length[StrictEqual[V]] DescribedAs "Should have an exact length of" + V
+
+  /**
    * Tests if the given collection contains a specific value.
    *
    * @tparam V the value the input must contain.
@@ -94,7 +99,7 @@ object collection:
 
       override inline def message: String = "Length: (" + summonInline[Impl].message + ")"
 
-    inline given[I <: Iterable[?], C, Impl <: Constraint[Int, C]](using inline impl: Impl): LengthIterable[I, C, Impl] =
+    inline given [I <: Iterable[?], C, Impl <: Constraint[Int, C]](using inline impl: Impl): LengthIterable[I, C, Impl] =
       new LengthIterable
 
     class LengthString[C, Impl <: Constraint[Int, C]](using Impl) extends Constraint[String, Length[C]]:
@@ -112,8 +117,8 @@ object collection:
       expr.value match
         case Some(value) => applyConstraint(Expr(value.length), constraintExpr)
 
-        case None => applyConstraint('{$expr.length}, constraintExpr)
-        
+        case None => applyConstraint('{ $expr.length }, constraintExpr)
+
     given [C1, C2](using C1 ==> C2): (Length[C1] ==> Length[C2]) = Implication()
 
   object Contain:
@@ -179,7 +184,7 @@ object collection:
 
       override inline def message: String = "For each element except head: (" + summonInline[Impl].message + ")"
 
-    inline given[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): InitIterable[A, I, C, Impl] =
+    inline given [A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): InitIterable[A, I, C, Impl] =
       new InitIterable
 
     class InitString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, Init[C]]:
@@ -204,9 +209,9 @@ object collection:
 
         case None => '{ $expr.init.forall(c => ${ applyConstraint('c, constraintExpr) }) }
 
-    given[C1, C2](using C1 ==> C2): (Init[C1] ==> Exists[C2]) = Implication()
+    given [C1, C2](using C1 ==> C2): (Init[C1] ==> Exists[C2]) = Implication()
 
-    given[C1, C2](using C1 ==> C2): (Init[C1] ==> Head[C2]) = Implication()
+    given [C1, C2](using C1 ==> C2): (Init[C1] ==> Head[C2]) = Implication()
 
   object Tail:
 
@@ -216,7 +221,7 @@ object collection:
 
       override inline def message: String = "For each element: (" + summonInline[Impl].message + ")"
 
-    inline given[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): TailIterable[A, I, C, Impl] =
+    inline given [A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): TailIterable[A, I, C, Impl] =
       new TailIterable
 
     class TailString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, Tail[C]]:
@@ -241,8 +246,8 @@ object collection:
 
         case None => '{ $expr.tail.forall(c => ${ applyConstraint('c, constraintExpr) }) }
 
-    given[C1, C2](using C1 ==> C2): (Tail[C1] ==> Exists[C2]) = Implication()
-    given[C1, C2](using C1 ==> C2): (Tail[C1] ==> Last[C2]) = Implication()
+    given [C1, C2](using C1 ==> C2): (Tail[C1] ==> Exists[C2]) = Implication()
+    given [C1, C2](using C1 ==> C2): (Tail[C1] ==> Last[C2]) = Implication()
 
   object Exists:
 
@@ -313,7 +318,7 @@ object collection:
 
       override inline def message: String = "Last: (" + summonInline[Impl].message + ")"
 
-    inline given[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): LastIterable[A, I, C, Impl] =
+    inline given [A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): LastIterable[A, I, C, Impl] =
       new LastIterable
 
     class LastString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, Last[C]]:
@@ -329,7 +334,7 @@ object collection:
         case Some(value) =>
           value.lastOption match
             case Some(last) => applyConstraint(Expr(last), constraintExpr)
-            case None => Expr(false)
+            case None       => Expr(false)
         case None => '{ $expr.lastOption.exists(last => ${ applyConstraint('{ last }, constraintExpr) }) }
 
-    given[C1, C2](using C1 ==> C2): (Last[C1] ==> Exists[C2]) = Implication()
+    given [C1, C2](using C1 ==> C2): (Last[C1] ==> Exists[C2]) = Implication()

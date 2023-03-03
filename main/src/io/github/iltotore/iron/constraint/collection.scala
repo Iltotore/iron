@@ -37,14 +37,14 @@ object collection:
   type MaxLength[V <: Int] = Length[LessEqual[V]] DescribedAs "Should have a maximum length of " + V
 
   /**
-   * Tests if the input is empty.
-   */
-  type Empty = Length[StrictEqual[0]] DescribedAs "Should be empty"
-
-  /**
    * Tests exact length. Supports [[Iterable]] and [[String]] by default.
    */
-  type FixedLength[V <: Int] = Length[StrictEqual[V]] DescribedAs "Should have an exact length of" + V
+  type FixedLength[V <: Int] = Length[StrictEqual[V]] DescribedAs "Should have an exact length of " + V
+
+  /**
+   * Tests if the input is empty.
+   */
+  type Empty = FixedLength[0] DescribedAs "Should be empty"
 
   /**
    * Tests if the given collection contains a specific value.

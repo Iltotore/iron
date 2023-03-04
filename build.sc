@@ -73,7 +73,7 @@ object docs extends ScalaModule {
 
   def scalaVersion = versions.scala
 
-  val modules: Seq[ScalaModule] = Seq(main, cats, circe, jsoniter, zio, zioJson)
+  val modules: Seq[ScalaModule] = Seq(main, cats, circe, jsoniter, scalacheck, zio, zioJson)
 
   def docSources = T.sources {
     T.traverse(modules)(_.docSources)().flatten

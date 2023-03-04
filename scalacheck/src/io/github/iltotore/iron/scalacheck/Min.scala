@@ -1,7 +1,14 @@
 package io.github.iltotore.iron.scalacheck
 
+/**
+ * Represent the minimum value of a type.
+ * @tparam A
+ */
 trait Min[A]:
 
+  /**
+   * The lowest value of type `A`
+   */
   def value: A
 
 object Min:

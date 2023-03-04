@@ -1,7 +1,14 @@
 package io.github.iltotore.iron.scalacheck
 
+/**
+ * Represent the maximum value of a type.
+ * @tparam A
+ */
 trait Max[A]:
 
+  /**
+   * The greatest value of type `A`
+   */
   def value: A
 
 object Max:

@@ -8,12 +8,14 @@ ___
 
 Iron is a lightweight library for refined types in Scala 3.
 
-It enables attaching constraints/assertions to types, to enforce properties and forbid invalid values. 
+It enables attaching constraints/assertions to types, to enforce properties and forbid invalid values.
 
 - **Catch bugs.** In the spirit of static typing, use more specific types to avoid invalid values.
-- **Compile-time and runtime.** Evaluate constraints at compile time, or explicitly check them at runtime (e.g. for a form).
+- **Compile-time and runtime.** Evaluate constraints at compile time, or explicitly check them at runtime (e.g. for a
+  form).
 - **Seamless.** Iron types are subtypes of their unrefined versions, meaning you can easily add or remove them.
-- **No black magic.** Use Scala 3's powerful inline, types and restricted macros for consistent behaviour and rules. No unexpected behaviour.
+- **No black magic.** Use Scala 3's powerful inline, types and restricted macros for consistent behaviour and rules. No
+  unexpected behaviour.
 - **Extendable.** Easily create your own constraints or integrations using classic typeclasses.
 
 To learn more about Iron, see the [microsite](https://iltotore.github.io/iron/docs/index.html).
@@ -55,20 +57,22 @@ ivy"io.github.iltotore::iron:version"
 
 ### Platform support
 
-| Module        | JVM | JS  | Native |
-|---------------|-----|-----|--------|
-| iron          | ✔️  | ✔️  | ✔️     |
-| iron-cats     | ✔️  | ✔️  | ✔️     |
-| iron-circe    | ✔️  | ✔️  | ✔️     |
-| iron-jsoniter | ✔️  | ✔️  | ✔️     | 
-| iron-zio      | ✔️  | ✔️  | ❌      |
-| iron-zio-json | ✔️  | ✔️  | ❌      |
+| Module          | JVM | JS  | Native |
+|-----------------|-----|-----|--------|
+| iron            | ✔️  | ✔️  | ✔️     |
+| iron-cats       | ✔️  | ✔️  | ✔️     |
+| iron-circe      | ✔️  | ✔️  | ✔️     |
+| iron-jsoniter   | ✔️  | ✔️  | ✔️     |
+| iron-scalacheck | ✔️  | ✔️  | ❌      |
+| iron-zio        | ✔️  | ✔️  | ❌      |
+| iron-zio-json   | ✔️  | ✔️  | ❌      |
 
 ## Adopters
 
 Here is a non-exhaustive list of projects using Iron.
 
-[Submit a PR](https://github.com/Iltotore/iron/pulls?q=is%3Apr+is%3Aopen+sort%3Aupdated-desc) to add your project or company to the list.
+[Submit a PR](https://github.com/Iltotore/iron/pulls?q=is%3Apr+is%3Aopen+sort%3Aupdated-desc) to add your project or
+company to the list.
 
 - [gvolpe/trading](https://github.com/gvolpe/trading/) ([book](https://leanpub.com/feda))
 

@@ -7,7 +7,7 @@ import scalalib._, scalalib.scalafmt._, scalalib.publish._, scalajslib._, scalan
 object versions {
   val scala = "3.2.1"
   val scalaJS = "1.12.0"
-  val scalaNative = "0.4.9"
+  val scalaNative = "0.4.10"
 }
 
 trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { outer =>
@@ -26,7 +26,7 @@ trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { 
       )
     )
 
-  trait Tests extends super.Tests {
+  trait Tests extends super.Tests with ScalafmtModule {
 
     def testFramework = "utest.runner.Framework"
 
@@ -73,7 +73,7 @@ object docs extends ScalaModule {
 
   def scalaVersion = versions.scala
 
-  val modules: Seq[ScalaModule] = Seq(main, cats, circe, jsoniter, zio, zioJson)
+  val modules: Seq[ScalaModule] = Seq(main, cats, circe, jsoniter, scalacheck, zio, zioJson)
 
   def docSources = T.sources {
     T.traverse(modules)(_.docSources)().flatten
@@ -267,4 +267,17 @@ object jsoniter extends SubModule {
   object test extends Tests {
     def compileIvyDeps = Agg(jsoniterMacros)
   }
+}
+
+object scalacheck extends SubModule {
+
+  def artifactName = "iron-scalacheck"
+
+  def ivyDeps = Agg(
+    ivy"org.scalacheck::scalacheck::1.17.0"
+  )
+
+  object js extends JSCrossModule
+
+  object test extends Tests
 }

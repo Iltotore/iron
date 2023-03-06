@@ -1,5 +1,7 @@
 package io.github.iltotore.iron.macros
 
+import io.github.iltotore.iron.util.*
+import io.github.iltotore.iron.util.Validation.{Valid, Invalid}
 import scala.quoted.*
 
 /**
@@ -38,20 +40,28 @@ object intersection:
 
     val constraintTpe = TypeRepr.of[io.github.iltotore.iron.Constraint]
 
-    def rec(tpe: TypeRepr): Expr[Boolean] =
+    def rec(tpe: TypeRepr): Validation[TypeRepr, Expr[Boolean]] =
       tpe.dealias match
-        case AndType(left, right) => '{ ${ rec(left) } && ${ rec(right) } }
+        case AndType(left, right) =>
+          rec(left)
+            .accumulate(rec(right))
+            .map((leftResult, rightResult) => '{ $leftResult && $rightResult })
         case t =>
           val implTpe = constraintTpe.appliedTo(List(aTpe, t))
 
           Implicits.search(implTpe) match
             case iss: ImplicitSearchSuccess =>
               val implTerm = iss.tree
-              Apply(Select.unique(implTerm, "test"), List(value.asTerm)).asExprOf[Boolean]
+              Valid(Apply(Select.unique(implTerm, "test"), List(value.asTerm)).asExprOf[Boolean])
 
-            case isf: ImplicitSearchFailure => report.errorAndAbort(s"Could not find implicit ${implTpe}")
+            case isf: ImplicitSearchFailure => Invalid(List(t))
 
-    rec(TypeRepr.of[C])
+    rec(TypeRepr.of[C]) match
+      case Valid(value) => value
+      case Invalid(errors) =>
+        val missingTypes = errors.map(tpe => s"- ${tpe.show}").mkString("\n")
+        compileTimeError(s"""|Missing given instances of Constraint[${aTpe.show}, ...] in intersection for types:
+                             |$missingTypes""".stripMargin)
 
   /**
    * Constraint message for intersection type.
@@ -69,17 +79,25 @@ object intersection:
 
     val constraintTpe = TypeRepr.of[io.github.iltotore.iron.Constraint]
 
-    def rec(tpe: TypeRepr): Expr[String] =
+    def rec(tpe: TypeRepr)(using Quotes): Validation[TypeRepr, Expr[String]] =
       tpe.dealias match
-        case AndType(left, right) => '{ ${ rec(left) } + " & " + ${ rec(right) } }
+        case AndType(left, right) =>
+          rec(left)
+            .accumulate(rec(right))
+            .map((leftResult, rightResult) => '{ $leftResult + " & " + $rightResult })
         case t =>
           val implTpe = constraintTpe.appliedTo(List(aTpe, t))
 
           Implicits.search(implTpe) match
             case iss: ImplicitSearchSuccess =>
               val implTerm = iss.tree
-              Select.unique(implTerm, "message").asExprOf[String]
+              Valid(Select.unique(implTerm, "message").asExprOf[String])
 
-            case isf: ImplicitSearchFailure => report.errorAndAbort(s"Could not find implicit $implTpe")
+            case isf: ImplicitSearchFailure => Invalid(List(t))
 
-    '{ "(" + ${ rec(TypeRepr.of[C]) } + ")" }
+    rec(TypeRepr.of[C]) match
+      case Valid(value) => value
+      case Invalid(errors) =>
+        val missingTypes = errors.map(tpe => s"- ${tpe.show}").mkString("\n")
+        compileTimeError(s"""|Missing given instances of Constraint[${aTpe.show}, ...] in intersection for types:
+                             |$missingTypes""".stripMargin)

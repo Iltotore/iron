@@ -111,7 +111,7 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
   val messageValue = message.value.getOrElse("<Unknown message>")
   val condValue = cond.value
     .getOrElse(
-      report.errorAndAbort(
+      compileTimeError(
         s"""Cannot refine value at compile-time because the predicate cannot be evaluated.
            |This is likely because the condition or the input value isn't fully inlined.
            |
@@ -138,7 +138,7 @@ private def nonConstantErrorImpl[A](expr: Expr[A])(using Quotes): Nothing =
 
   import quotes.reflect.*
 
-  report.errorAndAbort(
+  compileTimeError(
     s"""Cannot refine non full inlined input at compile-time.
        |To test a constraint at runtime, use the `refined` extension method.
        |
@@ -175,3 +175,10 @@ private def isConstantImpl[A: Type](expr: Expr[A])(using Quotes): Expr[Boolean] 
     else false
 
   Expr(result)
+
+def compileTimeError(msg: String)(using Quotes): Nothing =
+  quotes.reflect.report.errorAndAbort(
+  s"""|—— Compile-time Error —————————————————————————————————————————————————————
+      |$msg
+      |———————————————————————————————————————————————————————————————————————————""".stripMargin
+  )

@@ -162,7 +162,7 @@ object any:
     given right[C1, C2, C3](using C1 ==> Not[C2], C1 ==> C3): (C1 ==> Xor[C2, C3]) = Implication()
 
   object StrictEqual:
-    inline given [A, V <: A]: Constraint[A, StrictEqual[V]] with
+    inline given [A, V]: Constraint[A, StrictEqual[V]] with
 
       override inline def test(value: A): Boolean = value == constValue[V]
 

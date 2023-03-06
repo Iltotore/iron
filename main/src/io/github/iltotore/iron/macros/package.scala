@@ -140,7 +140,7 @@ private def nonConstantErrorImpl[A](expr: Expr[A])(using Quotes): Nothing =
 
   compileTimeError(
     s"""Cannot refine non full inlined input at compile-time.
-       |To test a constraint at runtime, use the `refined` extension method.
+       |To test a constraint at runtime, use the `refine` extension method.
        |
        |Note: Due to a Scala limitation, already-refined types cannot be tested at compile-time (unless proven by an `Implication`).
        |

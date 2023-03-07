@@ -1,4 +1,4 @@
-package io.github.iltotore.iron.util
+package io.github.iltotore.iron.internal
 
 enum Validation[L, R]:
   case Valid(value: R)

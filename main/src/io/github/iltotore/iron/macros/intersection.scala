@@ -1,7 +1,7 @@
 package io.github.iltotore.iron.macros
 
-import io.github.iltotore.iron.util.*
-import io.github.iltotore.iron.util.Validation.{Valid, Invalid}
+import io.github.iltotore.iron.internal.*
+import io.github.iltotore.iron.internal.Validation.{Valid, Invalid}
 import scala.quoted.*
 
 /**

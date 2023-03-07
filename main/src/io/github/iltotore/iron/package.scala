@@ -85,5 +85,4 @@ extension [A](value: A)
    * @return a constrained value, without performing constraint checks.
    * @see [[autoRefine]], [[refine]].
    */
-  inline def unsafeAssume[B](using inline constraint: Constraint[A, B]): A :| B =
-    value
+  inline def assume[B]: A :| B = value

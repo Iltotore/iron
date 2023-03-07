@@ -184,7 +184,7 @@ private def isConstantImpl[A: Type](expr: Expr[A])(using Quotes): Expr[Boolean] 
 
 def compileTimeError(msg: String)(using Quotes): Nothing =
   quotes.reflect.report.errorAndAbort(
-  s"""|—— Compile-time Error —————————————————————————————————————————————————————
+  s"""|-- Compile-time Error ------------------------------------------------------
       |$msg
-      |———————————————————————————————————————————————————————————————————————————""".stripMargin
+      |----------------------------------------------------------------------------""".stripMargin
   )

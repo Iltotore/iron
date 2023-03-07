@@ -126,7 +126,7 @@ private def assertConditionImpl[A : Type](input: Expr[A], cond: Expr[Boolean], m
     )
 
   if !condValue then
-    compileTimeError(s"""|A constraint did not pass for type $CYAN${inputType.show}$RESET.
+    compileTimeError(s"""|Could not satisfy a constraint for type $CYAN${inputType.show}$RESET.
                          |
                          |${CYAN}Value$RESET: ${input.show}
                          |${CYAN}Message$RESET: $messageValue""".stripMargin)
@@ -184,7 +184,7 @@ private def isConstantImpl[A: Type](expr: Expr[A])(using Quotes): Expr[Boolean] 
 
 def compileTimeError(msg: String)(using Quotes): Nothing =
   quotes.reflect.report.errorAndAbort(
-  s"""|-- Compile-time Error ------------------------------------------------------
+  s"""|-- Constraint Error --------------------------------------------------------
       |$msg
       |----------------------------------------------------------------------------""".stripMargin
   )

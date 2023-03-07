@@ -77,3 +77,12 @@ extension [A](value: A)
    */
   inline def refineOption[B](using inline constraint: Constraint[A, B]): Option[A :| B] =
     Option.when(constraint.test(value))(value)
+
+  /**
+   * Refine the given value at runtime, assuming the constraint holds.
+   *
+   * @param constraint the constraint to test with the value to refine.
+   * @return a constrained value, without performing constraint checks.
+   * @see [[autoRefine]], [[refine]].
+   */
+  inline def assume[B]: A :| B = value

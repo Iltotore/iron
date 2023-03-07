@@ -102,11 +102,13 @@ given FromExpr[String] with
  * @tparam A the input type.
  */
 inline def assertCondition[A](inline input: A, inline cond: Boolean, inline message: String): Unit =
-  ${ assertConditionImpl('input, 'cond, 'message) }
+  ${ assertConditionImpl[A]('input, 'cond, 'message) }
 
-private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], message: Expr[String])(using Quotes): Expr[Unit] =
+private def assertConditionImpl[A : Type](input: Expr[A], cond: Expr[Boolean], message: Expr[String])(using Quotes): Expr[Unit] =
 
   import quotes.reflect.*
+
+  val inputType = TypeRepr.of[A]
 
   val messageValue = message.value.getOrElse("<Unknown message>")
   val condValue = cond.value
@@ -123,7 +125,11 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
       )
     )
 
-  if !condValue then report.error(messageValue)
+  if !condValue then
+    compileTimeError(s"""|A constraint did not pass for type $CYAN${inputType.show}$RESET.
+                         |
+                         |${CYAN}Value$RESET: ${input.show}
+                         |${CYAN}Message$RESET: $messageValue""".stripMargin)
   '{}
 
 /**

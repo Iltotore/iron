@@ -102,16 +102,18 @@ given FromExpr[String] with
  * @tparam A the input type.
  */
 inline def assertCondition[A](inline input: A, inline cond: Boolean, inline message: String): Unit =
-  ${ assertConditionImpl('input, 'cond, 'message) }
+  ${ assertConditionImpl[A]('input, 'cond, 'message) }
 
-private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], message: Expr[String])(using Quotes): Expr[Unit] =
+private def assertConditionImpl[A : Type](input: Expr[A], cond: Expr[Boolean], message: Expr[String])(using Quotes): Expr[Unit] =
 
   import quotes.reflect.*
+
+  val inputType = TypeRepr.of[A]
 
   val messageValue = message.value.getOrElse("<Unknown message>")
   val condValue = cond.value
     .getOrElse(
-      report.errorAndAbort(
+      compileTimeError(
         s"""Cannot refine value at compile-time because the predicate cannot be evaluated.
            |This is likely because the condition or the input value isn't fully inlined.
            |
@@ -123,7 +125,11 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
       )
     )
 
-  if !condValue then report.error(messageValue)
+  if !condValue then
+    compileTimeError(s"""|Could not satisfy a constraint for type $CYAN${inputType.show}$RESET.
+                         |
+                         |${CYAN}Value$RESET: ${input.show}
+                         |${CYAN}Message$RESET: $messageValue""".stripMargin)
   '{}
 
 /**
@@ -138,9 +144,9 @@ private def nonConstantErrorImpl[A](expr: Expr[A])(using Quotes): Nothing =
 
   import quotes.reflect.*
 
-  report.errorAndAbort(
+  compileTimeError(
     s"""Cannot refine non full inlined input at compile-time.
-       |To test a constraint at runtime, use the `refined` extension method.
+       |To test a constraint at runtime, use the `refine` extension method.
        |
        |Note: Due to a Scala limitation, already-refined types cannot be tested at compile-time (unless proven by an `Implication`).
        |
@@ -175,3 +181,10 @@ private def isConstantImpl[A: Type](expr: Expr[A])(using Quotes): Expr[Boolean] 
     else false
 
   Expr(result)
+
+def compileTimeError(msg: String)(using Quotes): Nothing =
+  quotes.reflect.report.errorAndAbort(
+  s"""|-- Constraint Error --------------------------------------------------------
+      |$msg
+      |----------------------------------------------------------------------------""".stripMargin
+  )

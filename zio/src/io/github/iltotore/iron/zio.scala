@@ -16,3 +16,14 @@ object zio:
     inline def refineValidation[C](using inline constraint: Constraint[A, C]): Validation[String, A :| C] =
       Validation.fromPredicateWith(constraint.message)(value.asInstanceOf[A :| C])(constraint.test(_))
 
+
+  extension [A, C1](value: A :| C1)
+
+    /**
+     * Refine the given value again applicatively at runtime, resulting in a [[Validation]].
+     *
+     * @param constraint the new constraint to test.
+     * @return a [[Valid]] containing this value as [[IronType]] or an [[Validation.Failure]] containing a [[NonEmptyChunk]] of error messages.
+     */
+    inline def refineFurtherValidation[C2](using inline constraint: Constraint[A, C2]): Validation[String, A :| (C1 & C2)] =
+      (value: A).refineValidation[C2].map(_.assumeFurther[C1])

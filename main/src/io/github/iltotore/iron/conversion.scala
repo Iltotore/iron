@@ -59,3 +59,50 @@ implicit inline def autoFactorize[A, I[_] <: Iterable[?], C1, C2](inline iterabl
  */
 implicit inline def autoDistribute[A, I[_] <: Iterable[?], C1, C2](inline iterable: I[A] :| ForAll[C1])(using C1 ==> C2): I[A :| C2] =
   iterable.asInstanceOf
+
+extension [A, C1](value: A :| C1)
+
+  /**
+   * Refine the given value again at runtime, assuming the constraint holds.
+   *
+   * @return a constrained value, without performing constraint checks.
+   * @see [[assume]].
+   */
+  inline def assumeFurther[C2]: A :| (C1 & C2) = (value: A).assume[C1 & C2]
+
+  /**
+   * Refine the given value again at runtime.
+   *
+   * @param constraint the new constraint to test.
+   * @return this value refined with `C1 & C2`.
+   * @throws an [[IllegalArgumentException]] if the constraint is not satisfied.
+   * @see [[refine]].
+   */
+  inline def refineFurther[C2](using inline constraint: Constraint[A, C2]): A :| (C1 & C2) =
+    (value: A).refine[C2].assumeFurther[C1]
+
+  /**
+   * Refine the given value again at runtime, resulting in an [[Either]].
+   *
+   * @param constraint the new constraint to test.
+   * @return a [[Right]] containing this value refined with `C1 & C2` or a [[Left]] containing the constraint message.
+   * @see [[refineEither]].
+   */
+  inline def refineFurtherEither[C2](using inline constraint: Constraint[A, C2]): Either[String, A :| (C1 & C2)] =
+    (value: A).refineEither[C2].map(_.assumeFurther[C1])
+
+  /**
+   * Refine the given value again at runtime, resulting in an [[Option]].
+   *
+   * @param constraint the new constraint to test.
+   * @return a [[Option]] containing this value refined with `C1 & C2` or [[None]].
+   * @see [[refineOption]].
+   */
+  inline def refineFurtherOption[C2](using inline constraint: Constraint[A, C2]): Option[A :| (C1 & C2)] =
+    (value: A).refineOption[C2].map(_.assumeFurther[C1])
+
+extension [A, C1, C2](value: A :| C1 :| C2)
+  inline def compose: A :| (C1 & C2) = (value: A).assume[C1 & C2]
+
+extension [A, C1, C2](value: A :| (C1 & C2))
+  inline def decompose: A :| C1 :| C2 = (value: A).assume[C1].assume[C2]

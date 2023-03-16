@@ -2,8 +2,6 @@
 
 [![Scala version support](https://index.scala-lang.org/iltotore/iron/iron/latest-by-scala-version.svg)](https://index.scala-lang.org/iltotore/iron/iron)
 [![CI](https://github.com/Iltotore/iron/actions/workflows/ci.yml/badge.svg)](https://github.com/Iltotore/iron/actions/workflows/ci.yml)
-
-⚠️ **Iron v2.0.0 is still in development. Please check [old/1.x](https://github.com/Iltotore/iron/tree/old/1.x).**
 ___
 
 Iron is a lightweight library for refined types in Scala 3.

@@ -44,9 +44,9 @@ object union:
       tpe.dealias match
         case OrType(left, right) =>
           rec(left)
-          .accumulate(rec(right))
-          .map((leftResult, rightResult) => '{ $leftResult || $rightResult })
-            
+            .accumulate(rec(right))
+            .map((leftResult, rightResult) => '{ $leftResult || $rightResult })
+
         case t =>
           val implTpe = constraintTpe.appliedTo(List(aTpe, t))
 

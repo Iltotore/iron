@@ -51,7 +51,7 @@ object numeric:
 
     /**
      * Tests if the input is included in `(V1, V2)`
-     * 
+     *
      * @tparam V1 the lower bound, exclusive.
      * @tparam V2 the upper bound, exclusive.
      */

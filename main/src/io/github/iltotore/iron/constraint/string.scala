@@ -83,23 +83,23 @@ object string:
   object Blank:
 
     given (Empty ==> Blank) = Implication()
-    
+
   object StartWith:
-    
+
     inline given [V <: String]: Constraint[String, StartWith[V]] with
 
-      override inline def test(value: String): Boolean = ${check('value, '{constValue[V]})}
+      override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }
 
       override inline def message: String = "Should start with " + stringValue[V]
-    
+
     private def check(expr: Expr[String], prefixExpr: Expr[String])(using Quotes): Expr[Boolean] =
       (expr.value, prefixExpr.value) match
         case (Some(value), Some(prefix)) => Expr(value.startsWith(prefix))
-        case _ => '{$expr.startsWith($prefixExpr)}
+        case _                           => '{ $expr.startsWith($prefixExpr) }
 
   object EndWith:
 
-    inline given[V <: String]: Constraint[String, EndWith[V]] with
+    inline given [V <: String]: Constraint[String, EndWith[V]] with
 
       override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }
 
@@ -108,10 +108,10 @@ object string:
     private def check(expr: Expr[String], prefixExpr: Expr[String])(using Quotes): Expr[Boolean] =
       (expr.value, prefixExpr.value) match
         case (Some(value), Some(prefix)) => Expr(value.endsWith(prefix))
-        case _ => '{ $expr.endsWith($prefixExpr) }
+        case _                           => '{ $expr.endsWith($prefixExpr) }
 
   object Match:
-    
+
     inline given [V <: String]: Constraint[String, Match[V]] with
 
       override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }

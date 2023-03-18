@@ -102,7 +102,15 @@ extension [A, C1](value: A :| C1)
     (value: A).refineOption[C2].map(_.assumeFurther[C1])
 
 extension [A, C1, C2](value: A :| C1 :| C2)
+
+  /**
+   * Transform `A :| C1 :| C2` to `A :| (C1 & C2)`
+   */
   inline def compose: A :| (C1 & C2) = (value: A).assume[C1 & C2]
 
 extension [A, C1, C2](value: A :| (C1 & C2))
+
+  /**
+   * Transform `A :| (C1 & C2)` to `A :| C1 :| C2`
+   */
   inline def decompose: A :| C1 :| C2 = (value: A).assume[C1].assume[C2]

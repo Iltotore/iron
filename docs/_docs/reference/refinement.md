@@ -51,8 +51,6 @@ val x: Int :| Greater[0] = value //OK
 
 ## Runtime refinement
 
-### Imperative
-
 Sometimes, you want to refine a value that is not available at compile time. For example in the case of form validation.
 
 ```scala
@@ -64,7 +62,11 @@ val username: String :| Alphanumeric = runtimeString
 ```
 
 This snippet would not compile because `runtimeString` is not evaluable at compile time.
-Fortunately, Iron supports explicit runtime checking through `refine`:
+Fortunately, Iron supports explicit runtime checking using extension methods
+
+### Imperative
+
+You can imperatively refine a value at runtime (much like an assertion) using the `refine[C]` method:
 
 ```scala
 val runtimeString: String = ???
@@ -72,8 +74,7 @@ val username: String :| Alphanumeric = runtimeString.refine //or more explicitly
 ```
 
 The `refine` extension method tests the constraint at runtime, throwing an `IllegalArgumentException` if the value
-didn't pass
-the assertion.
+does not pass the assertion.
 
 ### Functional
 
@@ -217,3 +218,30 @@ createUser("Iltotore", "abc123  ") //Left("Your password should be alphanumeric"
 ```
 
 Note: Accumulative versions exist for [Cats](../modules/cats.md) and [ZIO](../modules/zio.md).
+
+## Assuming constraints
+
+Sometimes, you know that your value always passes (possibly at runtime) a constraint. For example:
+
+```scala
+val random = scala.util.Random.nextInt(9)+1
+val x: Int :| Positive = random
+```
+
+This code will not compile (see [Runtime refinement](#runtime-refinement)).
+We could use `refine` but we don't actually need to apply the constraint to `random`.
+Instead, we can can use `assume[C]`. It simply acts like a safer cast.
+
+```scala
+val random = scala.util.Random.nextInt(9)+1
+val x: Int :| Positive = random.assume
+```
+
+This code will compile to:
+
+```scala
+val random: Int = scala.util.Random.nextInt(9)+1
+val x: Int = random
+```
+
+leaving no overhead.

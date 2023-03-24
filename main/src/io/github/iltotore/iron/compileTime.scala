@@ -152,9 +152,9 @@ object compileTime:
    * @tparam A the constant type to cast.
    */
   type ToDouble[A <: NumConstant] <: Double = A match
-    case Int => int.ToDouble[A]
-    case Long => long.ToDouble[A]
-    case Float => float.ToDouble[A]
+    case Int    => int.ToDouble[A]
+    case Long   => long.ToDouble[A]
+    case Float  => float.ToDouble[A]
     case Double => A & Double
 
   /**
@@ -173,7 +173,9 @@ object compileTime:
    */
   transparent inline def stringValue[A]: String = constValue[ToString[A]]
 
-  def applyConstraint[A, C, Impl <: Constraint[A, C]](expr: Expr[A], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] = // Using quotes directly causes a "deferred inline error"
+  def applyConstraint[A, C, Impl <: Constraint[A, C]](expr: Expr[A], constraintExpr: Expr[Impl])(using
+      Quotes
+  ): Expr[Boolean] = // Using quotes directly causes a "deferred inline error"
 
     import quotes.reflect.*
 

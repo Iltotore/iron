@@ -104,7 +104,7 @@ given FromExpr[String] with
 inline def assertCondition[A](inline input: A, inline cond: Boolean, inline message: String): Unit =
   ${ assertConditionImpl[A]('input, 'cond, 'message) }
 
-private def assertConditionImpl[A : Type](input: Expr[A], cond: Expr[Boolean], message: Expr[String])(using Quotes): Expr[Unit] =
+private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], message: Expr[String])(using Quotes): Expr[Unit] =
 
   import quotes.reflect.*
 
@@ -184,7 +184,7 @@ private def isConstantImpl[A: Type](expr: Expr[A])(using Quotes): Expr[Boolean] 
 
 def compileTimeError(msg: String)(using Quotes): Nothing =
   quotes.reflect.report.errorAndAbort(
-  s"""|-- Constraint Error --------------------------------------------------------
-      |$msg
-      |----------------------------------------------------------------------------""".stripMargin
+    s"""|-- Constraint Error --------------------------------------------------------
+        |$msg
+        |----------------------------------------------------------------------------""".stripMargin
   )

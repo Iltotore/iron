@@ -143,7 +143,10 @@ object any:
 
       override inline def message: String = "(" + summonInline[Impl1].message + " xor " + summonInline[Impl2].message + ")"
 
-    inline given [A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using inline impl1: Impl1, impl2: Impl2): XorConstraint[A, C1, C2, Impl1, Impl2] =
+    inline given [A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]](using
+        inline impl1: Impl1,
+        impl2: Impl2
+    ): XorConstraint[A, C1, C2, Impl1, Impl2] =
       new XorConstraint
 
     /**

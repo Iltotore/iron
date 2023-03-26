@@ -25,7 +25,14 @@ If they don't, a compile-time error is thrown:
 val y: Int :| Greater[0] = -1
 ```
 
-> Error: Should be greater than 0
+```scala
+-- Constraint Error --------------------------------------------------------
+Could not satisfy a constraint for type scala.Int.
+
+Value: -1
+Message: Should be strictly greater than 0
+----------------------------------------------------------------------------
+```
 
 If the value (or the constraint itself) cannot be evaluated at compile time, then the compilation also fails:
 
@@ -34,10 +41,16 @@ val runtimeValue: Int = ???
 val x: Int :| Greater[0] = runtimeValue
 ```
 
-> Cannot refine non fully inlined input at compile-time.
-> To test a constraint at runtime, use the `refined` extension method.
->
-> Inlined input: runtimeValue
+```scala
+-- Constraint Error --------------------------------------------------------
+Cannot refine non full inlined input at compile-time.
+To test a constraint at runtime, use the `refine` extension method.
+
+Note: Due to a Scala limitation, already-refined types cannot be tested at compile-time (unless proven by an `Implication`).
+
+Inlined input: runtimeValue
+----------------------------------------------------------------------------
+```
 
 Iron uses to determine if a value is evaluable at compile time the Scala
 typeclass [FromExpr](https://scala-lang.org/api/3.2.0/scala/quoted/FromExpr.html).

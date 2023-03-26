@@ -37,6 +37,41 @@ runtimeValue.refineEither.map(log) //Use monadic style for functional validation
 runtimeValue.refineEither[Greater[0.0]].map(log) //More explicitly
 ```
 
+## Helpful error
+
+Iron provides useful errors when a constraint does not pass:
+
+```scala
+log(-1.0)
+```
+
+```scala
+-- Constraint Error --------------------------------------------------------
+Could not satisfy a constraint for type scala.Double.
+
+Value: -1.0
+Message: Should be strictly positive
+----------------------------------------------------------------------------
+```
+
+Or when it cannot be verified:
+
+```scala
+val runtimeValue: Double = ???
+log(runtimeValue)
+```
+
+```scala
+-- Constraint Error --------------------------------------------------------
+Cannot refine non full inlined input at compile-time.
+To test a constraint at runtime, use the `refine` extension method.
+
+Note: Due to a Scala limitation, already-refined types cannot be tested at compile-time (unless proven by an `Implication`).
+
+Inlined input: runtimeValue
+----------------------------------------------------------------------------
+```
+
 ## Import in your project
 
 SBT:

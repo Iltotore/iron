@@ -108,6 +108,7 @@ Here is a non-exhaustive list of projects using Iron.
 company to the list.
 
 - [gvolpe/trading](https://github.com/gvolpe/trading/) ([book](https://leanpub.com/feda))
+- [cheleb/laminar-form-derivation](https://github.com/cheleb/laminar-form-derivation)
 
 ## Useful links
 

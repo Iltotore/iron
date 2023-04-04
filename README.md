@@ -37,7 +37,7 @@ runtimeValue.refineEither.map(log) //Use monadic style for functional validation
 runtimeValue.refineEither[Greater[0.0]].map(log) //More explicitly
 ```
 
-## Helpful error
+## Helpful error messages
 
 Iron provides useful errors when a constraint does not pass:
 

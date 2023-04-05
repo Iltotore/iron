@@ -7,7 +7,7 @@ import org.scalacheck.Gen.Choose
 
 object char:
 
-  val whitespaceChars: Seq[Char] = (Char.MinValue to Char.MaxValue).filter(_.isWhitespace)
+  private val whitespaceChars: Seq[Char] = (Char.MinValue to Char.MaxValue).filter(_.isWhitespace)
 
   inline given whitespace: Arbitrary[Char :| Whitespace] = Arbitrary(Gen.oneOf(whitespaceChars)).asInstanceOf
 

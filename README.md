@@ -34,7 +34,7 @@ val runtimeValue: Double = ???
 log(runtimeValue.refine) //Explicitly refine your external values at runtime.
 
 runtimeValue.refineEither.map(log) //Use monadic style for functional validation
-runtimeValue.refineEither[Greater[0.0]].map(log) //More explicitly
+runtimeValue.refineEither[Positive].map(log) //More explicitly
 ```
 
 ## Helpful error messages

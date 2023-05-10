@@ -25,6 +25,7 @@ object RefinedOpsSuite extends TestSuite:
     test("temperature") {
       val result: Either[String, Temperature] = Temperature.either(2.0)
       val t: Temperature = 2
+      val temperatureFromApply: Temperature = Temperature(2)
     }
   }
 

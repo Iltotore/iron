@@ -14,17 +14,17 @@ extension [A, C](ops: RefinedTypeOps[A, IronType[A, C]])
   inline def apply(inline value: A)(using inline constraint: Constraint[A, C]): A :| C =
     autoRefine(value)
 
-type Temperature = Double :| Positive
+opaque type Temperature = Double :| Positive
 object Temperature extends RefinedTypeOps[Double, Temperature]
 
-type Moisture = Double :| Positive
+opaque type Moisture = Double :| Positive
 object Moisture extends RefinedTypeOps[Double, Moisture]
 
 object RefinedOpsSuite extends TestSuite:
   val tests: Tests = Tests {
     test("temperature") {
       val result: Either[String, Temperature] = Temperature.either(2.0)
-      val t: Temperature = 2
+
       val temperatureFromApply: Temperature = Temperature(2)
     }
   }

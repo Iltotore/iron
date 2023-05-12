@@ -2,66 +2,49 @@ package io.github.iltotore.iron.testing
 
 import io.github.iltotore.iron.{:|, IronType, autoRefine}
 import io.github.iltotore.iron.constraint.numeric.*
-import utest.{TestSuite, Tests, test}
+import utest.{TestSuite, Tests, compileError, test}
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
-import io.github.iltotore.iron.{given, *}
 
-class RefinedTypeOps[A, C]
-
-extension [A, C](ops: RefinedTypeOps[A, IronType[A, C]])
-  inline def either(a: A)(using inline constraint: Constraint[A, C]): Either[String, A :| C] = a.refineEither[C]
-  inline def apply(inline value: A)(using inline constraint: Constraint[A, C]): A :| C =
-    autoRefine(value)
+import scala.util.{Failure, Try}
 
 opaque type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Double, Temperature]
+object Temperature extends RefinedTypeOps[Temperature]
 
-opaque type Moisture = Double :| Positive
-object Moisture extends RefinedTypeOps[Double, Moisture]
-
-object RefinedOpsSuite extends TestSuite:
+object RefinedTypeOpsSuite extends TestSuite:
   val tests: Tests = Tests {
-    test("temperature") {
-      val result: Either[String, Temperature] = Temperature.either(2.0)
+    test("compile-time apply") {
+      val temperature = Temperature(100)
+      compileError("Temperature(-100)")
+    }
 
-      val temperatureFromApply: Temperature = Temperature(2)
+    test("either") {
+      val eitherWithFailingPredicate = Temperature.either(-5.0)
+      assert(eitherWithFailingPredicate == Left("Should be strictly positive"), "'either' returns left if predicate fails")
+      val eitherWithSucceedingPredicate = Temperature.either(100)
+      assert(eitherWithSucceedingPredicate == Right(Temperature(100)), "right should contain result of 'apply'")
+    }
+
+    test("option") {
+      val fromWithFailingPredicate = Temperature.option(-5.0)
+      assert(fromWithFailingPredicate == None, "'option' returns None if predicate fails")
+      val fromWithSucceedingPredicate = Temperature.option(100)
+      assert(fromWithSucceedingPredicate == Some(Temperature(100)), "Some should contain result of 'apply'")
+    }
+
+    test("applyUnsafe") {
+      val appliedUnsafeWithFailingPredicate = Try(Temperature.applyUnsafe(-1))
+
+      assert(appliedUnsafeWithFailingPredicate.isFailure, "appliedUnsafe should fail when predicate fails")
+      assert(
+        appliedUnsafeWithFailingPredicate.toEither.swap.toOption.get.getMessage == "Should be strictly positive",
+        "exception should duplicate message of failed predicate"
+      )
+
+      val appliedUnsafeWithSucceedingPredicate = Try(Temperature.applyUnsafe(100))
+      assert(
+        appliedUnsafeWithSucceedingPredicate.toOption.get == Temperature(100),
+        "should be wrapped result of apply"
+      )
     }
   }
-
-/*
-opaque type Temperature = Double :| Positive
-^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-value apply is not a member of object io.github.iltotore.iron.testing.Temperature.
-Extension methods were tried, but could not be fully constructed:
-
-    io.github.iltotore.iron.autoRefine[
-      io.github.iltotore.iron.testing.Temperature.type
-    , C](io.github.iltotore.iron.testing.Temperature)(
-      io.github.iltotore.iron.Constraint.given_UnionConstraint_A_C[
-        io.github.iltotore.iron.testing.Temperature.type
-      , C](<empty>)
-    )
-
-    io.github.iltotore.iron.testing.apply[A, C](Temperature)    failed with
-
-        Found:    io.github.iltotore.iron.testing.Temperature.type
-        Required: io.github.iltotore.iron.testing.RefinedTypeOps[A,
-          io.github.iltotore.iron.IronType[A, C]
-        ]
-
-        where:    A is a type variable
-                  C is a type variable
-
-      val t = Temperature(2)
-
-
-val t: Temperature = 2
-^^^^^^^^^^^^^^^^^^^^^^
-
-Found:    (2 : Int)
-Required: io.github.iltotore.iron.testing.Temperature
-      val t: Temperature = 2
-
- */

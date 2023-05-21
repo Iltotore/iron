@@ -229,6 +229,12 @@ object zio extends SubModule {
 
   object js extends JSCrossModule
 
+  object test extends Tests {
+    def ivyDeps = Agg(
+      ivy"com.lihaoyi::utest:0.8.1"
+    )
+  }
+
 }
 
 object zioJson extends SubModule {

@@ -55,3 +55,23 @@ createUser("Iltotore", 18) //Success(Chunk(),User(Iltotore,18))
 createUser("Il_totore", 18) //Failure(Chunk(),NonEmptyChunk(Username should be alphanumeric))
 createUser("Il_totore", -18) //Failure(Chunk(),NonEmptyChunk(Username should be alphanumeric, Age should be positive))
 ```
+
+## Companion object (RefinedTypeOps validation extension)
+
+Companion object created with `RefinedTypeOps` is being extended by set of functions.
+
+### Companion object
+```scala
+opaque type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps[Temperature]
+```
+
+### Imports
+`import io.github.iltotore.iron.zio.validation`
+
+### validation
+The example below returns `ZValidation.Success` or `ZValidation.Failure`.
+
+```scala
+Temperature.validation(x)
+```

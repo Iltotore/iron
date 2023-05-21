@@ -82,3 +82,24 @@ name1.show // Martin
 name1 |+| name2 // MartinGeorge
 age1 === 49 // false
 ```
+
+## Companion object (RefinedTypeOps extensions)
+
+Companion object created with `RefinedTypeOps` is being extended by set of functions.
+
+### Companion object
+```scala
+opaque type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps[Temperature]
+```
+
+### Imports
+`import io.github.iltotore.iron.cats.*`
+
+### functions
+All the example return cats structures with either result or error report.
+- `Temperature.eitherNec(-5.0)`
+- `Temperature.eitherNel(-5.0)`
+- `Temperature.validated(-5.0)`
+- `Temperature.validatedNec(-5.0)`
+- `Temperature.validatedNel(-5.0)`

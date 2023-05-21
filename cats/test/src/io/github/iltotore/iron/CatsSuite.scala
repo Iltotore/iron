@@ -115,15 +115,6 @@ object CatsSuite extends TestSuite:
       assert(validatedWithSucceedingPredicate == Valid(Temperature(100)), "right should contain result of 'apply'")
     }
 
-    test("validated") {
-      import io.github.iltotore.iron.cats.*
-
-      val validatedWithFailingPredicate = Temperature.validated(-5.0)
-      assert(validatedWithFailingPredicate == Invalid("Should be strictly positive"), "'eitherNec' returns left if predicate fails")
-      val validatedWithSucceedingPredicate = Temperature.validated(100)
-      assert(validatedWithSucceedingPredicate == Valid(Temperature(100)), "valid should contain result of 'apply'")
-    }
-
     test("validatedNec") {
       import io.github.iltotore.iron.cats.*
 

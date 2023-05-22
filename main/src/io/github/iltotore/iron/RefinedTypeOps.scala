@@ -25,6 +25,9 @@ class RefinedTypeOpsImpl[A, C, T]:
    */
   inline def assume(value: A): T = value.assume[C].asInstanceOf[T]
 
+  extension (value: T)
+    inline def raw: A = value.asInstanceOf[A]
+    
 extension [A, C, T](ops: RefinedTypeOpsImpl[A, C, T])
 
   /**

@@ -18,11 +18,12 @@ object RefinedTypeOpsSuite extends TestSuite:
       compileError("Temperature(-100)")
     }
 
-    test("raw") {
-      val temperature = Temperature(100)
-      compileError("temperature + 100")
-      val sum: Double = temperature.raw + 100
-      assert(sum == 200.0)
+    test("value") {
+      val t1 = Temperature(100)
+      val t2 = Temperature(100)
+
+      val result = t1.value + t2.value
+      assert(result == 200.0)
     }
 
     test("re-eval") {

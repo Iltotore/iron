@@ -18,6 +18,14 @@ object RefinedTypeOpsSuite extends TestSuite:
       compileError("Temperature(-100)")
     }
 
+    test("value") {
+      val t1 = Temperature(100)
+      val t2 = Temperature(100)
+
+      val result = t1.value + t2.value
+      assert(result == 200.0)
+    }
+
     test("re-eval") {
       val x: Double :| Positive = 5.0
       val y: Double :| Greater[10] = 15.0

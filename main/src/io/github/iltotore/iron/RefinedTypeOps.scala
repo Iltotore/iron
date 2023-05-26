@@ -25,6 +25,9 @@ class RefinedTypeOpsImpl[A, C, T]:
    */
   inline def assume(value: A): T = value.assume[C].asInstanceOf[T]
 
+  extension (wrapper: T)
+    inline def value: IronType[A, C] = wrapper.asInstanceOf[IronType[A, C]]
+    
 extension [A, C, T](ops: RefinedTypeOpsImpl[A, C, T])
 
   /**

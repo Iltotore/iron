@@ -16,7 +16,6 @@ import scala.language.implicitConversions
  * @note This method ensures that the value satisfies the constraint. If it doesn't or isn't evaluable at compile-time, the compilation is aborted.
  */
 implicit inline def autoRefine[A, C](inline value: A)(using inline constraint: Constraint[A, C]): A :| C =
-  inline if !macros.isConstant(value) then macros.nonConstantError(value)
   macros.assertCondition(value, constraint.test(value), constraint.message)
   IronType(value)
 

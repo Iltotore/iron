@@ -133,27 +133,6 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
   '{}
 
 /**
- * Throw compile-time error indicating that the given value is not constant.
- *
- * @param value the non-constant value, used in the error message.
- * @tparam A the type of `value`.
- */
-inline def nonConstantError[A](inline value: A): Nothing = ${ nonConstantErrorImpl('value) }
-
-private def nonConstantErrorImpl[A](expr: Expr[A])(using Quotes): Nothing =
-
-  import quotes.reflect.*
-
-  compileTimeError(
-    s"""Cannot refine non full inlined input at compile-time.
-       |To test a constraint at runtime, use the `refine` extension method.
-       |
-       |Note: Due to a Scala limitation, already-refined types cannot be tested at compile-time (unless proven by an `Implication`).
-       |
-       |${CYAN}Inlined input$RESET: ${expr.asTerm.show}""".stripMargin
-  )
-
-/**
  * Checks if the given value is constant (aka evaluable at compile time).
  *
  * @param value the value to test.

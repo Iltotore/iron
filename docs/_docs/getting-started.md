@@ -27,7 +27,7 @@ ivy"io.github.iltotore::iron:version"
 The following import is often used:
 
 ```scala
-import io.github.iltotore.iron.{given, *}
+import io.github.iltotore.iron.*
 ```
 
 This import contains bases to make Iron work including:

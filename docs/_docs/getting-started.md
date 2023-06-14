@@ -59,3 +59,4 @@ Now that you know how to import Iron in your project, you should check the [refe
 - [Iron Type](reference/iron-type.md): the core data type of Iron.
 - [Constraint](reference/constraint.md): to create your own constraints.
 - [Refinement Methods](reference/refinement.md): to use constraints and refine values.
+- [New types](reference/newtypes.md): to encapsulate business refined types.

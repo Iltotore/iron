@@ -66,6 +66,17 @@ object any:
    */
   final class StrictEqual[V]
 
+  /**
+   * Tests strict equality with any one of the given values.
+   * @tparam V the values the input must be in.
+   * @example {{{
+   * type Digit = In[(0, 1, 2, 3, 4, 5, 6, 7, 8, 9)]
+   * }}}
+   */
+  type In[V <: NonEmptyTuple] = V match
+    case *:[h, EmptyTuple] => StrictEqual[h]
+    case *:[h, t]          => StrictEqual[h] | In[t]
+
   object True:
 
     inline given [A]: Constraint[A, True] with

@@ -1,11 +1,12 @@
 package io.github.iltotore.iron.constraint
 
 import io.github.iltotore.iron.{==>, Constraint, Implication}
-import io.github.iltotore.iron.compileTime.stringValue
+import io.github.iltotore.iron.compileTime.*
 
 import scala.compiletime.{constValue, summonInline}
 import scala.compiletime.ops.any.ToString
 import scala.compiletime.ops.boolean
+import scala.util.NotGiven
 
 /**
  * Constraints working for any type (e.g [[any.StrictEqual]]) and constraint operators (e.g [[any.Not]]...).
@@ -164,9 +165,26 @@ object any:
      */
     given right[C1, C2, C3](using C1 ==> Not[C2], C1 ==> C3): (C1 ==> Xor[C2, C3]) = Implication()
 
-  object StrictEqual:
-    inline given [A, V]: Constraint[A, StrictEqual[V]] with
+  object StrictEqual extends StrictEqualLowPriority:
 
-      override inline def test(value: A): Boolean = value == constValue[V]
+    inline given [V <: NumConstant](using NotGiven[V =:= 0]): StrictEqualConstraint[BigDecimal, V] with
+      override inline def test(value: BigDecimal): Boolean = value == BigDecimal(doubleValue[V])
 
+    // specialized case avoids allocation per test
+    inline given StrictEqualConstraint[BigDecimal, 0] with
+      override inline def test(value: BigDecimal): Boolean = value == numeric.bigDecimal0
+
+    inline given [V <: NumConstant](using NotGiven[V =:= 0]): StrictEqualConstraint[BigInt, V] with
+      override inline def test(value: BigInt): Boolean = value == BigInt(longValue[V])
+
+    // specialized case avoids allocation per test
+    inline given StrictEqualConstraint[BigInt, 0] with
+      override inline def test(value: BigInt): Boolean = value == numeric.bigInt0
+
+  sealed trait StrictEqualLowPriority:
+
+    protected trait StrictEqualConstraint[A, V] extends Constraint[A, StrictEqual[V]]:
       override inline def message: String = "Should strictly equal to " + constValue[ToString[V]]
+
+    inline given [A, V]: StrictEqualConstraint[A, V] with
+      override inline def test(value: A): Boolean = value == constValue[V]

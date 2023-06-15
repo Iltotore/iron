@@ -158,12 +158,31 @@ object compileTime:
     case Double => A & Double
 
   /**
+   * Polymorphic `ToLong`.
+   *
+   * @tparam A the constant type to cast.
+   */
+  type ToLong[A <: NumConstant] <: Long = A match
+    case Double => double.ToLong[A]
+    case Float  => float.ToLong[A]
+    case Int    => int.ToLong[A]
+    case Long   => A & Long
+
+  /**
    * Get the `Double` value of the given type.
    *
    * @tparam A the type to convert to `Double`.
    * @return the String representation of the given type. Equivalent to `constValue[ToDouble[A]]`.
    */
   transparent inline def doubleValue[A <: NumConstant]: Double = constValue[ToDouble[A]]
+
+  /**
+   * Get the `Long` value of the given type.
+   *
+   * @tparam A the type to convert to `Long`.
+   * @return the Long representation of the given type. Equivalent to `constValue[ToLong[A]]`.
+   */
+  transparent inline def longValue[A <: NumConstant]: Long = constValue[ToLong[A]]
 
   /**
    * Get the `String` value of the given type.

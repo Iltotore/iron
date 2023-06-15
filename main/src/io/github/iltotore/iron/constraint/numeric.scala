@@ -4,10 +4,15 @@ import io.github.iltotore.iron.constraint.any.*
 import io.github.iltotore.iron.compileTime.*
 import io.github.iltotore.iron.{==>, Constraint, Implication}
 
+import scala.util.NotGiven
+
 /**
  * Number-related constraints.
  */
 object numeric:
+
+  private[iron] val bigDecimal0: BigDecimal = BigDecimal(0)
+  private[iron] val bigInt0: BigInt = BigInt(0)
 
   /**
    * Tests strict superiority.
@@ -133,6 +138,20 @@ object numeric:
     inline given [V <: NumConstant]: GreaterConstraint[Double, V] with
       override inline def test(value: Double): Boolean = value > doubleValue[V]
 
+    inline given [V <: NumConstant](using NotGiven[V =:= 0]): GreaterConstraint[BigDecimal, V] with
+      override inline def test(value: BigDecimal): Boolean = value > doubleValue[V]
+
+    // specialized case avoids allocation per test
+    inline given GreaterConstraint[BigDecimal, 0] with
+      override inline def test(value: BigDecimal): Boolean = value > bigDecimal0
+
+    inline given [V <: NumConstant](using NotGiven[V =:= 0]): GreaterConstraint[BigInt, V] with
+      override inline def test(value: BigInt): Boolean = value > longValue[V]
+
+    // specialized case avoids allocation per test
+    inline given GreaterConstraint[BigInt, 0] with
+      override inline def test(value: BigInt): Boolean = value > bigInt0
+
     given [V1, V2](using V1 > V2 =:= true): (Greater[V1] ==> Greater[V2]) = Implication()
 
     given [V1, V2](using V1 > V2 =:= true): (StrictEqual[V1] ==> Greater[V2]) = Implication()
@@ -158,6 +177,20 @@ object numeric:
 
     inline given [V <: NumConstant]: LessConstraint[Double, V] with
       override inline def test(value: Double): Boolean = value < doubleValue[V]
+
+    inline given [V <: NumConstant](using NotGiven[V =:= 0]): LessConstraint[BigDecimal, V] with
+      override inline def test(value: BigDecimal): Boolean = value < doubleValue[V]
+
+    // specialized case avoids allocation per test
+    inline given LessConstraint[BigDecimal, 0] with
+      override inline def test(value: BigDecimal): Boolean = value < bigDecimal0
+
+    inline given [V <: NumConstant](using NotGiven[V =:= 0]): LessConstraint[BigInt, V] with
+      override inline def test(value: BigInt): Boolean = value < longValue[V]
+
+    // specialized case avoids allocation per test
+    inline given LessConstraint[BigInt, 0] with
+      override inline def test(value: BigInt): Boolean = value < bigInt0
 
     given [V1, V2](using V1 < V2 =:= true): (Less[V1] ==> Less[V2]) = Implication()
 

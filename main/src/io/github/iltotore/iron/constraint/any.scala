@@ -167,19 +167,19 @@ object any:
 
   object StrictEqual extends StrictEqualLowPriority:
 
-    inline given [V <: NumConstant](using NotGiven[V =:= 0]): StrictEqualConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean = value == BigDecimal(doubleValue[V])
+    inline given [V <: NumConstant]: StrictEqualConstraint[BigDecimal, V] with
+      override inline def test(value: BigDecimal): Boolean =
+        value == (inline doubleValue[V] match
+          case 0.0   => numeric.bigDecimal0
+          case limit => BigDecimal(limit)
+        )
 
-    // specialized case avoids allocation per test
-    inline given StrictEqualConstraint[BigDecimal, 0] with
-      override inline def test(value: BigDecimal): Boolean = value == numeric.bigDecimal0
-
-    inline given [V <: NumConstant](using NotGiven[V =:= 0]): StrictEqualConstraint[BigInt, V] with
-      override inline def test(value: BigInt): Boolean = value == BigInt(longValue[V])
-
-    // specialized case avoids allocation per test
-    inline given StrictEqualConstraint[BigInt, 0] with
-      override inline def test(value: BigInt): Boolean = value == numeric.bigInt0
+    inline given [V <: NumConstant]: StrictEqualConstraint[BigInt, V] with
+      override inline def test(value: BigInt): Boolean =
+        value == (inline longValue[V] match
+          case 0L    => numeric.bigInt0
+          case limit => BigInt(limit)
+        )
 
   sealed trait StrictEqualLowPriority:
 

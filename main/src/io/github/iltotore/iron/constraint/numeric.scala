@@ -138,19 +138,19 @@ object numeric:
     inline given [V <: NumConstant]: GreaterConstraint[Double, V] with
       override inline def test(value: Double): Boolean = value > doubleValue[V]
 
-    inline given [V <: NumConstant](using NotGiven[V =:= 0]): GreaterConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean = value > doubleValue[V]
+    inline given [V <: NumConstant]: GreaterConstraint[BigDecimal, V] with
+      override inline def test(value: BigDecimal): Boolean =
+        value > (inline doubleValue[V] match
+          case 0.0   => bigDecimal0
+          case limit => BigDecimal(limit)
+        )
 
-    // specialized case avoids allocation per test
-    inline given GreaterConstraint[BigDecimal, 0] with
-      override inline def test(value: BigDecimal): Boolean = value > bigDecimal0
-
-    inline given [V <: NumConstant](using NotGiven[V =:= 0]): GreaterConstraint[BigInt, V] with
-      override inline def test(value: BigInt): Boolean = value > longValue[V]
-
-    // specialized case avoids allocation per test
-    inline given GreaterConstraint[BigInt, 0] with
-      override inline def test(value: BigInt): Boolean = value > bigInt0
+    inline given [V <: NumConstant]: GreaterConstraint[BigInt, V] with
+      override inline def test(value: BigInt): Boolean =
+        value > (inline longValue[V] match
+          case 0L    => bigInt0
+          case limit => BigInt(limit)
+        )
 
     given [V1, V2](using V1 > V2 =:= true): (Greater[V1] ==> Greater[V2]) = Implication()
 
@@ -179,14 +179,18 @@ object numeric:
       override inline def test(value: Double): Boolean = value < doubleValue[V]
 
     inline given [V <: NumConstant](using NotGiven[V =:= 0]): LessConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean = value < doubleValue[V]
-
-    // specialized case avoids allocation per test
-    inline given LessConstraint[BigDecimal, 0] with
-      override inline def test(value: BigDecimal): Boolean = value < bigDecimal0
+      override inline def test(value: BigDecimal): Boolean =
+        value < (inline doubleValue[V] match
+          case 0.0   => bigDecimal0
+          case limit => BigDecimal(limit)
+        )
 
     inline given [V <: NumConstant](using NotGiven[V =:= 0]): LessConstraint[BigInt, V] with
-      override inline def test(value: BigInt): Boolean = value < longValue[V]
+      override inline def test(value: BigInt): Boolean =
+        value < (inline longValue[V] match
+          case 0L    => bigInt0
+          case limit => BigInt(limit)
+        )
 
     // specialized case avoids allocation per test
     inline given LessConstraint[BigInt, 0] with

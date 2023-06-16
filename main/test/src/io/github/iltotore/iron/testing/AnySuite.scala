@@ -44,4 +44,10 @@ object AnySuite extends TestSuite:
       test - 0.assertRefine[StrictEqual[0]]
       test - 1.assertNotRefine[StrictEqual[0]]
     }
+
+    test("in") {
+      test - 0.assertRefine[In[(0, 1)]]
+      test - 1.assertRefine[In[(0, 1)]]
+      test - 2.assertNotRefine[In[(0, 1)]]
+    }
   }

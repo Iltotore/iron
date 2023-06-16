@@ -168,26 +168,18 @@ object any:
   object StrictEqual extends StrictEqualLowPriority:
 
     inline given [V <: NumConstant]: StrictEqualConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean =
-        value == (inline doubleValue[V] match
-          case 0.0   => numeric.bigDecimal0
-          case limit => BigDecimal(limit)
-        )
+      override inline def test(value: BigDecimal): Boolean = value == doubleValue[V]
 
     inline given [V <: IntConstant]: StrictEqualConstraint[BigInt, V] with
-      override inline def test(value: BigInt): Boolean =
-        value == (inline longValue[V] match
-          case 0L    => numeric.bigInt0
-          case limit => BigInt(limit)
-        )
+      override inline def test(value: BigInt): Boolean = value == longValue[V]
 
     inline given jBigDecimal[V <: NumConstant]: StrictEqualConstraint[java.math.BigDecimal, V] with
       override inline def test(value: java.math.BigDecimal): Boolean =
-        value == (inline if doubleValue[V] == 0.0 then java.math.BigDecimal.ZERO else java.math.BigDecimal(stringValue[V]))
+        value == java.math.BigDecimal(stringValue[V])
 
     inline given jBigInteger[V <: IntConstant]: StrictEqualConstraint[java.math.BigInteger, V] with
       override inline def test(value: java.math.BigInteger): Boolean =
-        value == (inline if longValue[V] == 0L then java.math.BigInteger.ZERO else java.math.BigInteger(stringValue[V]))
+        value == java.math.BigInteger(stringValue[V])
 
   sealed trait StrictEqualLowPriority:
 

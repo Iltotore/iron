@@ -145,7 +145,7 @@ object numeric:
           case limit => BigDecimal(limit)
         )
 
-    inline given [V <: NumConstant]: GreaterConstraint[BigInt, V] with
+    inline given [V <: IntConstant]: GreaterConstraint[BigInt, V] with
       override inline def test(value: BigInt): Boolean =
         value > (inline longValue[V] match
           case 0L    => bigInt0
@@ -193,7 +193,7 @@ object numeric:
           case limit => BigDecimal(limit)
         )
 
-    inline given [V <: NumConstant]: LessConstraint[BigInt, V] with
+    inline given [V <: IntConstant]: LessConstraint[BigInt, V] with
       override inline def test(value: BigInt): Boolean =
         value < (inline longValue[V] match
           case 0L    => bigInt0

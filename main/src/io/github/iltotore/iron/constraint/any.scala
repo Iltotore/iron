@@ -174,7 +174,7 @@ object any:
           case limit => BigDecimal(limit)
         )
 
-    inline given [V <: NumConstant]: StrictEqualConstraint[BigInt, V] with
+    inline given [V <: IntConstant]: StrictEqualConstraint[BigInt, V] with
       override inline def test(value: BigInt): Boolean =
         value == (inline longValue[V] match
           case 0L    => numeric.bigInt0

@@ -69,9 +69,11 @@ trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { 
   }
 }
 
-object docs extends ScalaModule {
+object docs extends BaseModule {
 
   def scalaVersion = versions.scala
+
+  def artifactName = "iron-docs"
 
   val modules: Seq[ScalaModule] = Seq(main, cats, circe, jsoniter, scalacheck, zio, zioJson)
 
@@ -183,6 +185,11 @@ trait SubModule extends BaseModule {
     def moduleDeps = Seq(main.native)
   }
 
+}
+
+object sandbox extends SubModule {
+
+  def artifactName = "sandbox"
 }
 
 object cats extends SubModule {

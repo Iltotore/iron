@@ -181,6 +181,14 @@ object any:
           case limit => BigInt(limit)
         )
 
+    inline given jBigDecimal[V <: NumConstant]: StrictEqualConstraint[java.math.BigDecimal, V] with
+      override inline def test(value: java.math.BigDecimal): Boolean =
+        value == (inline if doubleValue[V] == 0.0 then java.math.BigDecimal.ZERO else java.math.BigDecimal(stringValue[V]))
+
+    inline given jBigInteger[V <: IntConstant]: StrictEqualConstraint[java.math.BigInteger, V] with
+      override inline def test(value: java.math.BigInteger): Boolean =
+        value == (inline if longValue[V] == 0L then java.math.BigInteger.ZERO else java.math.BigInteger(stringValue[V]))
+
   sealed trait StrictEqualLowPriority:
 
     protected trait StrictEqualConstraint[A, V] extends Constraint[A, StrictEqual[V]]:

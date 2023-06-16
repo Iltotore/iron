@@ -152,6 +152,14 @@ object numeric:
           case limit => BigInt(limit)
         )
 
+    inline given jBigDecimal[V <: NumConstant]: GreaterConstraint[java.math.BigDecimal, V] with
+      override inline def test(value: java.math.BigDecimal): Boolean =
+        value.compareTo(inline if doubleValue[V] == 0.0 then java.math.BigDecimal.ZERO else java.math.BigDecimal(stringValue[V])) > 0
+
+    inline given jBigInteger[V <: IntConstant]: GreaterConstraint[java.math.BigInteger, V] with
+      override inline def test(value: java.math.BigInteger): Boolean =
+        value.compareTo(inline if longValue[V] == 0L then java.math.BigInteger.ZERO else java.math.BigInteger(stringValue[V])) > 0
+
     given [V1, V2](using V1 > V2 =:= true): (Greater[V1] ==> Greater[V2]) = Implication()
 
     given [V1, V2](using V1 > V2 =:= true): (StrictEqual[V1] ==> Greater[V2]) = Implication()
@@ -191,6 +199,14 @@ object numeric:
           case 0L    => bigInt0
           case limit => BigInt(limit)
         )
+
+    inline given jBigDecimal[V <: NumConstant]: LessConstraint[java.math.BigDecimal, V] with
+      override inline def test(value: java.math.BigDecimal): Boolean =
+        value.compareTo(inline if doubleValue[V] == 0.0 then java.math.BigDecimal.ZERO else java.math.BigDecimal(stringValue[V])) < 0
+
+    inline given jBigInteger[V <: IntConstant]: LessConstraint[java.math.BigInteger, V] with
+      override inline def test(value: java.math.BigInteger): Boolean =
+        value.compareTo(inline if longValue[V] == 0L then java.math.BigInteger.ZERO else java.math.BigInteger(stringValue[V])) < 0
 
     given [V1, V2](using V1 < V2 =:= true): (Less[V1] ==> Less[V2]) = Implication()
 

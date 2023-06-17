@@ -165,7 +165,13 @@ object any:
      */
     given right[C1, C2, C3](using C1 ==> Not[C2], C1 ==> C3): (C1 ==> Xor[C2, C3]) = Implication()
 
-  object StrictEqual extends StrictEqualLowPriority:
+  object StrictEqual:
+
+    private trait StrictEqualConstraint[A, V] extends Constraint[A, StrictEqual[V]]:
+      override inline def message: String = "Should strictly equal to " + constValue[ToString[V]]
+
+    inline given [A, V]: StrictEqualConstraint[A, V] with
+      override inline def test(value: A): Boolean = value == constValue[V]
 
     inline given [V <: NumConstant]: StrictEqualConstraint[BigDecimal, V] with
       override inline def test(value: BigDecimal): Boolean = value == doubleValue[V]
@@ -180,11 +186,3 @@ object any:
     inline given jBigInteger[V <: IntConstant]: StrictEqualConstraint[java.math.BigInteger, V] with
       override inline def test(value: java.math.BigInteger): Boolean =
         value == java.math.BigInteger(stringValue[V])
-
-  sealed trait StrictEqualLowPriority:
-
-    protected trait StrictEqualConstraint[A, V] extends Constraint[A, StrictEqual[V]]:
-      override inline def message: String = "Should strictly equal to " + constValue[ToString[V]]
-
-    inline given [A, V]: StrictEqualConstraint[A, V] with
-      override inline def test(value: A): Boolean = value == constValue[V]

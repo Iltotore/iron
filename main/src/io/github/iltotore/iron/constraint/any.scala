@@ -168,7 +168,7 @@ object any:
   object StrictEqual:
 
     private trait StrictEqualConstraint[A, V] extends Constraint[A, StrictEqual[V]]:
-      override inline def message: String = "Should strictly equal to " + constValue[ToString[V]]
+      override inline def message: String = "Should strictly equal to " + stringValue[V]
 
     inline given [A, V]: StrictEqualConstraint[A, V] with
       override inline def test(value: A): Boolean = value == constValue[V]

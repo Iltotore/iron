@@ -176,13 +176,17 @@ object any:
     inline given [V <: NumConstant]: StrictEqualConstraint[BigDecimal, V] with
       override inline def test(value: BigDecimal): Boolean = value == doubleValue[V]
 
-    inline given [V <: IntConstant]: StrictEqualConstraint[BigInt, V] with
+    inline given [V <: Integral]: StrictEqualConstraint[BigInt, V] with
       override inline def test(value: BigInt): Boolean = value == longValue[V]
 
-    inline given jBigDecimal[V <: NumConstant]: StrictEqualConstraint[java.math.BigDecimal, V] with
+    inline given jBigDecimalDouble[V <: Floating]: StrictEqualConstraint[java.math.BigDecimal, V] with
       override inline def test(value: java.math.BigDecimal): Boolean =
-        value == java.math.BigDecimal(stringValue[V])
+        value == java.math.BigDecimal.valueOf(doubleValue[V])
 
-    inline given jBigInteger[V <: IntConstant]: StrictEqualConstraint[java.math.BigInteger, V] with
+    inline given jBigDecimalLong[V <: Integral]: StrictEqualConstraint[java.math.BigDecimal, V] with
+      override inline def test(value: java.math.BigDecimal): Boolean =
+        value == java.math.BigDecimal.valueOf(longValue[V])
+
+    inline given jBigInteger[V <: Integral]: StrictEqualConstraint[java.math.BigInteger, V] with
       override inline def test(value: java.math.BigInteger): Boolean =
-        value == java.math.BigInteger(stringValue[V])
+        value == java.math.BigInteger.valueOf(longValue[V])

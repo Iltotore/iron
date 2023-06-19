@@ -11,6 +11,14 @@ object NumericSuite extends TestSuite:
     test("greater") {
       test - 0.assertNotRefine[Greater[0]]
       test - 1.assertRefine[Greater[0]]
+      test - BigDecimal(0).assertNotRefine[Greater[0]]
+      test - BigDecimal(1).assertRefine[Greater[0]]
+      test - BigInt(0).assertNotRefine[Greater[0]]
+      test - BigInt(1).assertRefine[Greater[0]]
+      test - java.math.BigDecimal("0").assertNotRefine[Greater[0]]
+      test - java.math.BigDecimal("1").assertRefine[Greater[0]]
+      test - java.math.BigInteger("0").assertNotRefine[Greater[0]]
+      test - java.math.BigInteger("1").assertRefine[Greater[0]]
     }
 
     test("greaterEqual") {
@@ -22,6 +30,14 @@ object NumericSuite extends TestSuite:
     test("less") {
       test - 0.assertNotRefine[Less[0]]
       test - -1.assertRefine[Less[0]]
+      test - BigDecimal(0).assertNotRefine[Less[0]]
+      test - BigDecimal(-1).assertRefine[Less[0]]
+      test - BigInt(0).assertNotRefine[Less[0]]
+      test - BigInt(-1).assertRefine[Less[0]]
+      test - java.math.BigDecimal("0").assertNotRefine[Less[0]]
+      test - java.math.BigDecimal("-1").assertRefine[Less[0]]
+      test - java.math.BigInteger("0").assertNotRefine[Less[0]]
+      test - java.math.BigInteger("-1").assertRefine[Less[0]]
     }
 
     test("lessEqual") {

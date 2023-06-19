@@ -10,10 +10,6 @@ import scala.quoted.*
  */
 object compileTime:
 
-  type Floating = Float | Double
-
-  type Integral = Int | Long
-
   type NumConstant = Int | Long | Float | Double
 
   /**

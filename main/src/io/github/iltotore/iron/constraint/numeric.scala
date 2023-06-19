@@ -138,18 +138,18 @@ object numeric:
     inline given [V <: NumConstant]: GreaterConstraint[BigDecimal, V] with
       override inline def test(value: BigDecimal): Boolean = value > doubleValue[V]
 
-    inline given [V <: Integral]: GreaterConstraint[BigInt, V] with
+    inline given [V <: Int | Long]: GreaterConstraint[BigInt, V] with
       override inline def test(value: BigInt): Boolean = value > longValue[V]
 
-    inline given jBigDecimalDouble[V <: Floating]: GreaterConstraint[java.math.BigDecimal, V] with
+    inline given jBigDecimalDouble[V <: Float | Double]: GreaterConstraint[java.math.BigDecimal, V] with
       override inline def test(value: java.math.BigDecimal): Boolean =
         value.compareTo(java.math.BigDecimal.valueOf(doubleValue[V])) > 0
 
-    inline given jBigDecimalLong[V <: Integral]: GreaterConstraint[java.math.BigDecimal, V] with
+    inline given jBigDecimalLong[V <: Int | Long]: GreaterConstraint[java.math.BigDecimal, V] with
       override inline def test(value: java.math.BigDecimal): Boolean =
         value.compareTo(java.math.BigDecimal.valueOf(longValue[V])) > 0
 
-    inline given jBigInteger[V <: Integral]: GreaterConstraint[java.math.BigInteger, V] with
+    inline given jBigInteger[V <: Int | Long]: GreaterConstraint[java.math.BigInteger, V] with
       override inline def test(value: java.math.BigInteger): Boolean =
         value.compareTo(java.math.BigInteger.valueOf(longValue[V])) > 0
 
@@ -182,18 +182,18 @@ object numeric:
     inline given [V <: NumConstant]: LessConstraint[BigDecimal, V] with
       override inline def test(value: BigDecimal): Boolean = value < doubleValue[V]
 
-    inline given [V <: Integral]: LessConstraint[BigInt, V] with
+    inline given [V <: Int | Long]: LessConstraint[BigInt, V] with
       override inline def test(value: BigInt): Boolean = value < longValue[V]
 
-    inline given jBigDecimalDouble[V <: Floating]: LessConstraint[java.math.BigDecimal, V] with
+    inline given jBigDecimalDouble[V <: Float | Double]: LessConstraint[java.math.BigDecimal, V] with
       override inline def test(value: java.math.BigDecimal): Boolean =
         value.compareTo(java.math.BigDecimal.valueOf(doubleValue[V])) < 0
 
-    inline given jBigDecimalLong[V <: Integral]: LessConstraint[java.math.BigDecimal, V] with
+    inline given jBigDecimalLong[V <: Int | Long]: LessConstraint[java.math.BigDecimal, V] with
       override inline def test(value: java.math.BigDecimal): Boolean =
         value.compareTo(java.math.BigDecimal.valueOf(longValue[V])) < 0
 
-    inline given jBigInteger[V <: Integral]: LessConstraint[java.math.BigInteger, V] with
+    inline given jBigInteger[V <: Int | Long]: LessConstraint[java.math.BigInteger, V] with
       override inline def test(value: java.math.BigInteger): Boolean =
         value.compareTo(java.math.BigInteger.valueOf(longValue[V])) < 0
 

@@ -173,11 +173,14 @@ object any:
     inline given [A, V]: StrictEqualConstraint[A, V] with
       override inline def test(value: A): Boolean = value == constValue[V]
 
-    inline given [V <: NumConstant]: StrictEqualConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean = value == doubleValue[V]
+    inline given bigDecimalDouble[V <: Float | Double]: StrictEqualConstraint[BigDecimal, V] with
+      override inline def test(value: BigDecimal): Boolean = value == BigDecimal(doubleValue[V])
+
+    inline given bigDecimalLong[V <: Int | Long]: StrictEqualConstraint[BigDecimal, V] with
+      override inline def test(value: BigDecimal): Boolean = value == BigDecimal(longValue[V])
 
     inline given [V <: Int | Long]: StrictEqualConstraint[BigInt, V] with
-      override inline def test(value: BigInt): Boolean = value == longValue[V]
+      override inline def test(value: BigInt): Boolean = value == BigInt(longValue[V])
 
     inline given jBigDecimalDouble[V <: Float | Double]: StrictEqualConstraint[java.math.BigDecimal, V] with
       override inline def test(value: java.math.BigDecimal): Boolean =

@@ -135,11 +135,14 @@ object numeric:
     inline given [V <: NumConstant]: GreaterConstraint[Double, V] with
       override inline def test(value: Double): Boolean = value > doubleValue[V]
 
-    inline given [V <: NumConstant]: GreaterConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean = value > doubleValue[V]
+    inline given bigDecimalDouble[V <: Float | Double]: GreaterConstraint[BigDecimal, V] with
+      override inline def test(value: BigDecimal): Boolean = value > BigDecimal(doubleValue[V])
+
+    inline given bigDecimalLong[V <: Int | Long]: GreaterConstraint[BigDecimal, V] with
+      override inline def test(value: BigDecimal): Boolean = value > BigDecimal(longValue[V])
 
     inline given [V <: Int | Long]: GreaterConstraint[BigInt, V] with
-      override inline def test(value: BigInt): Boolean = value > longValue[V]
+      override inline def test(value: BigInt): Boolean = value > BigInt(longValue[V])
 
     inline given jBigDecimalDouble[V <: Float | Double]: GreaterConstraint[java.math.BigDecimal, V] with
       override inline def test(value: java.math.BigDecimal): Boolean =
@@ -179,11 +182,14 @@ object numeric:
     inline given [V <: NumConstant]: LessConstraint[Double, V] with
       override inline def test(value: Double): Boolean = value < doubleValue[V]
 
-    inline given [V <: NumConstant]: LessConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean = value < doubleValue[V]
+    inline given bigDecimalDouble[V <: Float | Double]: LessConstraint[BigDecimal, V] with
+      override inline def test(value: BigDecimal): Boolean = value < BigDecimal(doubleValue[V])
+
+    inline given bigDecimalLong[V <: Int | Long]: LessConstraint[BigDecimal, V] with
+      override inline def test(value: BigDecimal): Boolean = value < BigDecimal(longValue[V])
 
     inline given [V <: Int | Long]: LessConstraint[BigInt, V] with
-      override inline def test(value: BigInt): Boolean = value < longValue[V]
+      override inline def test(value: BigInt): Boolean = value < BigInt(longValue[V])
 
     inline given jBigDecimalDouble[V <: Float | Double]: LessConstraint[java.math.BigDecimal, V] with
       override inline def test(value: java.math.BigDecimal): Boolean =

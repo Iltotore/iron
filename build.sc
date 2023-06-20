@@ -1,7 +1,9 @@
 import $ivy.`io.chris-kipp::mill-ci-release::0.1.5`
 import io.kipp.mill.ci.release.CiReleaseModule
+import de.tobiasroeser.mill.vcs.version.VcsVersion
 
-import mill._, define._
+
+import mill._, define._, api.Result
 import scalalib._, scalalib.scalafmt._, scalalib.publish._, scalajslib._, scalanativelib._
 
 object versions {
@@ -69,9 +71,11 @@ trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { 
   }
 }
 
-object docs extends ScalaModule {
+object docs extends BaseModule {
 
   def scalaVersion = versions.scala
+
+  def artifactName = "iron-docs"
 
   val modules: Seq[ScalaModule] = Seq(main, cats, circe, jsoniter, scalacheck, zio, zioJson)
 
@@ -83,11 +87,44 @@ object docs extends ScalaModule {
     T.traverse(modules)(_.compileClasspath)().flatten
   }
 
-  def docResources = T.sources { millSourcePath }
+  def docVersions = T.source {
+    val targetDir = T.dest / "_assets"
+
+    val versions =
+      os
+        .proc("git", "tag", "-l", "v*.*.*")
+        .call(VcsVersion.vcsBasePath)
+        .out
+        .trim()
+        .split("\n")
+        .map(_.substring(1))
+        .filterNot(_.contains("-RC"))
+        .reverse
+
+
+    def versionLink(version: String): String = {
+      val splat = version.split("\\.")
+      val (major, minor) = (splat(0).toInt, splat(1).toInt)
+      if(major >= 2 && minor >= 2) s"https://www.javadoc.io/doc/io.github.iltotore/iron-docs_3/$version/docs/index.html"
+      else s"https://www.javadoc.io/doc/io.github.iltotore/iron_3/$version/docs/index.html"
+    }
+
+    val links = versions.map(v => (v, ujson.Str(versionLink(v))))
+    val withNightly = links :+ ("Nightly", ujson.Str("https://iltotore.github.io/iron/docs/index.html"))
+    val json = ujson.Obj("versions" -> ujson.Obj.from(withNightly))
+
+    val versionsFile = targetDir / "versions.json"
+    os.write.over(versionsFile, ujson.write(json), createFolders = true)
+
+    T.dest
+  }
+
+  def docResources = T.sources(millSourcePath, docVersions().path)
 
   def scalaDocOptions = Seq(
     "-project", "Iron",
     "-project-version", main.publishVersion(),
+    "-versions-dictionary-url", "versions.json",
     s"-social-links:github::${main.pomSettings().url}"
   )
 }
@@ -183,6 +220,11 @@ trait SubModule extends BaseModule {
     def moduleDeps = Seq(main.native)
   }
 
+}
+
+object sandbox extends SubModule {
+
+  def artifactName = "sandbox"
 }
 
 object cats extends SubModule {

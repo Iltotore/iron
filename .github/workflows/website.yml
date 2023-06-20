@@ -30,7 +30,10 @@ jobs:
       # Checks-out your repository under $GITHUB_WORKSPACE, so your job can access it
       - uses: actions/checkout@v2
         with:
-          ref: ${{ github.ref }}
+          repository: Iltotore/iron
+      - run: |
+          git fetch --prune --unshallow --tags
+          git tag -l
 
       - uses: actions/setup-java@v3
         with:

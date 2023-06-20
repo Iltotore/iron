@@ -1,7 +1,9 @@
 import $ivy.`io.chris-kipp::mill-ci-release::0.1.5`
 import io.kipp.mill.ci.release.CiReleaseModule
+import de.tobiasroeser.mill.vcs.version.VcsVersion
 
-import mill._, define._
+
+import mill._, define._, api.Result
 import scalalib._, scalalib.scalafmt._, scalalib.publish._, scalajslib._, scalanativelib._
 
 object versions {
@@ -85,11 +87,35 @@ object docs extends BaseModule {
     T.traverse(modules)(_.compileClasspath)().flatten
   }
 
-  def docResources = T.sources { millSourcePath }
+  def docVersions = T.source {
+    val targetDir = T.dest / "_assets"
+
+    val versions =
+      os
+        .proc("git", "tag", "-l", "v*.*.*")
+        .call(VcsVersion.vcsBasePath)
+        .out
+        .trim()
+        .split("\n")
+        .map(_.substring(1))
+        .filterNot(_.contains("-RC"))
+        .reverse
+
+    val links = versions.map(v => (v, ujson.Str(s"https://www.javadoc.io/doc/io.github.iltotore/iron_3/$v/docs/index.html")))
+    val json = ujson.Obj("versions" -> ujson.Obj.from(links :+ ("Nightly", ujson.Str("https://iltotore.github.io/iron/docs/index.html"))))
+
+    val versionsFile = targetDir / "versions.json"
+    os.write.over(versionsFile, ujson.write(json), createFolders = true)
+
+    T.dest
+  }
+
+  def docResources = T.sources(millSourcePath, docVersions().path)
 
   def scalaDocOptions = Seq(
     "-project", "Iron",
     "-project-version", main.publishVersion(),
+    "-versions-dictionary-url", "versions.json",
     s"-social-links:github::${main.pomSettings().url}"
   )
 }

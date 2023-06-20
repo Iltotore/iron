@@ -124,7 +124,7 @@ object docs extends BaseModule {
   def scalaDocOptions = Seq(
     "-project", "Iron",
     "-project-version", main.publishVersion(),
-    "-versions-dictionary-url", "versions.json",
+    "-versions-dictionary-url", "https://iltotore.github.io/iron/versions.json",
     s"-social-links:github::${main.pomSettings().url}"
   )
 }

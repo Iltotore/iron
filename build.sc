@@ -97,8 +97,8 @@ object docs extends BaseModule {
         .out
         .trim()
         .split("\n")
+        .filterNot(v => v.contains("-RC") || v.isBlank)
         .map(_.substring(1))
-        .filterNot(_.contains("-RC"))
         .reverse
 
 

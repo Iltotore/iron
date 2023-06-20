@@ -101,8 +101,17 @@ object docs extends BaseModule {
         .filterNot(_.contains("-RC"))
         .reverse
 
-    val links = versions.map(v => (v, ujson.Str(s"https://www.javadoc.io/doc/io.github.iltotore/iron_3/$v/docs/index.html")))
-    val json = ujson.Obj("versions" -> ujson.Obj.from(links :+ ("Nightly", ujson.Str("https://iltotore.github.io/iron/docs/index.html"))))
+
+    def versionLink(version: String): String = {
+      val splat = version.split("\\.")
+      val (major, minor) = (splat(0).toInt, splat(1).toInt)
+      if(major >= 2 && minor >= 2) s"https://www.javadoc.io/doc/io.github.iltotore/iron-docs_3/$version/docs/index.html"
+      else s"https://www.javadoc.io/doc/io.github.iltotore/iron_3/$version/docs/index.html"
+    }
+
+    val links = versions.map(v => (v, ujson.Str(versionLink(v))))
+    val withNightly = links :+ ("Nightly", ujson.Str("https://iltotore.github.io/iron/docs/index.html"))
+    val json = ujson.Obj("versions" -> ujson.Obj.from(withNightly))
 
     val versionsFile = targetDir / "versions.json"
     os.write.over(versionsFile, ujson.write(json), createFolders = true)

@@ -14,8 +14,7 @@ class RefinedTypeOpsImpl[A, C, T]:
    * @return the given value typed as [[IronType]]
    * @note This method ensures that the value satisfies the constraint. If it doesn't or isn't evaluable at compile-time, the compilation is aborted.
    */
-  inline def apply(value: A)(using Constraint[A, C]): T =
-    autoRefine[A, C](value).asInstanceOf[T]
+  inline def apply(value: A :| C): T = value.asInstanceOf[T]
 
   /**
    * Refine the given value at runtime, assuming the constraint holds.
@@ -49,16 +48,6 @@ extension [A, C, T](ops: RefinedTypeOpsImpl[A, C, T])
    */
   inline def option(value: A)(using constraint: Constraint[A, C]): Option[T] =
     Option.when(constraint.test(value))(value.asInstanceOf[T])
-
-  /**
-   * Refine the given value at runtime, resulting in an [[Option]].
-   *
-   * @param implication the constraint (with possible implication) to test with the value to refine.
-   * @return an Option containing this value as [[T]] or [[None]].
-   * @see [[fromIronType]], [[either]], [[applyUnsafe]].
-   */
-  inline def fromIronType[C1](value: IronType[A, C1])(using Implication[C1, C]): T =
-    value.asInstanceOf[T]
 
   /**
    * Refine the given value at runtime.

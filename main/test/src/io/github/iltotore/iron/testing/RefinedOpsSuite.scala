@@ -29,8 +29,8 @@ object RefinedTypeOpsSuite extends TestSuite:
     test("re-eval") {
       val x: Double :| Positive = 5.0
       val y: Double :| Greater[10] = 15.0
-      val t1 = Temperature.fromIronType(x)
-      val t2 = Temperature.fromIronType(y)
+      val t1 = Temperature(x)
+      val t2 = Temperature(y)
 
       assert(t1 == Temperature(5.0), "should be result of 'apply'")
       assert(t2 == Temperature(15.0), "should be result of 'apply'")
@@ -80,9 +80,9 @@ object RefinedTypeOpsSuite extends TestSuite:
       val positive: Double :| Positive = 11
       val greaterThan10: Double :| Greater[10] = 11
 
-      assert(Moisture.fromIronType(positive) == moisture)
-      assert(Moisture.fromIronType(greaterThan10) == moisture)
-      assert(Moisture.fromIronType(positive) == moisture)
+      assert(Moisture(positive) == moisture)
+      assert(Moisture(greaterThan10) == moisture)
+      assert(Moisture(positive) == moisture)
       val eitherWithFailingPredicate = Moisture.either(-5.0)
       assert(eitherWithFailingPredicate == Left("Should be strictly positive"), "'either' returns left if predicate fails")
       val eitherWithSucceedingPredicate = Moisture.either(100)

@@ -24,11 +24,6 @@ class RefinedTypeOpsImpl[A, C, T]:
    */
   inline def assume(value: A): T = value.assume[C].asInstanceOf[T]
 
-  extension (wrapper: T)
-    inline def value: IronType[A, C] = wrapper.asInstanceOf[IronType[A, C]]
-    
-extension [A, C, T](ops: RefinedTypeOpsImpl[A, C, T])
-
   /**
    * Refine the given value at runtime, resulting in an [[Either]].
    *
@@ -59,3 +54,6 @@ extension [A, C, T](ops: RefinedTypeOpsImpl[A, C, T])
    */
   inline def applyUnsafe(value: A)(using Constraint[A, C]): T =
     value.refine[C].asInstanceOf[T]
+
+  extension (wrapper: T)
+    inline def value: IronType[A, C] = wrapper.asInstanceOf[IronType[A, C]]

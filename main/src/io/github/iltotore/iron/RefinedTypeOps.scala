@@ -3,7 +3,7 @@ package io.github.iltotore.iron
 type RefinedTypeOps[T] = T match
   case IronType[a, c] => RefinedTypeOpsImpl[a, c, T]
 
-class RefinedTypeOpsImpl[A, C, T]:
+trait RefinedTypeOpsImpl[A, C, T]:
   /**
    * Implicitly refine at compile-time the given value.
    *

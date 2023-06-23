@@ -168,7 +168,7 @@ object cats extends IronCatsInstances:
   /**
    * Represent all Cats' typeclass instances for Iron.
    */
-private trait IronCatsInstances extends IronCatsLowPriority:
+private trait IronCatsInstances extends IronCatsLowPriority, RefinedTypeOpsCats:
   inline given [A, C](using inline ev: Eq[A]): Eq[A :| C] = ev.asInstanceOf[Eq[A :| C]]
 
   inline given [A, C](using inline ev: Order[A]): Order[A :| C] = ev.asInstanceOf[Order[A :| C]]
@@ -218,3 +218,17 @@ private trait IronCatsInstances extends IronCatsLowPriority:
  */
 private trait IronCatsLowPriority:
   inline given [A, C](using inline ev: Hash[A]): Hash[A :| C] = ev.asInstanceOf[Hash[A :| C]]
+
+private trait RefinedTypeOpsCats extends RefinedTypeOpsCatsLowPriority:
+
+  inline given[T](using inline mirror: RefinedTypeOps.Mirror[T], ev: Eq[mirror.IronType]): Eq[T] = ev.asInstanceOf[Eq[T]]
+
+  inline given[T](using inline mirror: RefinedTypeOps.Mirror[T], ev: Order[mirror.IronType]): Order[T] = ev.asInstanceOf[Order[T]]
+
+  inline given[T](using inline mirror: RefinedTypeOps.Mirror[T], ev: Show[mirror.IronType]): Show[T] = ev.asInstanceOf[Show[T]]
+
+  inline given[T](using inline mirror: RefinedTypeOps.Mirror[T], ev: PartialOrder[mirror.IronType]): PartialOrder[T] = ev.asInstanceOf[PartialOrder[T]]
+
+private trait RefinedTypeOpsCatsLowPriority:
+
+  inline given[T](using inline mirror: RefinedTypeOps.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]

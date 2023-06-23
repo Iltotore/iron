@@ -3,7 +3,7 @@ package io.github.iltotore.iron
 import _root_.zio.NonEmptyChunk
 import _root_.zio.prelude.{Debug, Equal, Hash, Ord, PartialOrd, Validation}
 
-object zio:
+object zio extends RefinedTypeOpsZio:
 
   extension [A](value: A)
 
@@ -37,3 +37,15 @@ object zio:
      */
     inline def validation(value: A)(using inline constraint: Constraint[A, C]): Validation[String, T] =
       value.refineValidation[C].map(_.asInstanceOf[T])
+
+private trait RefinedTypeOpsZio extends RefinedTypeOpsZioLowPriority:
+
+  inline given[T](using inline mirror: RefinedTypeOps.Mirror[T], ev: Debug[mirror.IronType]): Debug[T] = ev.asInstanceOf[Debug[T]]
+
+  inline given[T](using inline mirror: RefinedTypeOps.Mirror[T], ev: Equal[mirror.IronType]): Equal[T] = ev.asInstanceOf[Equal[T]]
+
+  inline given[T](using inline mirror: RefinedTypeOps.Mirror[T], ev: Ord[mirror.IronType]): Ord[T] = ev.asInstanceOf[Ord[T]]
+
+private trait RefinedTypeOpsZioLowPriority:
+
+  inline given[T](using inline mirror: RefinedTypeOps.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]

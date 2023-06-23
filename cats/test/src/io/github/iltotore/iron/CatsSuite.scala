@@ -14,9 +14,6 @@ import _root_.cats.data.ValidatedNec
 
 import scala.runtime.stdLibPatches.Predef.assert
 
-opaque type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Temperature]
-
 object CatsSuite extends TestSuite:
 
   type AgeR = DescribedAs[
@@ -45,7 +42,17 @@ object CatsSuite extends TestSuite:
       Order[String :| NameR]
       PartialOrder[String :| NameR]
       Show[String :| NameR]
-      ()
+    }
+
+    test("Cats instances are resolved for new types") {
+      Eq[Temperature]
+      Hash[Temperature]
+      Order[Temperature]
+      Show[Temperature]
+      Eq[Moisture]
+      Hash[Moisture]
+      Order[Moisture]
+      Show[Moisture]
     }
 
     test("Cats instances are resolved for Int iron types") {

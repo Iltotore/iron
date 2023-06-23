@@ -22,3 +22,9 @@ object circe:
    * @param encoder the [[Encoder]] of the underlying type.
    */
   inline given [A, B](using inline encoder: Encoder[A]): Encoder[A :| B] = encoder.asInstanceOf[Encoder[A :| B]]
+
+  inline given[T](using inline mirror: RefinedTypeOps.Mirror[T], ev: Decoder[mirror.IronType]): Decoder[T] =
+    ev.asInstanceOf[Decoder[T]]
+
+  inline given[T](using inline mirror: RefinedTypeOps.Mirror[T], ev: Encoder[mirror.IronType]): Encoder[T] =
+    ev.asInstanceOf[Encoder[T]]

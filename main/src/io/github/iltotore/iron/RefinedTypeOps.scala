@@ -1,7 +1,21 @@
 package io.github.iltotore.iron
 
+import scala.quoted.*
+
 type RefinedTypeOps[T] = T match
   case IronType[a, c] => RefinedTypeOpsImpl[a, c, T]
+
+object RefinedTypeOps:
+
+  /**
+   * Typelevel access to a "new type"'s informations. It is similar to [[scala.deriving.Mirror]].
+   * @tparam T the new type (usually a type alias).
+   */
+  trait Mirror[T]:
+    type BaseType
+    type ConstraintType
+    type FinalType = T
+    type IronType = BaseType :| ConstraintType
 
 trait RefinedTypeOpsImpl[A, C, T]:
   /**
@@ -54,6 +68,10 @@ trait RefinedTypeOpsImpl[A, C, T]:
    */
   inline def applyUnsafe(value: A)(using Constraint[A, C]): T =
     value.refine[C].asInstanceOf[T]
+
+  inline given RefinedTypeOps.Mirror[T] with
+    override type BaseType = A
+    override type ConstraintType = C
 
   extension (wrapper: T)
     inline def value: IronType[A, C] = wrapper.asInstanceOf[IronType[A, C]]

@@ -4,6 +4,7 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.*
 import utest.*
 
+import scala.compiletime.summonInline
 import scala.util.{Failure, Success, Try}
 
 object RefinedTypeOpsSuite extends TestSuite:
@@ -66,4 +67,11 @@ object RefinedTypeOpsSuite extends TestSuite:
       test - assert(Moisture.option(100) == Some(Moisture(100)))
     }
 
+    test("mirror") {
+      val mirror = summonInline[RefinedTypeOps.Mirror[Temperature]]
+
+      assertGiven[mirror.BaseType =:= Double]
+      assertGiven[mirror.ConstraintType =:= Positive]
+      assertGiven[mirror.FinalType =:= Temperature]
+    }
   }

@@ -94,3 +94,12 @@ val unsafeRuntime: Double =
   else throw new IllegalArgumentException("...")
 ```
 
+## New type with no constraint
+
+You can create a new type without restriction by using the [[Pure|io.github.iltotore.iron.constraint.any.Pure]]
+constraint. [[Pure|io.github.iltotore.iron.constraint.any.Pure]] is an alias for
+[[True|io.github.iltotore.iron.constraint.any.True]], a constraint that is always satisfied.
+
+```scala
+type FirstName = String :| Pure
+```

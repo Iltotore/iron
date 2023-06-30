@@ -19,6 +19,12 @@ object any:
   final class True
 
   /**
+   * Alias for [[True]]. Usually used for new types with no constraint.
+   * @see "Creating new types" reference.
+   */
+  type Pure = True
+
+  /**
    * An always-invalid constraint.
    */
   final class False

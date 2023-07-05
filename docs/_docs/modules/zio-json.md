@@ -20,6 +20,20 @@ Mill:
 ivy"io.github.iltotore::iron-zio-json:version"
 ```
 
+### Following examples' dependencies
+
+SBT:
+
+```scala
+libraryDependencies += "dev.zio" %% "zio-json" % "0.3.0"
+```
+
+Mill:
+
+```scala
+ivy"dev.zio::zio:0.3.0"
+```
+
 ## Encoder/Decoder instances
 
 Given Encoder/Decoder for Iron enables using refined types for JSON serialization/deserialization:

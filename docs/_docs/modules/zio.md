@@ -22,6 +22,22 @@ Mill:
 ivy"io.github.iltotore::iron-zio:version"
 ```
 
+### Following examples' dependencies
+
+SBT:
+
+```scala
+libraryDependencies += "dev.zio" %% "zio" % "2.0.5"
+libraryDependencies += "dev.zio" %% "zio-prelude" % "1.0.0-RC16"
+```
+
+Mill:
+
+```scala
+ivy"dev.zio::zio:2.0.5"
+ivy"dev.zio::zio-prelude:1.0.0-RC16"
+```
+
 ## Accumulative error handling
 
 ZIO enables accumulative error handling via [Validation](https://zio.dev/zio-prelude/functionaldatatypes/validation/). The ZIO module provides a `refineValidation` method that uses this datatype to handle errors.

@@ -20,6 +20,20 @@ Mill:
 ivy"io.github.iltotore::iron-cats:version"
 ```
 
+### Following examples' dependencies
+
+SBT:
+
+```scala
+libraryDependencies += "org.typelevel" %% "cats-core" % "2.8.0"
+```
+
+Mill:
+
+```scala
+ivy"org.typelevel::cats-core::2.8.0"
+```
+
 ## Accumulative error handling
 
 Cats enables accumulative error handling via [Validated](http://typelevel.org/cats/datatypes/validated.html). Iron provides refinement methods that return an `Either`, `EitherNec` or `EitherNel` to easily combine runtime refinements with failure accumulation. There are also variants that return a `Validated`, `ValidatedNec` or `ValidatedNel`.

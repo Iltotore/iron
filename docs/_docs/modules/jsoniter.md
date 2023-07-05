@@ -20,6 +20,22 @@ Mill:
 ivy"io.github.iltotore::iron-jsoniter:version"
 ```
 
+### Following examples' dependencies
+
+SBT:
+
+```scala
+libraryDependencies += "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % "2.19.1"
+libraryDependencies += "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.19.1"
+```
+
+Mill:
+
+```scala
+ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-core:2.19.1"
+ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:2.19.1"
+```
+
 ## Encoder/Decoder instances
 
 Given `JsonValueCodec` for Iron enables using refined types for JSON serialization/deserialization:

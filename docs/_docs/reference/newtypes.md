@@ -103,3 +103,39 @@ constraint. [[Pure|io.github.iltotore.iron.constraint.any.Pure]] is an alias for
 ```scala
 type FirstName = String :| Pure
 ```
+
+## Inheriting base type
+
+Assuming the following new type:
+
+```scala
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
+
+opaque type FirstName = String :| ForAll[Letter]
+object FirstName extends RefinedTypeOps[FirstName]
+```
+
+We cannot use `java.lang.String`'s methods neither pass `FirstName` as a String without using the `value`
+extension method. In Scala 3, opaque types can be a subtype of their underlying type:
+
+```scala
+opaque type Foo <: String = String
+object Foo:
+  def apply(value: String): Foo = value
+```
+```scala
+val x = Foo("abcd")
+x.toUpperCase //"ABCD"
+```
+
+Therefore, you can combine it with `RefinedTypeOps`:
+
+```scala
+opaque type FirstName <: String :| ForAll[Letter] = String :| ForAll[Letter]
+object FirstName extends RefinedTypeOps[FirstName]
+```
+```scala
+val x = FirstName("Raphael")
+x.toUpperCase //"RAPHAEL"
+```

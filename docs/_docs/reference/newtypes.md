@@ -101,7 +101,11 @@ constraint. [[Pure|io.github.iltotore.iron.constraint.any.Pure]] is an alias for
 [[True|io.github.iltotore.iron.constraint.any.True]], a constraint that is always satisfied.
 
 ```scala
-type FirstName = String :| Pure
+opaque type FirstName = String :| Pure
+object FirstName extends RefinedTypeOps[FirstName]
+```
+```scala
+val firstName = FirstName("whatever")
 ```
 
 ## Inheriting base type

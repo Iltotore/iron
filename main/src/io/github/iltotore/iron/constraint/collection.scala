@@ -169,7 +169,7 @@ object collection:
             .map(applyConstraint(_, constraintExpr))
             .foldLeft(Expr(true))((e, t) => '{ $e && $t })
 
-        case None => '{ $expr.forall(c => ${ applyConstraint('c, constraintExpr) }) }
+        case None => '{ $expr.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
 
     given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Exists[C2]) = Implication()
     given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Last[C2]) = Implication()
@@ -207,7 +207,7 @@ object collection:
             .map(applyConstraint(_, constraintExpr))
             .foldLeft(Expr(true))((e, t) => '{ $e && $t })
 
-        case None => '{ $expr.init.forall(c => ${ applyConstraint('c, constraintExpr) }) }
+        case None => '{ $expr.init.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
 
     given [C1, C2](using C1 ==> C2): (Init[C1] ==> Exists[C2]) = Implication()
 
@@ -244,7 +244,7 @@ object collection:
             .map(applyConstraint(_, constraintExpr))
             .foldLeft(Expr(true))((e, t) => '{ $e && $t })
 
-        case None => '{ $expr.tail.forall(c => ${ applyConstraint('c, constraintExpr) }) }
+        case None => '{ $expr.tail.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
 
     given [C1, C2](using C1 ==> C2): (Tail[C1] ==> Exists[C2]) = Implication()
     given [C1, C2](using C1 ==> C2): (Tail[C1] ==> Last[C2]) = Implication()
@@ -279,7 +279,7 @@ object collection:
             .map(applyConstraint(_, constraintExpr))
             .foldLeft(Expr(false))((e, t) => '{ $e || $t })
 
-        case None => '{ $expr.exists(c => ${ applyConstraint('c, constraintExpr) }) }
+        case None => '{ $expr.existsOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
 
   object Head:
 
@@ -338,3 +338,27 @@ object collection:
         case None => '{ $expr.lastOption.exists(last => ${ applyConstraint('{ last }, constraintExpr) }) }
 
     given [C1, C2](using C1 ==> C2): (Last[C1] ==> Exists[C2]) = Implication()
+
+  /**
+   * Scala's [[Function1]] doesn't have a specialization on [[Char]] arguments, which causes each char in the string to be boxed
+   * when calling `forall`. This trait is used as a substitute to avoid this issue.
+   */
+  private trait EvalChar:
+    def apply(value: Char): Boolean
+
+  extension (s: String)
+    private def forallOptimized(p: EvalChar): Boolean =
+      var i = 0
+      val len = s.length
+      while i < len do
+        if !p(s.charAt(i)) then return false
+        i += 1
+      true
+
+    private def existsOptimized(p: EvalChar): Boolean =
+      var i = 0
+      val len = s.length
+      while i < len do
+        if p(s.charAt(i)) then return true
+        i += 1
+      false

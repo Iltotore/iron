@@ -75,12 +75,22 @@ object NumericSuite extends TestSuite:
     test("multiple") {
       test - 1.assertNotRefine[Multiple[2]]
       test - 2.assertRefine[Multiple[2]]
+      test - BigInt(1).assertNotRefine[Multiple[2]]
+      test - BigInt(2).assertRefine[Multiple[2]]
+      test - BigDecimal(1).assertNotRefine[Multiple[2]]
+      test - BigDecimal(2).assertRefine[Multiple[2]]
     }
 
     test("divide") {
       test - 1.assertRefine[Divide[2]]
       test - 2.assertRefine[Divide[2]]
       test - 3.assertNotRefine[Divide[2]]
+      test - BigInt(1).assertRefine[Divide[2]]
+      test - BigInt(2).assertRefine[Divide[2]]
+      test - BigInt(3).assertNotRefine[Divide[2]]
+      test - BigDecimal(1).assertRefine[Divide[2]]
+      test - BigDecimal(2).assertRefine[Divide[2]]
+      test - BigDecimal(3).assertNotRefine[Divide[2]]
     }
 
     test("nan") {

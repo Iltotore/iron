@@ -20,7 +20,7 @@ val temperature = Temperature(15) //Compiles
 println(temperature) //15
 
 val positive: Int :| Positive = 15
-val tempFromIron = Temperature.fromIronType(positive)
+val tempFromIron = Temperature(positive) //Compiles too
 ```
 
 ### Runtime refinement

@@ -150,3 +150,32 @@ object FirstName extends RefinedTypeOps[FirstName]
 val x = FirstName("Raphael")
 x.toUpperCase //"RAPHAEL"
 ```
+
+## Typeclass derivation
+
+Usually, transparent type aliases do not need a special handling for typeclass derivation as they can use the given
+instances for `IronType`. However, this is not the case for opaque type aliases, for instance:
+
+```scala
+opaque type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps[Temperature]
+```
+
+To support such type, you can use the [[RefinedTypeOps.Mirror|io.github.iltotore.iron.RefinedTypeOps.Mirror]] provided by
+each `RefinedTypeOps`. It works the same as
+[Scala 3's Mirror](https://docs.scala-lang.org/scala3/reference/contextual/derivation.html#mirror). Here is an example
+from the [ZIO JSON module](https://iltotore.github.io/iron/docs/modules/zio-json.html):
+
+```scala
+inline given[T](using mirror: RefinedTypeOps.Mirror[T], ev: JsonDecoder[mirror.IronType]): JsonDecoder[T] =
+  ev.asInstanceOf[JsonDecoder[T]]
+```
+
+In this example, given a new type `T` (like `Temperature` defined above), an implicit instance of `JsonEncoder` for its
+underlying `IronType` (e.g `Double :| Positive`) is got and returned.
+
+The types provided by [[RefinedTypeOps.Mirror|io.github.iltotore.iron.RefinedTypeOps.Mirror]] are:
+- `BaseType`: the base (unrefined) type of the mirrored type.
+- `ConstraintType`: the constraint type of the mirrored new type.
+- `IronType`: an alias for `BaseType :| ConstraintType`
+- `FinalType`: the underlying type of the mirrored new type. Equivalent to its `IronType` if the alias is not opaque.

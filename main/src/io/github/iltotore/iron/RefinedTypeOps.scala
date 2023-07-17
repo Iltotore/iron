@@ -12,10 +12,40 @@ object RefinedTypeOps:
    * @tparam T the new type (usually a type alias).
    */
   trait Mirror[T]:
+
+    /**
+     * The base type of the mirrored type without any constraint.
+     */
     type BaseType
+
+    /**
+     * The constraint of the mirrored type.
+     */
     type ConstraintType
-    type FinalType = T
+
+    /**
+     * Alias for `BaseType :| ConstraintType`
+     */
     type IronType = BaseType :| ConstraintType
+
+    /**
+     * Alias for [[T]]. Also equivalent to [[IronType]] if the type alias of the mirrored new type is transparent.
+     *
+     * {{{
+     * type Temperature = Double :| Positive
+     * object Temperature extends RefinedTypeOps[Temperature]
+     *
+     * //FinalType =:= IronType
+     * }}}
+     *
+     * {{{
+     * opaque type Temperature = Double :| Positive
+     * object Temperature extends RefinedTypeOps[Temperature]
+     *
+     * //FinalType =/= IronType
+     * }}}
+     */
+    type FinalType = T
 
 trait RefinedTypeOpsImpl[A, C, T]:
   /**

@@ -98,14 +98,19 @@ val moisture: Moisture = ???
 Info(moisture, temperature) //Compile-time error
 ```
 
-But as is, you cannot create an "instance" of your opaque type outside of its definition file. You need to add methods yourself like:
+Therefore, it also forces the user to convert the value explicitly, for example using a smart constructor from
+`RefinedTypeOps`:
 
 ```scala
 opaque type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps[Temperature]
+```
 
-object Temperature:
+```scala
+val value: Double :| Positive = ???
 
-  def apply(x: Double :| Positive): Temperature = x
+val a: Temperature = value //Compile-time error
+val b: Temperature = Temperature(value) //OK
 ```
 
 Note: due to a [compiler bug](https://github.com/lampepfl/dotty/issues/17984), incremental/cross-module compilation can fail.

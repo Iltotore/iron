@@ -7,6 +7,8 @@ import _root_.cats.{Eq, Monoid, Order, Show}
 import _root_.cats.data.Validated.{Invalid, Valid}
 import io.github.iltotore.iron.constraint.numeric.{Greater, Less, Positive, Negative}
 
+import scala.util.NotGiven
+
 object cats extends IronCatsInstances:
 
   /**
@@ -169,11 +171,13 @@ object cats extends IronCatsInstances:
    * Represent all Cats' typeclass instances for Iron.
    */
 private trait IronCatsInstances extends IronCatsLowPriority, RefinedTypeOpsCats:
-  inline given [A, C](using inline ev: Eq[A]): Eq[A :| C] = ev.asInstanceOf[Eq[A :| C]]
+
+  //The `NotGiven` implicit parameter is mandatory to avoid ambiguous implicit error when both Eq[A] and Hash[A]/PartialOrder[A] exist
+  inline given [A, C](using inline ev: Eq[A], notHashOrOrder: NotGiven[Hash[A] | PartialOrder[A]]): Eq[A :| C] = ev.asInstanceOf[Eq[A :| C]]
+
+  inline given [A, C](using inline ev: PartialOrder[A], notOrder: NotGiven[Order[A]]): PartialOrder[A :| C] = ev.asInstanceOf[PartialOrder[A :| C]]
 
   inline given [A, C](using inline ev: Order[A]): Order[A :| C] = ev.asInstanceOf[Order[A :| C]]
-
-  inline given [A, C](using inline ev: PartialOrder[A]): PartialOrder[A :| C] = ev.asInstanceOf[PartialOrder[A :| C]]
 
   inline given [A, C](using inline ev: Show[A]): Show[A :| C] = ev.asInstanceOf[Show[A :| C]]
 
@@ -217,6 +221,7 @@ private trait IronCatsInstances extends IronCatsLowPriority, RefinedTypeOpsCats:
  * Cats' instances for Iron that need to have a lower priority to avoid ambiguous implicits.
  */
 private trait IronCatsLowPriority:
+
   inline given [A, C](using inline ev: Hash[A]): Hash[A :| C] = ev.asInstanceOf[Hash[A :| C]]
 
 private trait RefinedTypeOpsCats extends RefinedTypeOpsCatsLowPriority:

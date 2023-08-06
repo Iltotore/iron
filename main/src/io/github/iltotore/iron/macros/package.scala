@@ -117,7 +117,7 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
         s"""Cannot refine value at compile-time because the predicate cannot be evaluated.
            |This is likely because the condition or the input value isn't fully inlined.
            |
-           |To test a constraint at runtime, use the `refined` extension method.
+           |To test a constraint at runtime, use one of the `refine...` extension methods.
            |
            |${CYAN}Inlined input$RESET: ${input.show}
            |${CYAN}Inlined condition$RESET: ${cond.show}

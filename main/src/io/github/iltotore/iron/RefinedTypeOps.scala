@@ -100,6 +100,8 @@ trait RefinedTypeOpsImpl[A, C, T]:
   inline def applyUnsafe(value: A)(using Constraint[A, C]): T =
     value.refine[C].asInstanceOf[T]
 
+  inline def unapply(value: T): Option[A :| C] = Some(value.asInstanceOf[A :| C])
+
   inline given RefinedTypeOps.Mirror[T] with
     override type BaseType = A
     override type ConstraintType = C

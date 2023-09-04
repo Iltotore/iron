@@ -3,7 +3,8 @@ package io.github.iltotore.iron
 import io.github.iltotore.iron.macros
 
 import scala.Console.{CYAN, RESET}
-import scala.compiletime.{codeOf, error}
+import scala.compiletime.{codeOf, error, summonInline}
+import scala.reflect.TypeTest
 import scala.util.NotGiven
 
 /**

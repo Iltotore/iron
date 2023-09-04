@@ -1,6 +1,7 @@
 package io.github.iltotore.iron
 
-import scala.quoted.*
+import scala.compiletime.summonInline
+import scala.reflect.TypeTest
 
 type RefinedTypeOps[T] = T match
   case IronType[a, c] => RefinedTypeOpsImpl[a, c, T]
@@ -99,9 +100,20 @@ trait RefinedTypeOpsImpl[A, C, T]:
   inline def applyUnsafe(value: A)(using Constraint[A, C]): T =
     value.refine[C].asInstanceOf[T]
 
+  inline def unapply(value: T): Option[A :| C] = Some(value.asInstanceOf[A :| C])
+
   inline given RefinedTypeOps.Mirror[T] with
     override type BaseType = A
     override type ConstraintType = C
+
+  inline given [R]: TypeTest[T, R] = summonInline[TypeTest[A :| C, R]].asInstanceOf[TypeTest[T, R]]
+
+  inline given [L](using inline constraint: Constraint[A, C]): TypeTest[L, T] =
+    val test = summonInline[TypeTest[L, A]]
+
+    new TypeTest:
+      override def unapply(value: L): Option[value.type & T] =
+        test.unapply(value).filter(constraint.test(_)).asInstanceOf
 
   extension (wrapper: T)
     inline def value: IronType[A, C] = wrapper.asInstanceOf[IronType[A, C]]

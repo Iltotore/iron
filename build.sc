@@ -148,7 +148,7 @@ object examples extends Module {
     def moduleDeps = Seq(main, cats)
 
     def ivyDeps = Agg(
-      ivy"org.typelevel::cats-effect:3.4.2"
+      ivy"org.typelevel::cats-effect:3.3.14"
     )
   }
 
@@ -162,7 +162,7 @@ object examples extends Module {
     val http4sVersion = "0.23.16"
 
     def ivyDeps = Agg(
-      ivy"org.typelevel::cats-core:2.8.0",
+      //ivy"org.typelevel::cats-core:2.8.0",
       ivy"io.circe::circe-core:$circeVersion",
       ivy"io.circe::circe-parser:$circeVersion",
       ivy"io.circe::circe-generic:$circeVersion",

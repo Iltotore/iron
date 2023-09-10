@@ -1,4 +1,4 @@
-import $ivy.`io.chris-kipp::mill-ci-release::0.1.5`
+import $ivy.`io.chris-kipp::mill-ci-release::0.1.9`
 import io.kipp.mill.ci.release.CiReleaseModule
 import de.tobiasroeser.mill.vcs.version.VcsVersion
 
@@ -28,7 +28,7 @@ trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { 
       )
     )
 
-  trait Tests extends super.Tests with ScalafmtModule {
+  trait Tests extends ScalaTests with ScalafmtModule {
 
     def testFramework = "utest.runner.Framework"
 

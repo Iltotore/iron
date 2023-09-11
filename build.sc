@@ -87,20 +87,23 @@ object docs extends BaseModule {
     T.traverse(modules)(_.compileClasspath)().flatten
   }
 
+  def gitTags = T {
+    os
+      .proc("git", "tag", "-l", "v*.*.*")
+      .call(VcsVersion.vcsBasePath)
+      .out
+      .trim()
+      .split("\n")
+      .reverse
+  }
+
   def docVersions = T.source {
     val targetDir = T.dest / "_assets"
 
     val versions =
-      os
-        .proc("git", "tag", "-l", "v*.*.*")
-        .call(VcsVersion.vcsBasePath)
-        .out
-        .trim()
-        .split("\n")
+      gitTags()
         .filterNot(v => v.contains("-RC") || v.isBlank)
         .map(_.substring(1))
-        .reverse
-
 
     def versionLink(version: String): String = {
       val splat = version.split("\\.")
@@ -121,10 +124,18 @@ object docs extends BaseModule {
 
   def docResources = T.sources(millSourcePath, docVersions().path)
 
+  def docRevision = T {
+    val version = main.publishVersion()
+    if(gitTags().contains(version)) version
+    else "main"
+  }
+
   def scalaDocOptions = Seq(
     "-project", "Iron",
     "-project-version", main.publishVersion(),
     "-versions-dictionary-url", "https://iltotore.github.io/iron/versions.json",
+    "-source-links:github://Iltotore/iron",
+    "-revision", docRevision(),
     s"-social-links:github::${main.pomSettings().url}"
   )
 }

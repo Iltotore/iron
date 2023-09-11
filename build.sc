@@ -125,6 +125,7 @@ object docs extends BaseModule {
     "-project", "Iron",
     "-project-version", main.publishVersion(),
     "-versions-dictionary-url", "https://iltotore.github.io/iron/versions.json",
+    "-source-links:github://Iltotore/iron/main",
     s"-social-links:github::${main.pomSettings().url}"
   )
 }

@@ -130,14 +130,36 @@ object docs extends BaseModule {
     else "main"
   }
 
-  def scalaDocOptions = Seq(
-    "-project", "Iron",
-    "-project-version", main.publishVersion(),
-    "-versions-dictionary-url", "https://iltotore.github.io/iron/versions.json",
-    "-source-links:github://Iltotore/iron",
-    "-revision", docRevision(),
-    s"-social-links:github::${main.pomSettings().url}"
+  def externalMappings = Map(
+    ".*cats.*" -> ("scaladoc3", "https://javadoc.io/doc/org.typelevel/cats-docs_3/latest/"),
+    ".*io.circe.*" -> ("scaladoc2", "https://circe.github.io/circe/api/"),
+    ".*com.github.plokhotnyuk.jsoniter_scala.core.*" -> ("scaladoc3", "https://www.javadoc.io/doc/com.github.plokhotnyuk.jsoniter-scala/jsoniter-scala-core_3/latest/"),
+    ".*zio.json.*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio-json_3/latest/"),
+    ".*zio.prelude.*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio-prelude-docs_3/latest/"),
+    ".*zio[^\\.json].*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio_3/latest/"),
+    ".*org.scalacheck.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scalacheck/scalacheck_3/latest/"),
+    ".*scala.*" -> ("scaladoc3", "https://scala-lang.org/api/3.x/")
   )
+
+  def scalaDocOptions = {
+    val externalMappingsFlag =
+      externalMappings
+        .map {
+          case (regex, (docType, link)) => s"$regex::$docType::$link"
+        }
+        .mkString(",")
+
+
+    Seq(
+      "-project", "Iron",
+      "-project-version", main.publishVersion(),
+      "-versions-dictionary-url", "https://iltotore.github.io/iron/versions.json",
+      "-source-links:github://Iltotore/iron",
+      "-revision", docRevision(),
+      s"-social-links:github::${main.pomSettings().url}",
+      s"-external-mappings:$externalMappingsFlag"
+    )
+  }
 }
 
 object main extends BaseModule {

@@ -13,6 +13,11 @@ It should be read as "C1 implies C2".
 For example, the following code compiles due to [transitivity](https://en.wikipedia.org/wiki/Transitive_relation):
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Greater
+//}
+
 val x: Int :| Greater[5] = ???
 val y: Int :| Greater[0] = x
 ```
@@ -24,7 +29,7 @@ implication mentioned above is stored in [[numeric|io.github.iltotore.iron.const
 
 You can create your own constraint-to-constraint [[implications|io.github.iltotore.iron.package.Implication]] following this
 single rule: a constraint `C1` can be cast to another `C2` if an implicit instance of `Implication[C1, C2]`
-(or using the alias `C1 ==> C2`) available.
+(or using the alias `C1 ==> C2`) is available.
 
 Note: implications are a purely compile-time mechanism.
 

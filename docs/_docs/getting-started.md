@@ -10,13 +10,13 @@ Include Iron in your project using your preferred build tool.
 
 SBT: 
 
-```scala
+```scala sc:nocompile
 libraryDependencies += "io.github.iltotore" %% "iron" % "version"
 ```
 
 Mill:
 
-```scala
+```scala sc:nocompile
 ivy"io.github.iltotore::iron:version"
 ```
 

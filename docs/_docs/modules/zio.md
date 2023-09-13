@@ -12,13 +12,13 @@ Prelude's typeclass instances already work with [[IronType|io.github.iltotore.ir
 
 SBT:
 
-```scala
+```scala sc:nocompile
 libraryDependencies += "io.github.iltotore" %% "iron-zio" % "version"
 ```
 
 Mill:
 
-```scala
+```scala sc:nocompile
 ivy"io.github.iltotore::iron-zio:version"
 ```
 
@@ -26,14 +26,14 @@ ivy"io.github.iltotore::iron-zio:version"
 
 SBT:
 
-```scala
+```scala sc:nocompile
 libraryDependencies += "dev.zio" %% "zio" % "2.0.5"
 libraryDependencies += "dev.zio" %% "zio-prelude" % "1.0.0-RC16"
 ```
 
 Mill:
 
-```scala
+```scala sc:nocompile
 ivy"dev.zio::zio:2.0.5"
 ivy"dev.zio::zio-prelude:1.0.0-RC16"
 ```
@@ -47,7 +47,7 @@ This method is similar to `refineEither` and `refineOption` defined in the core 
 The [User example](../reference/refinement.md) now looks like this:
 
 
-```scala
+```scala sc:nocompile
 import zio.prelude.Validation
 
 import io.github.iltotore.iron.*
@@ -77,7 +77,11 @@ createUser("Il_totore", -18) //Failure(Chunk(),NonEmptyChunk(Username should be 
 Companion object created with `RefinedTypeOps` is being extended by set of functions.
 
 ### Companion object
-```scala
+```scala sc-name:Temperature.scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
+//}
 opaque type Temperature = Double :| Positive
 object Temperature extends RefinedTypeOps[Temperature]
 ```
@@ -88,6 +92,6 @@ object Temperature extends RefinedTypeOps[Temperature]
 ### validation
 The example below returns `ZValidation.Success` or `ZValidation.Failure`.
 
-```scala
+```scala sc:nocompile sc-compile-with:Temperature.scala
 Temperature.validation(x)
 ```

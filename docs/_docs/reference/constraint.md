@@ -66,6 +66,7 @@ Here is how it looks:
 ```scala sc:nocompile sc-name:PositiveAndConstraint.scala sc-compile-with:Positive.scala
 //{
 import io.github.iltotore.iron.*
+
 //}
 given Constraint[Int, Positive] with
 
@@ -80,6 +81,7 @@ you can use a trait to reduce boilerplate:
 ```scala sc:nocompile sc-compile-with:Positive.scala
 //{
 import io.github.iltotore.iron.*
+
 //}
 trait PositiveConstraint[A] extends Constraint[A, Positive]:
   override inline def message: String = "Should be strictly positive"

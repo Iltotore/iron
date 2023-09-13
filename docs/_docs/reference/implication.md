@@ -16,8 +16,8 @@ For example, the following code compiles due to [transitivity](https://en.wikipe
 //{
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Greater
-//}
 
+//}
 val x: Int :| Greater[5] = ???
 val y: Int :| Greater[0] = x
 ```
@@ -36,12 +36,25 @@ Note: implications are a purely compile-time mechanism.
 For example, the following implication:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.any.Not
+
+//}
 given [C1]: (C1 ==> Not[Not[C1]]) = Implication()
 ```
 
 allows us (if imported) to compile this code:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.any.Not
+import io.github.iltotore.iron.constraint.numeric.Greater
+
+given [C1]: (C1 ==> Not[Not[C1]]) = Implication()
+
+//}
 val x: Int :| Greater[0] = ???
 val y: Int :| Not[Not[Greater[0]]] = x //C1 implies Not[Not[C1]]: `x` can be safely casted.
 ```
@@ -51,7 +64,13 @@ val y: Int :| Not[Not[Greater[0]]] = x //C1 implies Not[Not[C1]]: `x` can be saf
 Almost every implication has a dependency. For example, our previous "double negation" implication doesn't work in the
 following case:
 
-```scala
+```scala sc:nocompile
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.any.Not
+import io.github.iltotore.iron.constraint.numeric.Greater
+
+//}
 val x: Int :| Greater[1] = ???
 
 //Assuming that Greater[1] ==> Greater[0]
@@ -61,6 +80,11 @@ val y: Int :| Not[Not[Greater[0]]] = x
 But it should. This can be fixed by using two different constraints linked by an implication:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.any.Not
+
+//}
 given [C1, C2](using C1 ==> C2): (C1 ==> Not[Not[C2]]) = Implication()
 ```
 
@@ -69,6 +93,14 @@ given [C1, C2](using C1 ==> C2): (C1 ==> Not[Not[C2]]) = Implication()
 Our implication now depends on another implication: `C1 ==> C2`. With this implementation, our code now compiles:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.any.Not
+import io.github.iltotore.iron.constraint.numeric.Greater
+
+given [C1, C2](using C1 ==> C2): (C1 ==> Not[Not[C2]]) = Implication()
+
+//}
 val x: Int :| Greater[1] = ???
 
 //Assuming that Greater[1] ==> Greater[0]
@@ -86,6 +118,11 @@ This can be combined with [[iron.ops|io.github.iltotore.iron.ops]] to create log
 For example, we can implement the [transitive relation](https://en.wikipedia.org/wiki/Transitive_relation):
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Greater
+
+//}
 import io.github.iltotore.iron.compileTime.*
 
 given [V1, V2](using V1 > V2 =:= true): (Greater[V1] ==> Greater[V2]) = Implication()
@@ -96,6 +133,14 @@ given [V1, V2](using V1 > V2 =:= true): (Greater[V1] ==> Greater[V2]) = Implicat
 Now, the following code compiles:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.compileTime.*
+import io.github.iltotore.iron.constraint.numeric.Greater
+
+given [V1, V2](using V1 > V2 =:= true): (Greater[V1] ==> Greater[V2]) = Implication()
+
+//}
 val x: Int :| Greater[1] = ???
 val y: Int :| Greater[0] = x //x > 1 and 1 > 0, so x > 0.
 ```

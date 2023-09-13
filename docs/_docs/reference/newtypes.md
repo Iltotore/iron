@@ -11,15 +11,28 @@ You can create no-overhead new types like [scala-newtype](https://github.com/est
 Iron provides a convenient trait called `RefinedTypeOps` to easily add smart constructors to your type:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+//}
 type Temperature = Double :| Positive
 object Temperature extends RefinedTypeOps[Temperature]
 ```
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps[Temperature]
+
+//}
 val temperature = Temperature(15) //Compiles
 println(temperature) //15
 
-val positive: Int :| Positive = 15
+val positive: Double :| Positive = 15
 val tempFromIron = Temperature(positive) //Compiles too
 ```
 
@@ -28,6 +41,14 @@ val tempFromIron = Temperature(positive) //Compiles too
 `RefinedTypeOps` supports [all refinement methods](refinement.md) provided by Iron:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps[Temperature]
+
+//}
 val unsafeRuntime: Temperature = Temperature.applyUnsafe(15)
 val option: Option[Temperature] = Temperature.option(15)
 val either: Either[String, Temperature] = Temperature.either(15)
@@ -36,13 +57,34 @@ val either: Either[String, Temperature] = Temperature.either(15)
 Constructors for other modules exist:
 
 ```scala
-val zioValidation: Temperature = Temperature.validation(15)
+//{
+import zio.prelude.Validation
+
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+import io.github.iltotore.iron.zio.*
+
+type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps[Temperature]
+
+//}
+val zioValidation: Validation[String, Temperature] = Temperature.validation(15)
 ```
 
 Note: all these constructors are inline. They don't bring any overhead:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps[Temperature]
+
+//}
 val temperature: Temperature = Temperature(15)
+
+val runtimeValue: Double = ???
 val unsafeRuntime: Temperature = Temperature.applyUnsafe(runtimeValue)
 ```
 
@@ -50,6 +92,8 @@ compiles to
 
 ```scala
 val temperature: Double = 15
+
+val runtimeValue: Double = ???
 val unsafeRuntime: Double =
   if runtimeValue > 0 then runtimeValue
   else throw new IllegalArgumentException("...")
@@ -62,10 +106,23 @@ constraint. [[Pure|io.github.iltotore.iron.constraint.any.Pure]] is an alias for
 [[True|io.github.iltotore.iron.constraint.any.True]], a constraint that is always satisfied.
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.any.Pure
+
+//}
 type FirstName = String :| Pure
 object FirstName extends RefinedTypeOps[FirstName]
 ```
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.any.Pure
+
+type FirstName = String :| Pure
+object FirstName extends RefinedTypeOps[FirstName]
+
+//}
 val firstName = FirstName("whatever")
 ```
 
@@ -74,10 +131,22 @@ val firstName = FirstName("whatever")
 The aliased type of an [opaque type](https://docs.scala-lang.org/scala3/book/types-opaque-types.html) is only known in its definition file. It is not considered like a type alias outside of it:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+//}
 opaque type Temperature = Double :| Positive
 ```
 
-```scala
+```scala sc:nocompile
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+opaque type Temperature = Double :| Positive
+
+//}
 val x: Double :| Positive = 5
 val temperature: Temperature = x //Error: Temperature expected, got Double :| Positive
 ```
@@ -85,11 +154,24 @@ val temperature: Temperature = x //Error: Temperature expected, got Double :| Po
 Such encapsulation is especially useful to avoid mixing different domain types with the same refinement:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+//}
 opaque type Temperature = Double :| Positive
 opaque type Moisture = Double :| Positive
 ```
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+opaque type Temperature = Double :| Positive
+opaque type Moisture = Double :| Positive
+
+//}
 case class Info(temperature: Temperature, moisture: Moisture)
 
 val temperature: Temperature = ???
@@ -102,11 +184,24 @@ Therefore, it also forces the user to convert the value explicitly, for example 
 `RefinedTypeOps`:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+//}
 opaque type Temperature = Double :| Positive
 object Temperature extends RefinedTypeOps[Temperature]
 ```
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+opaque type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps[Temperature]
+
+//}
 val value: Double :| Positive = ???
 
 val a: Temperature = value //Compile-time error
@@ -141,6 +236,12 @@ object Foo:
   def apply(value: String): Foo = value
 ```
 ```scala
+//{
+opaque type Foo <: String = String
+object Foo:
+  def apply(value: String): Foo = value
+
+//}
 val x = Foo("abcd")
 x.toUpperCase //"ABCD"
 ```
@@ -148,10 +249,24 @@ x.toUpperCase //"ABCD"
 Therefore, you can combine it with `RefinedTypeOps`:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
+
+//}
 opaque type FirstName <: String :| ForAll[Letter] = String :| ForAll[Letter]
 object FirstName extends RefinedTypeOps[FirstName]
 ```
-```scala
+
+```scala sc:nocompile
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
+
+opaque type FirstName <: String :| ForAll[Letter] = String :| ForAll[Letter]
+object FirstName extends RefinedTypeOps[FirstName]
+
+//}
 val x = FirstName("Raphael")
 x.toUpperCase //"RAPHAEL"
 ```
@@ -162,6 +277,11 @@ Usually, transparent type aliases do not need a special handling for typeclass d
 instances for `IronType`. However, this is not the case for opaque type aliases, for instance:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+//}
 opaque type Temperature = Double :| Positive
 object Temperature extends RefinedTypeOps[Temperature]
 ```
@@ -172,6 +292,11 @@ each `RefinedTypeOps`. It works the same as
 from the [ZIO JSON module](https://iltotore.github.io/iron/docs/modules/zio-json.html):
 
 ```scala
+//{
+import zio.json.*
+import io.github.iltotore.iron.*
+
+//}
 inline given[T](using mirror: RefinedTypeOps.Mirror[T], ev: JsonDecoder[mirror.IronType]): JsonDecoder[T] =
   ev.asInstanceOf[JsonDecoder[T]]
 ```

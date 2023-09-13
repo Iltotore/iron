@@ -11,8 +11,6 @@ Iron provides multiple ways at compile time or runtime to refine a type dependin
 Unconstrained values are automatically cast to their refined form if they satisfy the constraint at compile time:
 
 ```scala
-//This import will be assumed in next examples.
-
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.*
 
@@ -22,10 +20,15 @@ val x: Int :| Greater[0] = 5
 If they don't, a compile-time error is thrown:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.*
+
+//}
 val y: Int :| Greater[0] = -1
 ```
 
-```scala
+```scala sc:nocompile
 -- Constraint Error --------------------------------------------------------
 Could not satisfy a constraint for type scala.Int.
 
@@ -37,11 +40,16 @@ Message: Should be strictly greater than 0
 If the value (or the constraint itself) cannot be evaluated at compile time, then the compilation also fails:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.*
+
+//}
 val runtimeValue: Int = ???
 val x: Int :| Greater[0] = runtimeValue
 ```
 
-```scala
+```scala sc:nocompile
 -- Constraint Error --------------------------------------------------------
 Cannot refine non full inlined input at compile-time.
 To test a constraint at runtime, use the `refine` extension method.
@@ -58,6 +66,11 @@ By default, all fully inlined literals (including AnyVals, String, Option and Ei
 Note that the constraint condition also needs to be fully inlined.
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.*
+
+//}
 inline val value = 2
 val x: Int :| Greater[0] = value //OK
 ```
@@ -66,7 +79,7 @@ val x: Int :| Greater[0] = value //OK
 
 Sometimes, you want to refine a value that is not available at compile time. For example in the case of form validation.
 
-```scala
+```scala sc:nocompile
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.string.*
 
@@ -81,7 +94,12 @@ Fortunately, Iron supports explicit runtime checking using extension methods
 
 You can imperatively refine a value at runtime (much like an assertion) using the `refine[C]` method:
 
-```scala
+```scala sc:nocompile
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.string.*
+
+//}
 val runtimeString: String = ???
 val username: String :| Alphanumeric = runtimeString.refine //or more explicitly, refine[LowerCase].
 ```
@@ -94,7 +112,7 @@ does not pass the assertion.
 Iron also provides methods similar to `refine` but returning an `Option` (`refineOption`) or
 an `Either` (`refineEither`), useful for data validation:
 
-```scala
+```scala sc:nocompile
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 
@@ -116,7 +134,7 @@ createUser("Iltotore", 18) //Right(User("Iltotore", 18))
 You can accumulate refinement errors using the [Cats](../modules/cats.md) or [ZIO](../modules/zio.md) module.
 Here is an example with the latter:
 
-```scala
+```scala sc:nocompile
 import zio.prelude.Validation
 
 import io.github.iltotore.iron.*
@@ -150,7 +168,7 @@ Check the [Cats module](../modules/cats.md) or [ZIO module](../modules/zio.md) p
 Sometimes you want to refine the same value multiple times with different constraints.
 This is especially useful when you want fine-grained refinement errors. Let's take the last example but with passwords:
 
-```scala
+```scala sc:nocompile
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 
@@ -178,7 +196,7 @@ However, it's not clear which constraint is not satisfied: is my password to sho
 
 Using `refineFurther`/`refineFurtherEither`/... enables more detailed messages:
 
-```scala
+```scala sc:nocompile
 type Username = DescribedAs[Alphanumeric, "Username should be alphanumeric"]
 type Password = DescribedAs[
   Alphanumeric & MinLength[5] & Exists[Letter] & Exists[Digit],
@@ -205,7 +223,7 @@ createUser("Iltotore", "abc123  ") //Left("Should be alphanumeric")
 
 Or with custom error messages:
 
-```scala
+```scala sc:nocompile
 type Username = DescribedAs[Alphanumeric, "Username should be alphanumeric"]
 type Password = DescribedAs[
   Alphanumeric & MinLength[5] & Exists[Letter] & Exists[Digit],
@@ -237,6 +255,11 @@ Note: Accumulative versions exist for [Cats](../modules/cats.md) and [ZIO](../mo
 Sometimes, you know that your value always passes (possibly at runtime) a constraint. For example:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+//}
 val random = scala.util.Random.nextInt(9)+1
 val x: Int :| Positive = random
 ```
@@ -246,6 +269,11 @@ We could use `refine` but we don't actually need to apply the constraint to `ran
 Instead, we can can use `assume[C]`. It simply acts like a safer cast.
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+//}
 val random = scala.util.Random.nextInt(9)+1
 val x: Int :| Positive = random.assume
 ```
@@ -253,6 +281,11 @@ val x: Int :| Positive = random.assume
 This code will compile to:
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+//}
 val random: Int = scala.util.Random.nextInt(9)+1
 val x: Int = random
 ```

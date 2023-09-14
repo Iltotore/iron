@@ -10,13 +10,13 @@ This module provides `Arbitrary` instances for [ScalaCheck](https://scalacheck.o
 
 SBT:
 
-```scala
+```scala 
 libraryDependencies += "io.github.iltotore" %% "iron-scalacheck" % "version"
 ```
 
 Mill:
 
-```scala
+```scala 
 ivy"io.github.iltotore::iron-scalacheck:version"
 ```
 

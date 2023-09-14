@@ -10,13 +10,13 @@ This module provides refined types Encoder/Decoder instances for [ZIO JSON](http
 
 SBT: 
 
-```scala
+```scala 
 libraryDependencies += "io.github.iltotore" %% "iron-zio-json" % "version"
 ```
 
 Mill:
 
-```scala
+```scala 
 ivy"io.github.iltotore::iron-zio-json:version"
 ```
 
@@ -24,13 +24,13 @@ ivy"io.github.iltotore::iron-zio-json:version"
 
 SBT:
 
-```scala
+```scala 
 libraryDependencies += "dev.zio" %% "zio-json" % "0.3.0"
 ```
 
 Mill:
 
-```scala
+```scala 
 ivy"dev.zio::zio:0.3.0"
 ```
 
@@ -38,7 +38,7 @@ ivy"dev.zio::zio:0.3.0"
 
 Given Encoder/Decoder for Iron enables using refined types for JSON serialization/deserialization:
 
-```scala
+```scala 
 import zio.json.*
 
 import io.github.iltotore.iron.*

@@ -10,13 +10,13 @@ This module provides typeclass instances for [Cats](https://typelevel.org/cats/)
 
 SBT:
 
-```scala
+```scala 
 libraryDependencies += "io.github.iltotore" %% "iron-cats" % "version"
 ```
 
 Mill:
 
-```scala
+```scala 
 ivy"io.github.iltotore::iron-cats:version"
 ```
 
@@ -24,13 +24,13 @@ ivy"io.github.iltotore::iron-cats:version"
 
 SBT:
 
-```scala
+```scala 
 libraryDependencies += "org.typelevel" %% "cats-core" % "2.8.0"
 ```
 
 Mill:
 
-```scala
+```scala 
 ivy"org.typelevel::cats-core::2.8.0"
 ```
 
@@ -42,7 +42,7 @@ These methods are similar to `refineEither` and `refineOption` defined in the co
 
 The [User example](../reference/refinement.md) now looks like this:
 
-```scala
+```scala 
 import cats.data.EitherNec
 import cats.syntax.all.*
 
@@ -54,8 +54,8 @@ case class User(name: String :| Alphanumeric, age: Int :| Positive)
 
 def createUserAcc(name: String, age: Int): EitherNec[String, User] =
 (
-    name.refineNec[Username],
-    age.refineNec[Age]
+    name.refineNec[Alphanumeric],
+    age.refineNec[Positive]
 ).parMapN(User.apply)
 
 createUserAcc("Iltotore", 18) //Right(User(Iltotore,18))
@@ -65,7 +65,15 @@ createUserAcc("Il_totore", -18) //Left(Chain(Should be alphanumeric, Should be g
 
 Or with custom messages:
 
-```scala
+```scala 
+//{
+import cats.data.EitherNec
+import cats.syntax.all.*
+
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.cats.*
+import io.github.iltotore.iron.constraint.all.*
+//}
 type Username = Alphanumeric DescribedAs "Username should be alphanumeric"
 
 type Age = Positive DescribedAs "Age should be positive"
@@ -85,10 +93,14 @@ createUserAcc("Il_totore", -18) //Left(Chain(Username should be alphanumeric, Ag
 
 Leveraging typeclass instances via Cats' syntax.
 
-```scala
+```scala 
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
+//}
 import io.github.iltotore.iron.cats.given
 
-val name1: String :| Alphanumeric = "Martin"
+val name1: String :| Alphanumeric = "Martin".refine
 val name2: String :| Alphanumeric = "George"
 val age1: Int :| Greater[0] = 60
 
@@ -103,6 +115,10 @@ Companion object created with `RefinedTypeOps` is being extended by set of funct
 
 ### Companion object
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
+//}
 opaque type Temperature = Double :| Positive
 object Temperature extends RefinedTypeOps[Temperature]
 ```

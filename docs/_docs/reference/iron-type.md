@@ -20,6 +20,11 @@ used in set builders.
 Refined types are subtypes of their unrefined form. For instance, `Int :| Greater[0]` is a subtype of `Int`.
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Greater
+
+//}
 val x: Int :| Greater[0] = ???
 val y: Int = x //Compiles
 ```
@@ -28,6 +33,11 @@ val y: Int = x //Compiles
 types overheadless.
 
 ```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Greater
+
+//}
 val x: Int :| Greater[0] = ???
 ```
 

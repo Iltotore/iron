@@ -10,13 +10,13 @@ This module provides refined types codec instances for [Jsoniter Scala](https://
 
 SBT: 
 
-```scala
+```scala 
 libraryDependencies += "io.github.iltotore" %% "iron-jsoniter" % "version"
 ```
 
 Mill:
 
-```scala
+```scala 
 ivy"io.github.iltotore::iron-jsoniter:version"
 ```
 
@@ -24,14 +24,14 @@ ivy"io.github.iltotore::iron-jsoniter:version"
 
 SBT:
 
-```scala
+```scala 
 libraryDependencies += "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-core" % "2.19.1"
 libraryDependencies += "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scala-macros" % "2.19.1"
 ```
 
 Mill:
 
-```scala
+```scala 
 ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-core:2.19.1"
 ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:2.19.1"
 ```
@@ -40,7 +40,7 @@ ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:2.19.1"
 
 Given `JsonValueCodec` for Iron enables using refined types for JSON serialization/deserialization:
 
-```scala
+```scala 
 import com.github.plokhotnyuk.jsoniter_scala.macros.*
 import com.github.plokhotnyuk.jsoniter_scala.core.*
 

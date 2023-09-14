@@ -15,20 +15,23 @@ However, despite strong static typing, some invalid values still type check.
 
 Taking for example a User with an age:
 
-```scala
+```scala sc-name:User.scala
 case class User(age: Int)
 ```
 
 Thanks to static typing, we cannot pass values of a different type:
 
-```scala
+```scala sc-compile-with:User.scala
 User(1) //OK
+```
+
+```scala sc:fail sc-compile-with:User.scala
 User("1") //Error
 ```
 
 However, unexpected values can still be passed because `Int` contains "wrong" values for our use case:
 
-```scala
+```scala sc-compile-with:User.scala
 User(-1) //A User with a negative age?
 ```
 
@@ -38,14 +41,15 @@ To fix this caveat, you have to write an assertion/guard condition with the foll
 
 Refined types solve both problems by ensuring that constraints are checked compile time or __explicitly__ at runtime.
 
-```scala
+```scala sc-name:BetterUser.scala
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.*
 
 case class User(age: Int :| Positive)
+```
 
+```scala  sc-compile-with:BetterUser.scala
 User(1) //Compiles
-User("1") //Does not compile
 User(-1) //Does not compile
 User(-1.refine) //Compiles but fails at runtime. Useful for runtime checks such as form validation.
 //See also `refineOption` and `refineEither`

@@ -156,6 +156,7 @@ object docs extends BaseModule {
       "-versions-dictionary-url", "https://iltotore.github.io/iron/versions.json",
       "-source-links:github://Iltotore/iron",
       "-revision", docRevision(),
+      "-snippet-compiler:nocompile",
       s"-social-links:github::${main.pomSettings().url}",
       s"-external-mappings:$externalMappingsFlag"
     )

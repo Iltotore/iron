@@ -23,7 +23,7 @@ import io.github.iltotore.iron.constraint.all.*
 
 type GreaterEqual[V] = Greater[V] | StrictEqual[V]
 ```
-```scala sc:nocompile sc-compile-with:GreaterEqual.scala
+```scala  sc-compile-with:GreaterEqual.scala
 val x: Int :| GreaterEqual[0] = 1 //OK
 val y: Int :| GreaterEqual[0] = -1 //Compile-time error: (Should be greater than 0 | Should strictly equal to 0)
 ```
@@ -63,7 +63,7 @@ Each refined type `A :| C` need an implicit instance of `Constraint[A, C]` to be
 
 Here is how it looks:
 
-```scala sc:nocompile sc-name:PositiveAndConstraint.scala sc-compile-with:Positive.scala
+```scala  sc-name:PositiveAndConstraint.scala sc-compile-with:Positive.scala
 //{
 import io.github.iltotore.iron.*
 
@@ -78,7 +78,7 @@ given Constraint[Int, Positive] with
 Note that you need to do this for each type. If your constraint supports multiple types (e.g numeric types),
 you can use a trait to reduce boilerplate:
 
-```scala sc:nocompile sc-compile-with:Positive.scala
+```scala  sc-compile-with:Positive.scala
 //{
 import io.github.iltotore.iron.*
 
@@ -95,7 +95,7 @@ given PositiveConstraint[Double] with
 
 This constraint can now be used like any other:
 
-```scala sc:nocompile sc-compile-with:PositiveAndConstraint.scala
+```scala  sc-compile-with:PositiveAndConstraint.scala
 val x: Int :| Positive = 1
 val y: Int :| Positive = -1 //Compile-time error: Should be strictly positive
 ```
@@ -113,7 +113,7 @@ final class Greater[V]
 
 Then, we can get the value of the passed type using `scala.compiletime.constValue`:
 
-```scala sc:nocompile sc-name:GreaterAndConstraint.scala sc-compile-with:Greater.scala
+```scala  sc-name:GreaterAndConstraint.scala sc-compile-with:Greater.scala
 //{
 import io.github.iltotore.iron.*
 //}
@@ -132,7 +132,7 @@ This method is equivalent to `constValue[scala.compiletime.ops.any.ToString[V]]`
 
 Now testing the constraint:
 
-```scala sc:nocompile sc-compile-with:GreaterAndConstraint.scala
+```scala  sc-compile-with:GreaterAndConstraint.scala
 val x: Int :| Greater[5] = 6
 val y: Int :| Greater[5] = 3 //Compile-time error: Should be greater than 5
 ```

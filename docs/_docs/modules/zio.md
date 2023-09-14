@@ -12,13 +12,13 @@ Prelude's typeclass instances already work with [[IronType|io.github.iltotore.ir
 
 SBT:
 
-```scala sc:nocompile
+```scala 
 libraryDependencies += "io.github.iltotore" %% "iron-zio" % "version"
 ```
 
 Mill:
 
-```scala sc:nocompile
+```scala 
 ivy"io.github.iltotore::iron-zio:version"
 ```
 
@@ -26,14 +26,14 @@ ivy"io.github.iltotore::iron-zio:version"
 
 SBT:
 
-```scala sc:nocompile
+```scala 
 libraryDependencies += "dev.zio" %% "zio" % "2.0.5"
 libraryDependencies += "dev.zio" %% "zio-prelude" % "1.0.0-RC16"
 ```
 
 Mill:
 
-```scala sc:nocompile
+```scala 
 ivy"dev.zio::zio:2.0.5"
 ivy"dev.zio::zio-prelude:1.0.0-RC16"
 ```
@@ -47,7 +47,7 @@ This method is similar to `refineEither` and `refineOption` defined in the core 
 The [User example](../reference/refinement.md) now looks like this:
 
 
-```scala sc:nocompile
+```scala 
 import zio.prelude.Validation
 
 import io.github.iltotore.iron.*
@@ -92,6 +92,6 @@ object Temperature extends RefinedTypeOps[Temperature]
 ### validation
 The example below returns `ZValidation.Success` or `ZValidation.Failure`.
 
-```scala sc:nocompile sc-compile-with:Temperature.scala
+```scala  sc-compile-with:Temperature.scala
 Temperature.validation(x)
 ```

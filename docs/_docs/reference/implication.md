@@ -64,7 +64,7 @@ val y: Int :| Not[Not[Greater[0]]] = x //C1 implies Not[Not[C1]]: `x` can be saf
 Almost every implication has a dependency. For example, our previous "double negation" implication doesn't work in the
 following case:
 
-```scala sc:nocompile
+```scala 
 //{
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.any.Not

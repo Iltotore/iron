@@ -139,7 +139,7 @@ import io.github.iltotore.iron.constraint.numeric.Positive
 opaque type Temperature = Double :| Positive
 ```
 
-```scala sc:nocompile
+```scala 
 //{
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
@@ -258,7 +258,7 @@ opaque type FirstName <: String :| ForAll[Letter] = String :| ForAll[Letter]
 object FirstName extends RefinedTypeOps[FirstName]
 ```
 
-```scala sc:nocompile
+```scala 
 //{
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*

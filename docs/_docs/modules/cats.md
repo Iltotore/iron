@@ -10,13 +10,13 @@ This module provides typeclass instances for [Cats](https://typelevel.org/cats/)
 
 SBT:
 
-```scala sc:nocompile
+```scala 
 libraryDependencies += "io.github.iltotore" %% "iron-cats" % "version"
 ```
 
 Mill:
 
-```scala sc:nocompile
+```scala 
 ivy"io.github.iltotore::iron-cats:version"
 ```
 
@@ -24,13 +24,13 @@ ivy"io.github.iltotore::iron-cats:version"
 
 SBT:
 
-```scala sc:nocompile
+```scala 
 libraryDependencies += "org.typelevel" %% "cats-core" % "2.8.0"
 ```
 
 Mill:
 
-```scala sc:nocompile
+```scala 
 ivy"org.typelevel::cats-core::2.8.0"
 ```
 
@@ -42,7 +42,7 @@ These methods are similar to `refineEither` and `refineOption` defined in the co
 
 The [User example](../reference/refinement.md) now looks like this:
 
-```scala sc:nocompile
+```scala 
 import cats.data.EitherNec
 import cats.syntax.all.*
 
@@ -65,7 +65,7 @@ createUserAcc("Il_totore", -18) //Left(Chain(Should be alphanumeric, Should be g
 
 Or with custom messages:
 
-```scala sc:nocompile
+```scala 
 //{
 import cats.data.EitherNec
 import cats.syntax.all.*
@@ -93,7 +93,7 @@ createUserAcc("Il_totore", -18) //Left(Chain(Username should be alphanumeric, Ag
 
 Leveraging typeclass instances via Cats' syntax.
 
-```scala sc:nocompile
+```scala 
 //{
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*

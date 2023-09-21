@@ -127,7 +127,7 @@ object cats extends IronCatsInstances:
      * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
      * @see [[either]], [[eitherNel]].
      */
-    inline def eitherNec(value: A)(using inline c: Constraint[A, C]): EitherNec[String, T] = value.refineNec[C].map(_.asInstanceOf[T])
+    inline def eitherNec(value: A): EitherNec[String, T] = ops.either(value).toEitherNec
 
     /**
      * Refine the given value at runtime, resulting in an [[EitherNel]].
@@ -136,7 +136,7 @@ object cats extends IronCatsInstances:
      * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
      * @see [[either]], [[eitherNec]].
      */
-    inline def eitherNel(value: A)(using inline c: Constraint[A, C]): EitherNel[String, T] = value.refineNel[C].map(_.asInstanceOf[T])
+    inline def eitherNel(value: A): EitherNel[String, T] = ops.either(value).toEitherNel
 
     /**
      * Refine the given value at runtime, resulting in a [[Validated]].
@@ -145,7 +145,7 @@ object cats extends IronCatsInstances:
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing the constraint message.
      * @see [[validatedNec]], [[validatedNel]].
      */
-    inline def validated(value: A)(using inline c: Constraint[A, C]): Validated[String, T] = value.refineValidated[C].map(_.asInstanceOf[T])
+    inline def validated(value: A): Validated[String, T] = ops.either(value).toValidated
 
     /**
      * Refine the given value applicatively at runtime, resulting in a [[ValidatedNec]].
@@ -154,8 +154,7 @@ object cats extends IronCatsInstances:
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyChain]] of error messages.
      * @see [[validated]], [[validatedNel]].
      */
-    inline def validatedNec(value: A)(using inline c: Constraint[A, C]): ValidatedNec[String, T] =
-      value.refineValidatedNec[C].map(_.asInstanceOf[T])
+    inline def validatedNec(value: A): ValidatedNec[String, T] = ops.either(value).toValidatedNec
 
     /**
      * Refine the given value applicatively at runtime, resulting in a [[ValidatedNel]].
@@ -164,15 +163,14 @@ object cats extends IronCatsInstances:
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyList]] of error messages.
      * @see [[validated]], [[validatedNec]].
      */
-    inline def validatedNel(value: A)(using inline c: Constraint[A, C]): ValidatedNel[String, T] =
-      value.refineValidatedNel[C].map(_.asInstanceOf[T])
+    inline def validatedNel(value: A): ValidatedNel[String, T] = ops.either(value).toValidatedNel
 
   /**
    * Represent all Cats' typeclass instances for Iron.
    */
 private trait IronCatsInstances extends IronCatsLowPriority, RefinedTypeOpsCats:
 
-  //The `NotGiven` implicit parameter is mandatory to avoid ambiguous implicit error when both Eq[A] and Hash[A]/PartialOrder[A] exist
+  // The `NotGiven` implicit parameter is mandatory to avoid ambiguous implicit error when both Eq[A] and Hash[A]/PartialOrder[A] exist
   inline given [A, C](using inline ev: Eq[A], notHashOrOrder: NotGiven[Hash[A] | PartialOrder[A]]): Eq[A :| C] = ev.asInstanceOf[Eq[A :| C]]
 
   inline given [A, C](using inline ev: PartialOrder[A], notOrder: NotGiven[Order[A]]): PartialOrder[A :| C] = ev.asInstanceOf[PartialOrder[A :| C]]
@@ -226,14 +224,14 @@ private trait IronCatsLowPriority:
 
 private trait RefinedTypeOpsCats extends RefinedTypeOpsCatsLowPriority:
 
-  inline given[T](using mirror: RefinedTypeOps.Mirror[T], ev: Eq[mirror.IronType]): Eq[T] = ev.asInstanceOf[Eq[T]]
+  inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: Eq[mirror.IronType]): Eq[T] = ev.asInstanceOf[Eq[T]]
 
-  inline given[T](using mirror: RefinedTypeOps.Mirror[T], ev: Order[mirror.IronType]): Order[T] = ev.asInstanceOf[Order[T]]
+  inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: Order[mirror.IronType]): Order[T] = ev.asInstanceOf[Order[T]]
 
-  inline given[T](using mirror: RefinedTypeOps.Mirror[T], ev: Show[mirror.IronType]): Show[T] = ev.asInstanceOf[Show[T]]
+  inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: Show[mirror.IronType]): Show[T] = ev.asInstanceOf[Show[T]]
 
-  inline given[T](using mirror: RefinedTypeOps.Mirror[T], ev: PartialOrder[mirror.IronType]): PartialOrder[T] = ev.asInstanceOf[PartialOrder[T]]
+  inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: PartialOrder[mirror.IronType]): PartialOrder[T] = ev.asInstanceOf[PartialOrder[T]]
 
 private trait RefinedTypeOpsCatsLowPriority:
 
-  inline given[T](using mirror: RefinedTypeOps.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]
+  inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]

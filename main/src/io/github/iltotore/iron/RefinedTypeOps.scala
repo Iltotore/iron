@@ -49,6 +49,8 @@ object RefinedTypeOps:
     type FinalType = T
 
 trait RefinedTypeOpsImpl[A, C, T](using rtc: RuntimeConstraint[A, C]):
+  inline given RuntimeConstraint[A, C] = rtc
+
   /**
    * Implicitly refine at compile-time the given value.
    *

@@ -6,7 +6,11 @@ trait PosShift[A]:
 
 object PosShift:
 
-  inline given PosShift[Int] = value => value & Int.MaxValue
-  inline given PosShift[Long] = value => value & Long.MaxValue
-  inline given PosShift[Float] = value => if value < 0 then Float.MaxValue - value else value
-  inline given PosShift[Double] = value => if value < 0 then Double.MaxValue - value else value
+  inline given PosShift[Int] with
+    def shift(value: Int): Int = value & Int.MaxValue
+  inline given PosShift[Long] with
+    def shift(value: Long): Long = value & Long.MaxValue
+  inline given PosShift[Float] with
+    def shift(value: Float): Float = if value < 0 then Float.MaxValue - value else value
+  inline given PosShift[Double] with
+    def shift(value: Double): Double = if value < 0 then Double.MaxValue - value else value

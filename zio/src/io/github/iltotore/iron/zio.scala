@@ -1,7 +1,7 @@
 package io.github.iltotore.iron
 
 import _root_.zio.NonEmptyChunk
-import _root_.zio.prelude.*
+import _root_.zio.prelude.{Debug, Equal, Hash, Ord, Validation}
 
 object zio extends RefinedTypeOpsZio:
 
@@ -32,7 +32,7 @@ object zio extends RefinedTypeOpsZio:
      * @param constraint the constraint to test with the value to refine.
      * @return a [[Valid]] containing this value as [[T]] or an [[Validation.Failure]] containing a [[NonEmptyChunk]] of error messages.
      */
-    inline def validation(value: A): Validation[String, T] =
+    def validation(value: A): Validation[String, T] =
       Validation.fromEither(ops.either(value))
 
 private trait RefinedTypeOpsZio extends RefinedTypeOpsZioLowPriority:

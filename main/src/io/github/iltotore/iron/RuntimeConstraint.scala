@@ -1,8 +1,11 @@
 package io.github.iltotore.iron
 
-final class RuntimeConstraint[A, B](_test: A => Boolean, val message: String):
-  inline def test(inline value: A): Boolean = _test(value)
+type RuntimeConstraint[T] = T match
+  case IronType[a, c] => RuntimeConstraint.Impl[a, c, T]
 
 object RuntimeConstraint:
-  inline given derived[A, B](using c: Constraint[A, B]): RuntimeConstraint[A, B] =
-    new RuntimeConstraint[A, B](c.test(_), c.message)
+  final class Impl[A, C, T](_test: A => Boolean, val message: String):
+    inline def test(value: A): Boolean = _test(value)
+
+  inline given derived[A, C](using inline c: Constraint[A, C]): RuntimeConstraint[A :| C] =
+    new Impl[A, C, A :| C](c.test(_), c.message)

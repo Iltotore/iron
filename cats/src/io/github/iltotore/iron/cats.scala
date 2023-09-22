@@ -127,7 +127,7 @@ object cats extends IronCatsInstances:
      * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
      * @see [[either]], [[eitherNel]].
      */
-    inline def eitherNec(value: A): EitherNec[String, T] = ops.either(value).toEitherNec
+    def eitherNec(value: A): EitherNec[String, T] = ops.either(value).toEitherNec
 
     /**
      * Refine the given value at runtime, resulting in an [[EitherNel]].
@@ -136,7 +136,7 @@ object cats extends IronCatsInstances:
      * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
      * @see [[either]], [[eitherNec]].
      */
-    inline def eitherNel(value: A): EitherNel[String, T] = ops.either(value).toEitherNel
+    def eitherNel(value: A): EitherNel[String, T] = ops.either(value).toEitherNel
 
     /**
      * Refine the given value at runtime, resulting in a [[Validated]].
@@ -145,7 +145,7 @@ object cats extends IronCatsInstances:
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing the constraint message.
      * @see [[validatedNec]], [[validatedNel]].
      */
-    inline def validated(value: A): Validated[String, T] = ops.either(value).toValidated
+    def validated(value: A): Validated[String, T] = ops.either(value).toValidated
 
     /**
      * Refine the given value applicatively at runtime, resulting in a [[ValidatedNec]].
@@ -154,7 +154,7 @@ object cats extends IronCatsInstances:
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyChain]] of error messages.
      * @see [[validated]], [[validatedNel]].
      */
-    inline def validatedNec(value: A): ValidatedNec[String, T] = ops.either(value).toValidatedNec
+    def validatedNec(value: A): ValidatedNec[String, T] = ops.either(value).toValidatedNec
 
     /**
      * Refine the given value applicatively at runtime, resulting in a [[ValidatedNel]].
@@ -163,7 +163,7 @@ object cats extends IronCatsInstances:
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyList]] of error messages.
      * @see [[validated]], [[validatedNec]].
      */
-    inline def validatedNel(value: A): ValidatedNel[String, T] = ops.either(value).toValidatedNel
+    def validatedNel(value: A): ValidatedNel[String, T] = ops.either(value).toValidatedNel
 
   /**
    * Represent all Cats' typeclass instances for Iron.

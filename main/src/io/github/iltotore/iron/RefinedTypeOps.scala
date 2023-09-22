@@ -48,8 +48,8 @@ object RefinedTypeOps:
      */
     type FinalType = T
 
-trait RefinedTypeOpsImpl[A, C, T](using rtc: RuntimeConstraint[A, C]):
-  inline given RuntimeConstraint[A, C] = rtc
+trait RefinedTypeOpsImpl[A, C, T](using rtc: RuntimeConstraint[A :| C]):
+  inline given RuntimeConstraint[T] = rtc.asInstanceOf[RuntimeConstraint[T]]
 
   /**
    * Implicitly refine at compile-time the given value.
@@ -69,7 +69,7 @@ trait RefinedTypeOpsImpl[A, C, T](using rtc: RuntimeConstraint[A, C]):
    * @return a constrained value, without performing constraint checks.
    * @see [[apply]], [[applyUnsafe]].
    */
-  inline def assume(value: A): T = value.assume[C].asInstanceOf[T]
+  inline def assume(value: A): T = value.asInstanceOf[T]
 
   /**
    * Refine the given value at runtime, resulting in an [[Either]].
@@ -78,7 +78,7 @@ trait RefinedTypeOpsImpl[A, C, T](using rtc: RuntimeConstraint[A, C]):
    * @return a [[Right]] containing this value as [[T]] or a [[Left]] containing the constraint message.
    * @see [[fromIronType]], [[option]], [[applyUnsafe]].
    */
-  inline def either(value: A): Either[String, T] =
+  def either(value: A): Either[String, T] =
     Either.cond(rtc.test(value), value.asInstanceOf[T], rtc.message)
 
   /**
@@ -88,7 +88,7 @@ trait RefinedTypeOpsImpl[A, C, T](using rtc: RuntimeConstraint[A, C]):
    * @return an Option containing this value as [[T]] or [[None]].
    * @see [[fromIronType]], [[either]], [[applyUnsafe]].
    */
-  inline def option(value: A): Option[T] =
+  def option(value: A): Option[T] =
     Option.when(rtc.test(value))(value.asInstanceOf[T])
 
   /**
@@ -102,7 +102,7 @@ trait RefinedTypeOpsImpl[A, C, T](using rtc: RuntimeConstraint[A, C]):
   inline def applyUnsafe(value: A): T =
     if rtc.test(value) then value.asInstanceOf[T] else throw new IllegalArgumentException(rtc.message)
 
-  inline def unapply(value: T): Option[A :| C] = Some(value.asInstanceOf[A :| C])
+  def unapply(value: T): Option[A :| C] = Some(value.asInstanceOf[A :| C])
 
   inline given RefinedTypeOps.Mirror[T] with
     override type BaseType = A

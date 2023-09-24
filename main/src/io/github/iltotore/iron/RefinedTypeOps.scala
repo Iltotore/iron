@@ -48,8 +48,9 @@ object RefinedTypeOps:
      */
     type FinalType = T
 
-trait RefinedTypeOpsImpl[A, C, T](using rtc: RuntimeConstraint[A :| C]):
-  inline given RuntimeConstraint[T] = rtc.asInstanceOf[RuntimeConstraint[T]]
+
+trait RefinedTypeOpsImpl[A, C, T](using rtcAuto: RuntimeConstraint.AutoDerived[A, A :| C]):
+  given rtc: RuntimeConstraint[A, T] = rtcAuto.inner.asInstanceOf[RuntimeConstraint[A, T]]
 
   /**
    * Implicitly refine at compile-time the given value.

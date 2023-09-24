@@ -48,15 +48,13 @@ object RefinedTypeOps:
      */
     type FinalType = T
 
-
-trait RefinedTypeOpsImpl[A, C, T](using rtcAuto: RuntimeConstraint.AutoDerived[A, A :| C]):
-  given rtc: RuntimeConstraint[A, T] = rtcAuto.inner.asInstanceOf[RuntimeConstraint[A, T]]
+trait RefinedTypeOpsImpl[A, C, T](using rtc: RuntimeConstraint[A, C]):
+  protected given RuntimeConstraint[A, C] = rtc
 
   /**
    * Implicitly refine at compile-time the given value.
    *
    * @param value      the value to refine.
-   * @param constraint the implementation of `C` to check.
    * @tparam A the refined type.
    * @tparam C the constraint applied to the type.
    * @return the given value typed as [[IronType]]
@@ -75,7 +73,6 @@ trait RefinedTypeOpsImpl[A, C, T](using rtcAuto: RuntimeConstraint.AutoDerived[A
   /**
    * Refine the given value at runtime, resulting in an [[Either]].
    *
-   * @param constraint the constraint to test with the value to refine.
    * @return a [[Right]] containing this value as [[T]] or a [[Left]] containing the constraint message.
    * @see [[fromIronType]], [[option]], [[applyUnsafe]].
    */
@@ -95,7 +92,6 @@ trait RefinedTypeOpsImpl[A, C, T](using rtcAuto: RuntimeConstraint.AutoDerived[A
   /**
    * Refine the given value at runtime.
    *
-   * @param constraint the constraint to test with the value to refine.
    * @return this value as [[T]].
    * @throws an [[IllegalArgumentException]] if the constraint is not satisfied.
    * @see [[fromIronType]], [[either]], [[option]].

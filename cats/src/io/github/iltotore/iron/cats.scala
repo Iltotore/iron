@@ -146,7 +146,7 @@ object cats extends IronCatsInstances:
      * @see [[validatedNec]], [[validatedNel]].
      */
     def validated(value: A): Validated[String, T] =
-      if ops.rtc.test(value) then Validated.valid(value.asInstanceOf[T]) else Validated.invalid(ops.rtc.message)
+      Validated.fromEither(ops.either(value))
 
     /**
      * Refine the given value applicatively at runtime, resulting in a [[ValidatedNec]].
@@ -156,7 +156,7 @@ object cats extends IronCatsInstances:
      * @see [[validated]], [[validatedNel]].
      */
     def validatedNec(value: A): ValidatedNec[String, T] =
-      if ops.rtc.test(value) then Validated.validNec(value.asInstanceOf[T]) else Validated.invalidNec(ops.rtc.message)
+      Validated.fromEither(ops.either(value)).toValidatedNec
 
     /**
      * Refine the given value applicatively at runtime, resulting in a [[ValidatedNel]].
@@ -166,7 +166,7 @@ object cats extends IronCatsInstances:
      * @see [[validated]], [[validatedNec]].
      */
     def validatedNel(value: A): ValidatedNel[String, T] =
-      if ops.rtc.test(value) then Validated.validNel(value.asInstanceOf[T]) else Validated.invalidNel(ops.rtc.message)
+      Validated.fromEither(ops.either(value)).toValidatedNel
 
   /**
    * Represent all Cats' typeclass instances for Iron.

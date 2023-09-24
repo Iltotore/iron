@@ -33,7 +33,7 @@ object zio extends RefinedTypeOpsZio:
      * @return a [[Valid]] containing this value as [[T]] or an [[Validation.Failure]] containing a [[NonEmptyChunk]] of error messages.
      */
     def validation(value: A): Validation[String, T] =
-      Validation.fromEither(ops.either(value))
+      Validation.fromPredicateWith(ops.rtc.message)(value)(ops.rtc.test(_)).asInstanceOf[Validation[String, T]]
 
 private trait RefinedTypeOpsZio extends RefinedTypeOpsZioLowPriority:
 

@@ -48,7 +48,7 @@ object RefinedTypeOps:
      */
     type FinalType = T
 
-trait RefinedTypeOpsImpl[A, C, T](using rtc: RuntimeConstraint[A, C]):
+trait RefinedTypeOpsImpl[A, C, T](using val rtc: RuntimeConstraint[A, C]):
   protected given RuntimeConstraint[A, C] = rtc
 
   /**

@@ -49,7 +49,7 @@ object RefinedTypeOps:
     type FinalType = T
 
 trait RefinedTypeOpsImpl[A, C, T](using val rtc: RuntimeConstraint[A, C]):
-  protected given RuntimeConstraint[A, C] = rtc
+  inline protected given RuntimeConstraint[A, C] = rtc
 
   /**
    * Implicitly refine at compile-time the given value.

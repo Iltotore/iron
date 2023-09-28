@@ -48,12 +48,13 @@ object RefinedTypeOps:
      */
     type FinalType = T
 
-trait RefinedTypeOpsImpl[A, C, T]:
+trait RefinedTypeOpsImpl[A, C, T](using val rtc: RuntimeConstraint[A, C]):
+  inline protected given RuntimeConstraint[A, C] = rtc
+
   /**
    * Implicitly refine at compile-time the given value.
    *
    * @param value      the value to refine.
-   * @param constraint the implementation of `C` to check.
    * @tparam A the refined type.
    * @tparam C the constraint applied to the type.
    * @return the given value typed as [[IronType]]
@@ -67,17 +68,16 @@ trait RefinedTypeOpsImpl[A, C, T]:
    * @return a constrained value, without performing constraint checks.
    * @see [[apply]], [[applyUnsafe]].
    */
-  inline def assume(value: A): T = value.assume[C].asInstanceOf[T]
+  inline def assume(value: A): T = value.asInstanceOf[T]
 
   /**
    * Refine the given value at runtime, resulting in an [[Either]].
    *
-   * @param constraint the constraint to test with the value to refine.
    * @return a [[Right]] containing this value as [[T]] or a [[Left]] containing the constraint message.
    * @see [[fromIronType]], [[option]], [[applyUnsafe]].
    */
-  inline def either(value: A)(using constraint: Constraint[A, C]): Either[String, T] =
-    Either.cond(constraint.test(value), value.asInstanceOf[T], constraint.message)
+  def either(value: A): Either[String, T] =
+    Either.cond(rtc.test(value), value.asInstanceOf[T], rtc.message)
 
   /**
    * Refine the given value at runtime, resulting in an [[Option]].
@@ -86,21 +86,20 @@ trait RefinedTypeOpsImpl[A, C, T]:
    * @return an Option containing this value as [[T]] or [[None]].
    * @see [[fromIronType]], [[either]], [[applyUnsafe]].
    */
-  inline def option(value: A)(using constraint: Constraint[A, C]): Option[T] =
-    Option.when(constraint.test(value))(value.asInstanceOf[T])
+  def option(value: A): Option[T] =
+    Option.when(rtc.test(value))(value.asInstanceOf[T])
 
   /**
    * Refine the given value at runtime.
    *
-   * @param constraint the constraint to test with the value to refine.
    * @return this value as [[T]].
    * @throws an [[IllegalArgumentException]] if the constraint is not satisfied.
    * @see [[fromIronType]], [[either]], [[option]].
    */
-  inline def applyUnsafe(value: A)(using Constraint[A, C]): T =
-    value.refine[C].asInstanceOf[T]
+  inline def applyUnsafe(value: A): T =
+    if rtc.test(value) then value.asInstanceOf[T] else throw new IllegalArgumentException(rtc.message)
 
-  inline def unapply(value: T): Option[A :| C] = Some(value.asInstanceOf[A :| C])
+  def unapply(value: T): Option[A :| C] = Some(value.asInstanceOf[A :| C])
 
   inline given RefinedTypeOps.Mirror[T] with
     override type BaseType = A
@@ -108,12 +107,8 @@ trait RefinedTypeOpsImpl[A, C, T]:
 
   inline given [R]: TypeTest[T, R] = summonInline[TypeTest[A :| C, R]].asInstanceOf[TypeTest[T, R]]
 
-  inline given [L](using inline constraint: Constraint[A, C]): TypeTest[L, T] =
-    val test = summonInline[TypeTest[L, A]]
-
-    new TypeTest:
-      override def unapply(value: L): Option[value.type & T] =
-        test.unapply(value).filter(constraint.test(_)).asInstanceOf
+  given [L](using test: TypeTest[L, A]): TypeTest[L, T] with
+    override def unapply(value: L): Option[value.type & T] = test.unapply(value).filter(rtc.test(_)).asInstanceOf
 
   extension (wrapper: T)
     inline def value: IronType[A, C] = wrapper.asInstanceOf[IronType[A, C]]

@@ -77,7 +77,7 @@ object docs extends BaseModule {
 
   def artifactName = "iron-docs"
 
-  val modules: Seq[ScalaModule] = Seq(main, cats, circe, jsoniter, scalacheck, zio, zioJson)
+  val modules: Seq[ScalaModule] = Seq(main, cats, circe, ciris, jsoniter, scalacheck, zio, zioJson)
 
   def docSources = T.sources {
     T.traverse(modules)(_.docSources)().flatten
@@ -292,6 +292,27 @@ object circe extends SubModule {
   object js extends JSCrossModule
 
   object native extends NativeCrossModule
+}
+
+object ciris extends SubModule {
+
+  def artifactName = "iron-ciris"
+
+  def ivyDeps = Agg(
+    ivy"is.cir::ciris::3.1.0"
+  )
+
+  object test extends Tests {
+    def ivyDeps = Agg(
+      ivy"com.lihaoyi::utest:0.8.1",
+      ivy"is.cir::ciris::3.1.0"
+    )
+  }
+
+  object js extends JSCrossModule
+
+  object native extends NativeCrossModule
+
 }
 
 object zio extends SubModule {

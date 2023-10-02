@@ -91,7 +91,7 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Temperature]
+object Temperature extends RefinedTypeOps.Transparent[Temperature]
 
 //}
 val temperature: Temperature = Temperature(15)
@@ -124,7 +124,7 @@ import io.github.iltotore.iron.constraint.any.Pure
 
 //}
 type FirstName = String :| Pure
-object FirstName extends RefinedTypeOps[FirstName]
+object FirstName extends RefinedTypeOps.Transparent[FirstName]
 ```
 ```scala
 //{
@@ -132,7 +132,7 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.any.Pure
 
 type FirstName = String :| Pure
-object FirstName extends RefinedTypeOps[FirstName]
+object FirstName extends RefinedTypeOps.Transparent[FirstName]
 
 //}
 val firstName = FirstName("whatever")

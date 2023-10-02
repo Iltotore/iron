@@ -17,7 +17,7 @@ import io.github.iltotore.iron.constraint.numeric.Positive
 
 //}
 type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Temperature]
+object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
 ```
 
 ```scala
@@ -26,7 +26,7 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Temperature]
+object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
 
 //}
 val temperature = Temperature(15) //Compiles
@@ -34,6 +34,18 @@ println(temperature) //15
 
 val positive: Double :| Positive = 15
 val tempFromIron = Temperature(positive) //Compiles too
+```
+
+For transparent type aliases, it is possible to use the `RefinedTypeOps.Transparent` alias to avoid boilerplate.
+
+```scala
+//{
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.numeric.Positive
+
+//}
+type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps.Transparent[Temperature]
 ```
 
 ### Runtime refinement
@@ -46,7 +58,7 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Temperature]
+object Temperature extends RefinedTypeOps.Transparent[Temperature]
 
 //}
 val unsafeRuntime: Temperature = Temperature.applyUnsafe(15)
@@ -65,7 +77,7 @@ import io.github.iltotore.iron.constraint.numeric.Positive
 import io.github.iltotore.iron.zio.*
 
 type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Temperature]
+object Temperature extends RefinedTypeOps.Transparent[Temperature]
 
 //}
 val zioValidation: Validation[String, Temperature] = Temperature.validation(15)
@@ -79,7 +91,7 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Temperature]
+object Temperature extends RefinedTypeOps.Transparent[Temperature]
 
 //}
 val temperature: Temperature = Temperature(15)
@@ -112,7 +124,7 @@ import io.github.iltotore.iron.constraint.any.Pure
 
 //}
 type FirstName = String :| Pure
-object FirstName extends RefinedTypeOps[FirstName]
+object FirstName extends RefinedTypeOps.Transparent[FirstName]
 ```
 ```scala
 //{
@@ -120,7 +132,7 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.any.Pure
 
 type FirstName = String :| Pure
-object FirstName extends RefinedTypeOps[FirstName]
+object FirstName extends RefinedTypeOps.Transparent[FirstName]
 
 //}
 val firstName = FirstName("whatever")
@@ -137,6 +149,7 @@ import io.github.iltotore.iron.constraint.numeric.Positive
 
 //}
 opaque type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
 ```
 
 ```scala 
@@ -145,6 +158,7 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 opaque type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
 
 //}
 val x: Double :| Positive = 5
@@ -160,7 +174,10 @@ import io.github.iltotore.iron.constraint.numeric.Positive
 
 //}
 opaque type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
+
 opaque type Moisture = Double :| Positive
+object Temperature extends RefinedTypeOps[Double, Positive, Moisture]
 ```
 
 ```scala
@@ -169,7 +186,10 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 opaque type Temperature = Double :| Positive
+object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
+
 opaque type Moisture = Double :| Positive
+object Temperature extends RefinedTypeOps[Double, Positive, Moisture]
 
 //}
 case class Info(temperature: Temperature, moisture: Moisture)
@@ -190,7 +210,7 @@ import io.github.iltotore.iron.constraint.numeric.Positive
 
 //}
 opaque type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Temperature]
+object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
 ```
 
 ```scala
@@ -199,7 +219,7 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 opaque type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Temperature]
+object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
 
 //}
 val value: Double :| Positive = ???
@@ -224,7 +244,7 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 
 opaque type FirstName = String :| ForAll[Letter]
-object FirstName extends RefinedTypeOps[FirstName]
+object FirstName extends RefinedTypeOps[String, ForAll[Letter], FirstName]
 ```
 
 We cannot use `java.lang.String`'s methods neither pass `FirstName` as a String without using the `value`
@@ -255,7 +275,7 @@ import io.github.iltotore.iron.constraint.all.*
 
 //}
 opaque type FirstName <: String :| ForAll[Letter] = String :| ForAll[Letter]
-object FirstName extends RefinedTypeOps[FirstName]
+object FirstName extends RefinedTypeOps[String, ForAll[Letter], FirstName]
 ```
 
 ```scala 
@@ -264,7 +284,7 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 
 opaque type FirstName <: String :| ForAll[Letter] = String :| ForAll[Letter]
-object FirstName extends RefinedTypeOps[FirstName]
+object FirstName extends RefinedTypeOps[String, ForAll[Letter], FirstName]
 
 //}
 val x = FirstName("Raphael")
@@ -283,7 +303,7 @@ import io.github.iltotore.iron.constraint.numeric.Positive
 
 //}
 opaque type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Temperature]
+object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
 ```
 
 To support such type, you can use the [[RefinedTypeOps.Mirror|io.github.iltotore.iron.RefinedTypeOps.Mirror]] provided by

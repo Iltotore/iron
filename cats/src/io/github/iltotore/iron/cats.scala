@@ -118,7 +118,7 @@ object cats extends IronCatsInstances:
     inline def refineFurtherValidatedNel[C2](using inline constraint: Constraint[A, C2]): ValidatedNel[String, A :| (C1 & C2)] =
       (value: A).refineValidatedNel[C2].map(_.assumeFurther[C1])
 
-  extension [A, C, T](ops: RefinedTypeOpsImpl[A, C, T])
+  extension [A, C, T](ops: RefinedTypeOps[A, C, T])
 
     /**
      * Refine the given value at runtime, resulting in an [[EitherNec]].

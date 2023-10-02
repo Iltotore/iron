@@ -25,7 +25,7 @@ object zio extends RefinedTypeOpsZio:
     inline def refineFurtherValidation[C2](using inline constraint: Constraint[A, C2]): Validation[String, A :| (C1 & C2)] =
       (value: A).refineValidation[C2].map(_.assumeFurther[C1])
 
-  extension [A, C, T](ops: RefinedTypeOpsImpl[A, C, T])
+  extension [A, C, T](ops: RefinedTypeOps[A, C, T])
     /**
      * Refine the given value applicatively at runtime, resulting in a [[Validation]].
      *

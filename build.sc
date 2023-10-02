@@ -7,9 +7,9 @@ import mill._, define._, api.Result
 import scalalib._, scalalib.scalafmt._, scalalib.publish._, scalajslib._, scalanativelib._
 
 object versions {
-  val scala = "3.2.1"
-  val scalaJS = "1.12.0"
-  val scalaNative = "0.4.10"
+  val scala = "3.3.1"
+  val scalaJS = "1.13.2"
+  val scalaNative = "0.4.15"
 }
 
 trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { outer =>

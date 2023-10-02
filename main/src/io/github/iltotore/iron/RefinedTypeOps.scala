@@ -84,6 +84,14 @@ trait RefinedTypeOps[A, C, T](using val rtc: RuntimeConstraint[A, C]):
 object RefinedTypeOps:
 
   /**
+   * Alias to reduce boilerplate for transparent type aliases.
+   *
+   * @tparam T the new type which should be a transparent alias for an [[IronType]]
+   */
+  type Transparent[T] = T match
+    case a :| c => RefinedTypeOps[a, c, T]
+
+  /**
    * Typelevel access to a "new type"'s informations. It is similar to [[scala.deriving.Mirror]].
    * @tparam T the new type (usually a type alias).
    */

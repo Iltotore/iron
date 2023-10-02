@@ -3,58 +3,25 @@ package io.github.iltotore.iron
 import scala.compiletime.summonInline
 import scala.reflect.TypeTest
 
-type RefinedTypeOps[T] = T match
-  case IronType[a, c] => RefinedTypeOpsImpl[a, c, T]
-
-object RefinedTypeOps:
+/**
+ * Utility trait for new types' companion object.
+ * 
+ * @tparam A the base type of the new type
+ * @tparam C the constraint type of the new type
+ * @tparam T the new type (equivalent to `A :| C` if `T` is a transparent alias)
+ */
+trait RefinedTypeOps[A, C, T](using val rtc: RuntimeConstraint[A, C]):
 
   /**
-   * Typelevel access to a "new type"'s informations. It is similar to [[scala.deriving.Mirror]].
-   * @tparam T the new type (usually a type alias).
+   * R
+   * @return
    */
-  trait Mirror[T]:
-
-    /**
-     * The base type of the mirrored type without any constraint.
-     */
-    type BaseType
-
-    /**
-     * The constraint of the mirrored type.
-     */
-    type ConstraintType
-
-    /**
-     * Alias for `BaseType :| ConstraintType`
-     */
-    type IronType = BaseType :| ConstraintType
-
-    /**
-     * Alias for [[T]]. Also equivalent to [[IronType]] if the type alias of the mirrored new type is transparent.
-     *
-     * {{{
-     * type Temperature = Double :| Positive
-     * object Temperature extends RefinedTypeOps[Temperature]
-     *
-     * //FinalType =:= IronType
-     * }}}
-     *
-     * {{{
-     * opaque type Temperature = Double :| Positive
-     * object Temperature extends RefinedTypeOps[Temperature]
-     *
-     * //FinalType =/= IronType
-     * }}}
-     */
-    type FinalType = T
-
-trait RefinedTypeOpsImpl[A, C, T](using val rtc: RuntimeConstraint[A, C]):
   inline protected given RuntimeConstraint[A, C] = rtc
 
   /**
    * Implicitly refine at compile-time the given value.
    *
-   * @param value      the value to refine.
+   * @param value the value to refine.
    * @tparam A the refined type.
    * @tparam C the constraint applied to the type.
    * @return the given value typed as [[IronType]]
@@ -105,10 +72,53 @@ trait RefinedTypeOpsImpl[A, C, T](using val rtc: RuntimeConstraint[A, C]):
     override type BaseType = A
     override type ConstraintType = C
 
-  inline given [R]: TypeTest[T, R] = summonInline[TypeTest[A :| C, R]].asInstanceOf[TypeTest[T, R]]
+  inline given[R]: TypeTest[T, R] = summonInline[TypeTest[A :| C, R]].asInstanceOf[TypeTest[T, R]]
 
-  given [L](using test: TypeTest[L, A]): TypeTest[L, T] with
+  given[L] (using test: TypeTest[L, A]): TypeTest[L, T] with
     override def unapply(value: L): Option[value.type & T] = test.unapply(value).filter(rtc.test(_)).asInstanceOf
 
   extension (wrapper: T)
     inline def value: IronType[A, C] = wrapper.asInstanceOf[IronType[A, C]]
+
+
+object RefinedTypeOps:
+
+  /**
+   * Typelevel access to a "new type"'s informations. It is similar to [[scala.deriving.Mirror]].
+   * @tparam T the new type (usually a type alias).
+   */
+  trait Mirror[T]:
+
+    /**
+     * The base type of the mirrored type without any constraint.
+     */
+    type BaseType
+
+    /**
+     * The constraint of the mirrored type.
+     */
+    type ConstraintType
+
+    /**
+     * Alias for `BaseType :| ConstraintType`
+     */
+    type IronType = BaseType :| ConstraintType
+
+    /**
+     * Alias for [[T]]. Also equivalent to [[IronType]] if the type alias of the mirrored new type is transparent.
+     *
+     * {{{
+     * type Temperature = Double :| Positive
+     * object Temperature extends RefinedTypeOps[Temperature]
+     *
+     * //FinalType =:= IronType
+     * }}}
+     *
+     * {{{
+     * opaque type Temperature = Double :| Positive
+     * object Temperature extends RefinedTypeOps[Temperature]
+     *
+     * //FinalType =/= IronType
+     * }}}
+     */
+    type FinalType = T

@@ -41,9 +41,9 @@ object RefinedTypeOpsSuite extends TestSuite:
 
     test("option") {
       val fromWithFailingPredicate = Temperature.option(-5.0)
-      assert(fromWithFailingPredicate == None)
+      assert(fromWithFailingPredicate.isEmpty)
       val fromWithSucceedingPredicate = Temperature.option(100)
-      assert(fromWithSucceedingPredicate == Some(Temperature(100)))
+      assert(fromWithSucceedingPredicate.contains(Temperature(100)))
     }
 
     test("applyUnsafe") {
@@ -63,8 +63,8 @@ object RefinedTypeOpsSuite extends TestSuite:
       test - assert(Moisture(positive) == moisture)
       test - assert(Moisture.either(-5.0) == Left("Should be strictly positive"))
       test - assert(Moisture.either(100) == Right(Moisture(100)))
-      test - assert(Moisture.option(-5.0) == None)
-      test - assert(Moisture.option(100) == Some(Moisture(100)))
+      test - assert(Moisture.option(-5.0).isEmpty)
+      test - assert(Moisture.option(100).contains(Moisture(100)))
     }
 
     test("mirror") {
@@ -73,5 +73,10 @@ object RefinedTypeOpsSuite extends TestSuite:
       assertGiven[mirror.BaseType =:= Double]
       assertGiven[mirror.ConstraintType =:= Positive]
       assertGiven[mirror.FinalType =:= Temperature]
+    }
+
+    test("value") {
+      val temperature = Temperature(10)
+      assert(temperature.value == 10)
     }
   }

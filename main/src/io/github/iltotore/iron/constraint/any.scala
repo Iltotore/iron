@@ -198,15 +198,3 @@ object any:
 
     inline given [V <: Int | Long]: StrictEqualConstraint[BigInt, V] with
       override inline def test(value: BigInt): Boolean = value == BigInt(longValue[V])
-
-    inline given jBigDecimalDouble[V <: Float | Double]: StrictEqualConstraint[java.math.BigDecimal, V] with
-      override inline def test(value: java.math.BigDecimal): Boolean =
-        value == java.math.BigDecimal.valueOf(doubleValue[V])
-
-    inline given jBigDecimalLong[V <: Int | Long]: StrictEqualConstraint[java.math.BigDecimal, V] with
-      override inline def test(value: java.math.BigDecimal): Boolean =
-        value == java.math.BigDecimal.valueOf(longValue[V])
-
-    inline given jBigInteger[V <: Int | Long]: StrictEqualConstraint[java.math.BigInteger, V] with
-      override inline def test(value: java.math.BigInteger): Boolean =
-        value == java.math.BigInteger.valueOf(longValue[V])

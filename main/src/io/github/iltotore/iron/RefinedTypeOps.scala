@@ -10,13 +10,13 @@ import scala.reflect.TypeTest
  * @tparam C the constraint type of the new type
  * @tparam T the new type (equivalent to `A :| C` if `T` is a transparent alias)
  */
-trait RefinedTypeOps[A, C, T](using val rtc: RuntimeConstraint[A, C]):
+trait RefinedTypeOps[A, C, T](using private val _rtc: RuntimeConstraint[A, C]):
 
   /**
-   * R
-   * @return
+   * The runtime constraint of the underlying [[IronType]]. Can be used in non-inline methods and to improve runtime
+   * performances.
    */
-  inline protected given RuntimeConstraint[A, C] = rtc
+  inline def rtc: RuntimeConstraint[A, C] = _rtc
 
   /**
    * Implicitly refine at compile-time the given value.

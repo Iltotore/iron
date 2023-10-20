@@ -36,8 +36,8 @@ object circe:
    * @param constraint the [[Constraint]] implementation to test the decoded value.
    */
   inline given [A, B](using inline decoder: KeyDecoder[A], inline constraint: Constraint[A, B]): KeyDecoder[A :| B] =
-    KeyDecoder.instance[A :| B]: input =>
-      decoder.apply(input).flatMap(_.refineOption)
+    KeyDecoder.instance: input =>
+      decoder.apply(input).flatMap[A :| B](_.refineOption)
 
   /**
    * An [[KeyEncoder]] instance for refined types. Basically the underlying type [[KeyEncoder]].

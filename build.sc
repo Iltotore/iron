@@ -384,3 +384,16 @@ object scalacheck extends SubModule {
 
   object test extends Tests
 }
+
+object doobie extends SubModule {
+
+  def artifactName = "iron-doobie"
+
+  def ivyDeps = Agg(
+    ivy"org.tpolecat::doobie-core::1.0.0-RC4"
+  )
+
+  object js extends JSCrossModule
+
+  object test extends Tests
+}

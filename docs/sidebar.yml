@@ -20,6 +20,7 @@ subsection:
     subsection:
       - page: modules/cats.md
       - page: modules/circe.md
+      - page: modules/ciris.md
       - page: modules/jsoniter.md
       - page: modules/scalacheck.md
       - page: modules/zio.md

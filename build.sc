@@ -291,10 +291,6 @@ object upickle extends SubModule {
   )
 
   object test extends Tests {
-    def ivyDeps = Agg(
-      ivy"com.lihaoyi::utest:0.8.1",
-      ivy"com.lihaoyi::upickle:3.1.3"
-    )
   }
 
   object js extends JSCrossModule

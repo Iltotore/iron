@@ -77,7 +77,7 @@ object docs extends BaseModule {
 
   def artifactName = "iron-docs"
 
-  val modules: Seq[ScalaModule] = Seq(main, cats, circe, ciris, jsoniter, scalacheck, zio, zioJson)
+  val modules: Seq[ScalaModule] = Seq(main, cats, circe, upickle, ciris, jsoniter, scalacheck, zio, zioJson)
 
   def docSources = T.sources {
     T.traverse(modules)(_.docSources)().flatten
@@ -275,6 +275,22 @@ object cats extends SubModule {
       ivy"com.lihaoyi::utest:0.8.1",
       ivy"org.typelevel::kittens:3.0.0"
     )
+  }
+
+  object js extends JSCrossModule
+
+  object native extends NativeCrossModule
+}
+
+object upickle extends SubModule {
+
+  def artifactName = "iron-upickle"
+
+  def ivyDeps = Agg(
+    ivy"com.lihaoyi::upickle:3.1.3"
+  )
+
+  object test extends Tests {
   }
 
   object js extends JSCrossModule

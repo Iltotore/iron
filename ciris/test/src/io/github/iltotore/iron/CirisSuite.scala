@@ -1,19 +1,22 @@
 package io.github.iltotore.iron
 
 import _root_.ciris.ConfigDecoder
+import io.github.iltotore.iron.ciris.given
+import io.github.iltotore.iron.constraint.numeric.Positive
 import utest.*
-import ciris.given
-
 
 object CirisSuite extends TestSuite:
   val tests: Tests = Tests {
 
-    test("summon String => Int :| Pure") {
-      summon[ ConfigDecoder[String, Int :| Pure]]
-    }
+    test("decoder") {
+      test("ironType") {
+        test("success") - assert(summon[ConfigDecoder[String, Int :| Positive]].decode(None, "5") == Right(5))
+        test("failure") - assert(summon[ConfigDecoder[String, Int :| Positive]].decode(None, "-5").isLeft)
+      }
 
-    test("summon from Int => Int :| Pure") {
-      summon[ConfigDecoder[Int, Int :| Pure]]
+      test("newType") {
+        test("success") - assert(summon[ConfigDecoder[String, Temperature]].decode(None, "5") == Right(Temperature(5)))
+        test("failure") - assert(summon[ConfigDecoder[String, Temperature]].decode(None, "-5").isLeft)
+      }
     }
   }
-

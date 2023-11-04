@@ -97,6 +97,7 @@ ivy"io.github.iltotore::iron:version"
 | iron-circe      | ✔️  | ✔️  | ✔️     |
 | iron-ciris      | ✔️  | ✔️  | ✔️     |
 | iron-jsoniter   | ✔️  | ✔️  | ✔️     |
+| iron-skunk      | ✔️  | ✔️  | ✔️     |
 | iron-scalacheck | ✔️  | ✔️  | ❌      |
 | iron-zio        | ✔️  | ✔️  | ❌      |
 | iron-zio-json   | ✔️  | ✔️  | ❌      |

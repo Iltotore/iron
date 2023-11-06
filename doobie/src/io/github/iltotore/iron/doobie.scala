@@ -1,7 +1,7 @@
 package io.github.iltotore.iron
 
 import cats.Show
-import doobie.util.{Put, Get, Meta}
+import _root_.doobie.util.{Put, Get, Meta}
 
 /**
  * Implicit [[Meta]]s, [[Put]]s  and [[Get]]s for refined types.

@@ -393,7 +393,5 @@ object doobie extends SubModule {
     ivy"org.tpolecat::doobie-core::1.0.0-RC4"
   )
 
-  object js extends JSCrossModule
-
   object test extends Tests
 }

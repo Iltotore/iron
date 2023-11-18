@@ -139,7 +139,8 @@ object docs extends BaseModule {
     ".*zio.prelude.*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio-prelude-docs_3/latest/"),
     ".*zio[^\\.json].*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio_3/latest/"),
     ".*org.scalacheck.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scalacheck/scalacheck_3/latest/"),
-    ".*scala.*" -> ("scaladoc3", "https://scala-lang.org/api/3.x/")
+    ".*org.scalacheck.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scalacheck/scalacheck_3/latest/"),
+    ".*skunk.*" -> ("scaladoc3", "https://javadoc.io/doc/org.tpolecat/skunk-docs_3/latest/")
   )
 
   def scalaDocOptions = {

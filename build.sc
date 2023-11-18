@@ -77,7 +77,7 @@ object docs extends BaseModule {
 
   def artifactName = "iron-docs"
 
-  val modules: Seq[ScalaModule] = Seq(main, cats, circe, upickle, ciris, jsoniter, scalacheck, zio, zioJson)
+  val modules: Seq[ScalaModule] = Seq(main, cats, circe, upickle, ciris, jsoniter, scalacheck, skunk, zio, zioJson)
 
   def docSources = T.sources {
     T.traverse(modules)(_.docSources)().flatten

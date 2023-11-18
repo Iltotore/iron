@@ -41,8 +41,8 @@ val tests: Tests = Tests {
 
   test("decoder") {
     test("ironType") {
-      test("success") - assert(summon[Decoder[PositiveInt]].decode(0, List(Some("5"))) == Right(PositiveInt(5)))
-      test("failure") - assert(summon[Decoder[PositiveInt]].decode(0, List(Some("-5"))).isLeft)
+      test("success") - assert(summon[Decoder[Int :| Positive]].decode(0, List(Some("5"))) == Right(PositiveInt(5)))
+      test("failure") - assert(summon[Decoder[Int :| Positive]].decode(0, List(Some("-5"))).isLeft)
     }
 
     test("newType") {

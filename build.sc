@@ -77,7 +77,7 @@ object docs extends BaseModule {
 
   def artifactName = "iron-docs"
 
-  val modules: Seq[ScalaModule] = Seq(main, cats, circe, upickle, ciris, jsoniter, scalacheck, zio, zioJson)
+  val modules: Seq[ScalaModule] = Seq(main, cats, circe, upickle, ciris, jsoniter, scalacheck, skunk, zio, zioJson)
 
   def docSources = T.sources {
     T.traverse(modules)(_.docSources)().flatten
@@ -139,7 +139,8 @@ object docs extends BaseModule {
     ".*zio.prelude.*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio-prelude-docs_3/latest/"),
     ".*zio[^\\.json].*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio_3/latest/"),
     ".*org.scalacheck.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scalacheck/scalacheck_3/latest/"),
-    ".*scala.*" -> ("scaladoc3", "https://scala-lang.org/api/3.x/")
+    ".*org.scalacheck.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scalacheck/scalacheck_3/latest/"),
+    ".*skunk.*" -> ("scaladoc3", "https://javadoc.io/doc/org.tpolecat/skunk-docs_3/latest/")
   )
 
   def scalaDocOptions = {
@@ -387,6 +388,27 @@ object jsoniter extends SubModule {
   object test extends Tests {
     def compileIvyDeps = Agg(jsoniterMacros)
   }
+}
+
+object skunk extends SubModule {
+
+  def artifactName = "iron-skunk"
+
+  def ivyDeps = Agg(
+    ivy"org.tpolecat::skunk-core::0.6.1"
+  )
+
+  object test extends Tests {
+    def ivyDeps = Agg(
+      ivy"com.lihaoyi::utest:0.8.1",
+      ivy"org.tpolecat::skunk-core::0.6.1"
+    )
+  }
+
+  object js extends JSCrossModule
+
+  object native extends NativeCrossModule
+
 }
 
 object scalacheck extends SubModule {

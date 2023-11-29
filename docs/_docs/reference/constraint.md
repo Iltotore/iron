@@ -15,7 +15,7 @@ Usually, you can make your constraint out of existing ones. Iron provides severa
 
 ### Union and intersection
 
-Type union `C1 | C2` and intersection `C1 & C2` respectively act as a boolean OR/AND in Iron. For example, [[GreaterEqual|io.github.iltotore.iron.constraint.numeric.GreaterEqual]] is just a union of [[Greater|io.github.iltotore.iron.constraint.numeric.Greater]] and [[StrictEqual|io.github.iltotore.iron.constraint.numeric.StrictEqual]]:
+Type union `C1 | C2` and intersection `C1 & C2` respectively act as a boolean OR/AND in Iron. For example, [[GreaterEqual|io.github.iltotore.iron.constraint.numeric.GreaterEqual]] is just a union of [[Greater|io.github.iltotore.iron.constraint.numeric.Greater]] and [[StrictEqual|io.github.iltotore.iron.constraint.any.StrictEqual]]:
 
 ```scala sc-name:GreaterEqual.scala
 import io.github.iltotore.iron.*

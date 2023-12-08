@@ -21,6 +21,7 @@ subsection:
       - page: modules/cats.md
       - page: modules/circe.md
       - page: modules/ciris.md
+      - page: modules/decline.md
       - page: modules/jsoniter.md
       - page: modules/skunk.md
       - page: modules/scalacheck.md

@@ -77,7 +77,7 @@ object docs extends BaseModule {
 
   def artifactName = "iron-docs"
 
-  val modules: Seq[ScalaModule] = Seq(main, cats, circe, upickle, ciris, jsoniter, scalacheck, skunk, zio, zioJson)
+  val modules: Seq[ScalaModule] = Seq(main, cats, circe, decline, upickle, ciris, jsoniter, scalacheck, skunk, zio, zioJson)
 
   def docSources = T.sources {
     T.traverse(modules)(_.docSources)().flatten
@@ -140,7 +140,8 @@ object docs extends BaseModule {
     ".*zio[^\\.json].*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio_3/latest/"),
     ".*org.scalacheck.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scalacheck/scalacheck_3/latest/"),
     ".*org.scalacheck.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scalacheck/scalacheck_3/latest/"),
-    ".*skunk.*" -> ("scaladoc3", "https://javadoc.io/doc/org.tpolecat/skunk-docs_3/latest/")
+    ".*skunk.*" -> ("scaladoc3", "https://javadoc.io/doc/org.tpolecat/skunk-docs_3/latest/"),
+    ".*com.monovore.decline.*" -> ("scaladoc3", "https://javadoc.io/doc/com.monovore/decline_3/latest/")
   )
 
   def scalaDocOptions = {
@@ -433,4 +434,24 @@ object doobie extends SubModule {
   )
 
   object test extends Tests
+}
+
+object decline extends SubModule {
+
+  def artifactName = "iron-decline"
+
+  def ivyDeps = Agg(
+    ivy"com.monovore::decline::2.4.1"
+  )
+
+  object test extends Tests {
+    def ivyDeps = Agg(
+      ivy"com.lihaoyi::utest:0.8.1",
+      ivy"com.monovore::decline::2.4.1"
+    )
+  }
+
+  object js extends JSCrossModule
+
+  object native extends NativeCrossModule
 }

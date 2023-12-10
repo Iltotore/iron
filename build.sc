@@ -444,12 +444,7 @@ object decline extends SubModule {
     ivy"com.monovore::decline::2.4.1"
   )
 
-  object test extends Tests {
-    def ivyDeps = Agg(
-      ivy"com.lihaoyi::utest:0.8.1",
-      ivy"com.monovore::decline::2.4.1"
-    )
-  }
+  object test extends Tests
 
   object js extends JSCrossModule
 

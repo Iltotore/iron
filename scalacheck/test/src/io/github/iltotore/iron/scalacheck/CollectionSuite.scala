@@ -22,7 +22,7 @@ object CollectionSuite extends TestSuite:
     }
     test("empty") {
       test("seq") - testGen[Seq[Boolean], Empty]
-      test("string") - testGen[Seq[Boolean], Empty]
+      test("string") - testGen[String, Empty]
     }
     test("contain") {
       test("seq") - testGen[Seq[Boolean], Contain[true]]

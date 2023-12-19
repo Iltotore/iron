@@ -8,10 +8,12 @@ import org.scalacheck.Arbitrary.arbitrary
 
 import scala.compiletime.constValue
 
-object any extends LowPriorityArbitrary:
+object any extends AnyArbitrary
+
+trait AnyArbitrary extends LowPriorityArbitrary:
 
   inline given strictEqual[A, V <: A]: Arbitrary[A :| StrictEqual[V]] = Arbitrary(Gen.oneOf(Seq(constValue[V]))).asInstanceOf
-  
+
   inline given union[A, C](using IsUnion[C]): Arbitrary[A :| C] = Arbitrary(unionGen[A, C])
 
 trait LowPriorityArbitrary extends LowPriorityArbitrary2:

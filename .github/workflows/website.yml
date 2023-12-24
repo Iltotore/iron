@@ -43,8 +43,8 @@ jobs:
       - name: Build website
         run: ./millw -i docs.docJar
 
-      - uses: actions/upload-pages-artifact@v1.0.4
+      - uses: actions/upload-pages-artifact@v3.0.0
         with:
           path: out/docs/docJar.dest/javadoc
 
-      - uses: actions/deploy-pages@v1.0.10
+      - uses: actions/deploy-pages@v4.0.2

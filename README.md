@@ -90,18 +90,19 @@ ivy"io.github.iltotore::iron:version"
 
 ### Platform support
 
-| Module          | JVM | JS  | Native |
-|-----------------|-----|-----|--------|
-| iron            | ✔️  | ✔️  | ✔️     |
-| iron-cats       | ✔️  | ✔️  | ✔️     |
-| iron-circe      | ✔️  | ✔️  | ✔️     |
-| iron-ciris      | ✔️  | ✔️  | ✔️     |
-| iron-decline    | ✔️  | ✔️  | ✔️     |
-| iron-jsoniter   | ✔️  | ✔️  | ✔️     |
-| iron-scalacheck | ✔️  | ✔️  | ❌      |
-| iron-skunk      | ✔️  | ✔️  | ✔️     |
-| iron-zio        | ✔️  | ✔️  | ❌      |
-| iron-zio-json   | ✔️  | ✔️  | ❌      |
+| Module          | JVM | JS | Native |
+|-----------------|-----|----|--------|
+| iron            | ✔️  | ✔️ | ✔️     |
+| iron-cats       | ✔️  | ✔️ | ✔️     |
+| iron-circe      | ✔️  | ✔️ | ✔️     |
+| iron-ciris      | ✔️  | ✔️ | ✔️     |
+| iron-decline    | ✔️  | ✔️ | ✔️     |
+| iron-doobie     | ✔️  | ❌  | ❌    |
+| iron-jsoniter   | ✔️  | ✔️ | ✔️     |
+| iron-scalacheck | ✔️  | ✔️ | ❌     |
+| iron-skunk      | ✔️  | ✔️ | ✔️     |
+| iron-zio        | ✔️  | ✔️ | ❌     |
+| iron-zio-json   | ✔️  | ✔️ | ❌     |
 
 ## Adopters
 

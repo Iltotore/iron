@@ -45,9 +45,19 @@ object numeric:
   type Positive = Greater[0] DescribedAs "Should be strictly positive"
 
   /**
+   * Tests if the input is positive or zero.
+   */
+  type Positive0 = GreaterEqual[0] DescribedAs "Should be positive or zero"
+
+  /**
    * Tests if the input is strictly negative.
    */
   type Negative = Less[0] DescribedAs "Should be strictly negative"
+
+  /**
+   * Tests if the input is negative or zero.
+   */
+  type Negative0 = LessEqual[0] DescribedAs "Should be negative or zero"
 
   object Interval:
 

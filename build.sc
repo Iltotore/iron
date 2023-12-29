@@ -77,7 +77,7 @@ object docs extends BaseModule {
 
   def artifactName = "iron-docs"
 
-  val modules: Seq[ScalaModule] = Seq(main, cats, circe, decline, upickle, ciris, jsoniter, scalacheck, skunk, zio, zioJson)
+  val modules: Seq[ScalaModule] = Seq(main, cats, circe, decline, doobie, upickle, ciris, jsoniter, scalacheck, skunk, zio, zioJson)
 
   def docSources = T.sources {
     T.traverse(modules)(_.docSources)().flatten
@@ -134,14 +134,15 @@ object docs extends BaseModule {
     ".*cats.*" -> ("scaladoc3", "https://javadoc.io/doc/org.typelevel/cats-docs_3/latest/"),
     ".*io.circe.*" -> ("scaladoc2", "https://circe.github.io/circe/api/"),
     ".*ciris.*" -> ("scaladoc2", "https://cir.is/api/"),
+    ".*com.monovore.decline.*" -> ("scaladoc3", "https://javadoc.io/doc/com.monovore/decline_3/latest/"),
+    ".*doobie.*" -> ("scaladoc3", "https://www.javadoc.io/doc/org.tpolecat/doobie-core_3/latest/"),
     ".*com.github.plokhotnyuk.jsoniter_scala.core.*" -> ("scaladoc3", "https://www.javadoc.io/doc/com.github.plokhotnyuk.jsoniter-scala/jsoniter-scala-core_3/latest/"),
-    ".*zio.json.*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio-json_3/latest/"),
-    ".*zio.prelude.*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio-prelude-docs_3/latest/"),
-    ".*zio[^\\.json].*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio_3/latest/"),
     ".*org.scalacheck.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scalacheck/scalacheck_3/latest/"),
     ".*org.scalacheck.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scalacheck/scalacheck_3/latest/"),
     ".*skunk.*" -> ("scaladoc3", "https://javadoc.io/doc/org.tpolecat/skunk-docs_3/latest/"),
-    ".*com.monovore.decline.*" -> ("scaladoc3", "https://javadoc.io/doc/com.monovore/decline_3/latest/")
+    ".*zio.json.*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio-json_3/latest/"),
+    ".*zio.prelude.*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio-prelude-docs_3/latest/"),
+    ".*zio[^\\.json].*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio_3/latest/")
   )
 
   def scalaDocOptions = {

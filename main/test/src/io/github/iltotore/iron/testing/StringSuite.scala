@@ -77,4 +77,33 @@ object StringSuite extends TestSuite:
       test - "http:///".assertNotRefine[ValidURL]
     }
 
+    test("semantic version") {
+        test - "1.0.0".assertRefine[SemanticVersion]
+        test - "1.0.0-alpha".assertRefine[SemanticVersion]
+        test - "1.0.0-alpha.1".assertRefine[SemanticVersion]
+        test - "1.0.0-0.3.7".assertRefine[SemanticVersion]
+        test - "1.0.0-x.7.z.92".assertRefine[SemanticVersion]
+        test - "1.0.0-alpha+001".assertRefine[SemanticVersion]
+        test - "1.0.0+20130313144700".assertRefine[SemanticVersion]
+        test - "1.0.0-beta+exp.sha.5114f85".assertRefine[SemanticVersion]
+        test - "1.0.0-rc.1+exp.sha.5114f85".assertRefine[SemanticVersion]
+        test - "1".assertNotRefine[SemanticVersion]
+        test - "1.0".assertNotRefine[SemanticVersion]
+        test - "x.0.0".assertNotRefine[SemanticVersion]
+        test - "0.y.0".assertNotRefine[SemanticVersion]
+        test - "0.0.z".assertNotRefine[SemanticVersion]
+        test - "x.y.z".assertNotRefine[SemanticVersion]
+        test - "00000001.0.0".assertNotRefine[SemanticVersion]
+        test - "0.00000001.0".assertNotRefine[SemanticVersion]
+        test - "0.0.00000001".assertNotRefine[SemanticVersion]
+        test - "1.0.0-rc.1+exp.sha.51_14f85".assertNotRefine[SemanticVersion]
+        test - "1.0.0-rc.1+exp.sha.51 14f85".assertNotRefine[SemanticVersion]
+        test - "1.0.0-rc.1+exp.sha.51?14f85".assertNotRefine[SemanticVersion]
+        test - "1.0.0-rc.1+exp.sha.51#14f85".assertNotRefine[SemanticVersion]
+        test - "1.0.0-rc.1+exp.sha.51@14f85".assertNotRefine[SemanticVersion]
+        test - "1.0.0-rc.1+exp.sha.51:14f85".assertNotRefine[SemanticVersion]
+        test - "1.0.0-rc.1+exp.sha.51*14f85".assertNotRefine[SemanticVersion]
+        test - "1.0.0-rc.1+exp.sha.51|14f85".assertNotRefine[SemanticVersion]
+    }
+
   }

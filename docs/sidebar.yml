@@ -26,5 +26,6 @@ subsection:
       - page: modules/jsoniter.md
       - page: modules/skunk.md
       - page: modules/scalacheck.md
+      - page: modules/upickle.md
       - page: modules/zio.md
       - page: modules/zio-json.md

@@ -31,7 +31,7 @@ log(1.0) //Automatically verified at compile time.
 log(-1.0) //Compile-time error: Should be strictly positive
 
 val runtimeValue: Double = ???
-log(runtimeValue.refine) //Explicitly refine your external values at runtime.
+log(runtimeValue.refineUnsafe) //Explicitly refine your external values at runtime.
 
 runtimeValue.refineEither.map(log) //Use monadic style for functional validation
 runtimeValue.refineEither[Positive].map(log) //More explicitly

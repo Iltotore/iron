@@ -100,7 +100,7 @@ import io.github.iltotore.iron.constraint.all.*
 //}
 import io.github.iltotore.iron.cats.given
 
-val name1: String :| Alphanumeric = "Martin".refine
+val name1: String :| Alphanumeric = "Martin".refineUnsafe
 val name2: String :| Alphanumeric = "George"
 val age1: Int :| Greater[0] = 60
 

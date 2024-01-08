@@ -52,7 +52,7 @@ extension [A](value: A)
    *
    * @param constraint the constraint to test with the value to refine.
    * @return a constrained value, without performing constraint checks.
-   * @see [[autoRefine]], [[refine]].
+   * @see [[autoRefine]], [[refineUnsafe]].
    */
   inline def assume[B]: A :| B = value
 
@@ -85,7 +85,7 @@ extension [A](value: A)
    *
    * @param constraint the constraint to test with the value to refine.
    * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
-   * @see [[autoRefine]], [[refine]], [[refineOption]].
+   * @see [[autoRefine]], [[refineUnsafe]], [[refineOption]].
    */
   inline def refineEither[B](using inline constraint: Constraint[A, B]): Either[String, A :| B] =
     Either.cond(constraint.test(value), value, constraint.message)
@@ -95,7 +95,7 @@ extension [A](value: A)
    *
    * @param constraint the constraint to test with the value to refine.
    * @return an Option containing this value as [[IronType]] or [[None]].
-   * @see [[autoRefine]], [[refine]], [[refineEither]].
+   * @see [[autoRefine]], [[refineUnsafe]], [[refineEither]].
    */
   inline def refineOption[B](using inline constraint: Constraint[A, B]): Option[A :| B] =
     Option.when(constraint.test(value))(value)

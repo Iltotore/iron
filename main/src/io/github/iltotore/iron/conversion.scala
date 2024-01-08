@@ -75,7 +75,7 @@ extension [A, C1](value: A :| C1)
    * @param constraint the new constraint to test.
    * @return this value refined with `C1 & C2`.
    * @throws an [[IllegalArgumentException]] if the constraint is not satisfied.
-   * @see [[refine]].
+   * @see [[refineUnsafe]].
    */
   @deprecated("Use refineFurtherUnsafe instead. refineFurther will be removed in 3.0")
   inline def refineFurther[C2](using inline constraint: Constraint[A, C2]): A :| (C1 & C2) =

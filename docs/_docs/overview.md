@@ -51,7 +51,7 @@ case class User(age: Int :| Positive)
 ```scala  sc-compile-with:BetterUser.scala
 User(1) //Compiles
 User(-1) //Does not compile
-User(-1.refine) //Compiles but fails at runtime. Useful for runtime checks such as form validation.
+User(-1.refineUnsafe) //Compiles but fails at runtime. Useful for runtime checks such as form validation.
 //See also `refineOption` and `refineEither`
 ```
 

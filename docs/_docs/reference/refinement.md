@@ -96,7 +96,7 @@ You can imperatively refine a value at runtime (much like an assertion) using th
 
 ```scala
 val runtimeString: String = ???
-val username: String :| Alphanumeric = runtimeString.refine //or more explicitly, refine[LowerCase].
+val username: String :| Alphanumeric = runtimeString.refineUnsafe //or more explicitly, refineUnsafe[LowerCase].
 ```
 
 The `refine` extension method tests the constraint at runtime, throwing an `IllegalArgumentException` if the value

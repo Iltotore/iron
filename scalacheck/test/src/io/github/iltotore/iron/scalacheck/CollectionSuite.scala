@@ -3,9 +3,7 @@ package io.github.iltotore.iron.scalacheck
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 import io.github.iltotore.iron.constraint.numeric.*
-import io.github.iltotore.iron.scalacheck.any.given
-import io.github.iltotore.iron.scalacheck.collection.given
-import io.github.iltotore.iron.scalacheck.numeric.given
+import io.github.iltotore.iron.scalacheck.all.given
 import org.scalacheck.*
 import utest.*
 
@@ -23,6 +21,7 @@ object CollectionSuite extends TestSuite:
     test("empty") {
       test("seq") - testGen[Seq[Boolean], Empty]
       test("string") - testGen[String, Empty]
+      test("not empty") - testGen[Seq[Boolean], Not[Empty]]
     }
     test("contain") {
       test("seq") - testGen[Seq[Boolean], Contain[true]]

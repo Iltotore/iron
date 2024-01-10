@@ -63,3 +63,5 @@ object collection:
         init <- Gen.containerOf[CC, A](arb.arbitrary)
       yield (buildable.builder ++= evt(init) += constrainedLast ).result()
     ).asInstanceOf
+
+  inline given notEmptyCollection[CC, A](using evb: Buildable[A, CC], ev2: CC => Iterable[A], arb: Arbitrary[A]): Arbitrary[CC :| Not[Empty]] = Arbitrary(Gen.nonEmptyBuildableOf[CC, A](arb.arbitrary)).asInstanceOf

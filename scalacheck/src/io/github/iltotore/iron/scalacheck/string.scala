@@ -1,6 +1,7 @@
 package io.github.iltotore.iron.scalacheck
 
 import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.collection.Empty
 import io.github.iltotore.iron.constraint.string.*
 import org.scalacheck.{Arbitrary, Gen}
 import org.scalacheck.Gen.Choose
@@ -8,7 +9,8 @@ import org.scalacheck.Gen.Choose
 import scala.compiletime.constValue
 
 object string:
-
+  inline given notEmptyString: Arbitrary[String :| Not[Empty]] = collection.notEmptyCollection[String, Char]
+  
   inline given startWith[V <: String]: Arbitrary[String :| StartWith[V]] =
     Arbitrary(Gen.asciiStr.map(constValue[V] + _)).asInstanceOf
 

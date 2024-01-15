@@ -18,6 +18,10 @@ object CollectionSuite extends TestSuite:
       test("seq") - testGen[Seq[Boolean], MaxLength[5]]
       test("string") - testGen[String, MaxLength[5]]
     }
+    test("exactLength") {
+      test("seq") - testGen[Seq[Boolean], FixedLength[5]]
+      test("string") - testGen[String, FixedLength[5]]
+    }
     test("empty") {
       test("seq") - testGen[Seq[Boolean], Empty]
       test("string") - testGen[String, Empty]

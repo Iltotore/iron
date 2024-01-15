@@ -228,13 +228,6 @@ val a: Temperature = value //Compile-time error
 val b: Temperature = Temperature(value) //OK
 ```
 
-Note: due to a [compiler bug](https://github.com/lampepfl/dotty/issues/17984), incremental/cross-module compilation can fail.
-[An easy workaround](https://github.com/Iltotore/iron/issues/131#issuecomment-1614974318) but with more boilerplate is
-to use `RefinedTypeOpsImpl[A, C, T]` where:
-- `A` is the base type
-- `C` is the constraint type
-- `T` is the type alias
-
 ### Inheriting base type
 
 Assuming the following new type:

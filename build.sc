@@ -244,6 +244,18 @@ object examples extends Module {
       ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:$jsoniterVersion"
     )
   }
+
+  object borerSerialization extends ScalaModule with ScalafmtModule {
+
+    def scalaVersion = versions.scala
+
+    def moduleDeps = Seq(main, borer)
+
+    def ivyDeps = Agg(
+      ivy"io.bullet::borer-core::1.13.0",
+      ivy"io.bullet::borer-derivation::1.13.0"
+    )
+  }
 }
 
 trait SubModule extends BaseModule {

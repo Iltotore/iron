@@ -138,6 +138,7 @@ object docs extends BaseModule {
     ".*com.monovore.decline.*" -> ("scaladoc3", "https://javadoc.io/doc/com.monovore/decline_3/latest/"),
     ".*doobie.*" -> ("scaladoc3", "https://www.javadoc.io/doc/org.tpolecat/doobie-core_3/latest/"),
     ".*com.github.plokhotnyuk.jsoniter_scala.core.*" -> ("scaladoc3", "https://www.javadoc.io/doc/com.github.plokhotnyuk.jsoniter-scala/jsoniter-scala-core_3/latest/"),
+    ".*io.bullet.borer.*" -> ("scaladoc3", "https://javadoc.io/doc/io.bullet/borer-core_3/latest/"),
     ".*org.scalacheck.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scalacheck/scalacheck_3/latest/"),
     ".*skunk.*" -> ("scaladoc3", "https://javadoc.io/doc/org.tpolecat/skunk-docs_3/latest/"),
     ".*upickle.core.*" -> ("scaladoc3", "https://javadoc.io/doc/com.lihaoyi/upickle-core_3/latest/"),
@@ -392,6 +393,19 @@ object jsoniter extends SubModule {
   object test extends Tests {
     def compileIvyDeps = Agg(jsoniterMacros)
   }
+}
+
+object borer extends SubModule {
+
+  def artifactName = "iron-borer"
+
+  def ivyDeps = Agg(
+    ivy"io.bullet::borer-core::1.13.0"
+  )
+
+  object js extends JSCrossModule
+
+  object test extends Tests
 }
 
 object skunk extends SubModule {

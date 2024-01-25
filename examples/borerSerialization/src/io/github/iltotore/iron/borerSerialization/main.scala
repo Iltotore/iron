@@ -1,7 +1,7 @@
-package io.github.iltotore.iron.formBorer
+package io.github.iltotore.iron.borerSerialization
 
 import io.bullet.borer.{Borer, Json}
-import io.github.iltotore.iron.{*, given}
+import io.github.iltotore.iron.*
 
 @main def main: Unit =
 

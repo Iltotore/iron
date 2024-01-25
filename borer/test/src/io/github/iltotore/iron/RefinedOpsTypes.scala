@@ -1,6 +1,6 @@
 package io.github.iltotore.iron
 
-import io.github.iltotore.iron.*
+import io.github.iltotore.iron.RefinedTypeOps
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 /**

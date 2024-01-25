@@ -1,9 +1,9 @@
-package io.github.iltotore.iron.formBorer
+package io.github.iltotore.iron.borerSerialization
 
 import io.bullet.borer.Codec
-import io.bullet.borer.derivation.MapBasedCodecs
+import io.bullet.borer.derivation.MapBasedCodecs.*
 import io.github.iltotore.iron.constraint.all.*
-import io.github.iltotore.iron.{*, given}
+import io.github.iltotore.iron.*
 import io.github.iltotore.iron.borer.given // this enables borer <-> iron integration
 
 type Username = (Alphanumeric & MinLength[3] & MaxLength[10]) DescribedAs
@@ -19,7 +19,4 @@ case class Account(
     name: String :| Username,
     password: String :| Password,
     age: Int :| Age
-)
-
-object Account:
-  given Codec[Account] = MapBasedCodecs.deriveCodec
+) derives Codec

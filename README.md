@@ -93,6 +93,7 @@ ivy"io.github.iltotore::iron:version"
 | Module          | JVM | JS | Native |
 |-----------------|-----|----|--------|
 | iron            | ✔️  | ✔️ | ✔️     |
+| iron-borer      | ✔️  | ✔️ | ❌     |
 | iron-cats       | ✔️  | ✔️ | ✔️     |
 | iron-circe      | ✔️  | ✔️ | ✔️     |
 | iron-ciris      | ✔️  | ✔️ | ✔️     |

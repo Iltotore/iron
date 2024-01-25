@@ -1,9 +1,8 @@
 package io.github.iltotore.iron
 
-import io.github.iltotore.iron.constraint.all.*
+import io.bullet.borer.{Encoder, Json}
 import io.github.iltotore.iron.borer.given
 import utest.*
-import io.bullet.borer.{Encoder, Json}
 
 object BorerSuite extends TestSuite:
 

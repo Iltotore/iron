@@ -18,6 +18,7 @@ subsection:
     directory: modules
     index: modules/index.md
     subsection:
+      - page: modules/borer.md
       - page: modules/cats.md
       - page: modules/circe.md
       - page: modules/ciris.md

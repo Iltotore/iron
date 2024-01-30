@@ -17,6 +17,11 @@ import scala.quoted.*
 object string:
 
   /**
+   * Test if the input is not empty
+   */
+  type NonEmpty = (Not[Empty] | Not[Blank]) DescribedAs "Should not be empty"
+
+  /**
    * Tests if the input only contains whitespaces.
    * @see [[Whitespace]]
    */

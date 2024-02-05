@@ -11,6 +11,23 @@ import scala.compiletime.constValue
 
 object collection:
 
+  inline given empty[A, CC[_]](using arbElem: Arbitrary[A], evb: Buildable[A, CC[A]], evt: CC[A] => Iterable[A]): Arbitrary[CC[A] :| Empty] = exactLength[A, CC, 0].asInstanceOf
+
+  inline given exactLength[A, CC[_], V <: Int](using arbElem: Arbitrary[A], evb: Buildable[A, CC[A]], evt: CC[A] => Iterable[A]): Arbitrary[CC[A] :| FixedLength[V]] =
+    Arbitrary(Gen.infiniteLazyList(arbElem.arbitrary).flatMap(ll => evb.fromIterable(ll.take(constValue[V])))).asInstanceOf
+  
+  inline given minLength[A, CC[_], V <: Int](using arbElem: Arbitrary[A], evb: Buildable[A,CC[A]], evt: CC[A] => Iterable[A]): Arbitrary[CC[A] :| MinLength[V]] =
+    Arbitrary(
+      for
+        prefix <- Gen.infiniteLazyList(arbElem.arbitrary)
+        postfix <- Gen.listOf(arbElem.arbitrary)
+      yield
+        evb.fromIterable(prefix.take(constValue[V]) ++ postfix)  
+    ).asInstanceOf
+    
+  inline given maxLength[A, CC[_], V <: Int](using arbElem: Arbitrary[A], evb: Buildable[A,CC[A]], evt: CC[A] => Iterable[A]): Arbitrary[CC[A] :| MaxLength[V]] =
+    Arbitrary(Gen.containerOf(arbElem.arbitrary).flatMap(cc => Gen.const(evt(cc).take(constValue[V])))).asInstanceOf[Arbitrary[CC[A] :| MaxLength[V]]]
+
   inline given length[A, CC[_], C](using arbLength: Arbitrary[Int :| C], arbElem: Arbitrary[A], evb: Buildable[A,CC[A]], evt: CC[A] => Iterable[A]): Arbitrary[CC[A] :| Length[C]] =
     Arbitrary(arbLength.arbitrary.flatMap(n => Gen.containerOfN(n, arbElem.arbitrary))).asInstanceOf
 

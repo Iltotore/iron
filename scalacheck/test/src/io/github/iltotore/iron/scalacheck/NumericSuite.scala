@@ -3,6 +3,7 @@ package io.github.iltotore.iron.scalacheck
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.*
 import io.github.iltotore.iron.scalacheck.numeric.given
+import io.github.iltotore.iron.scalacheck.any.strictEqual
 import org.scalacheck.*
 import utest.*
 
@@ -36,6 +37,13 @@ object NumericSuite extends TestSuite:
       test("long") - testGen[Long, LessEqual[5L]]
       test("float") - testGen[Float, LessEqual[5f]]
       test("double") - testGen[Double, LessEqual[5d]]
+    }
+
+    test("strictEqual") {
+      test("int") - testGen[Int, StrictEqual[5]]
+      test("long") - testGen[Long, StrictEqual[5L]]
+      test("float") - testGen[Float, StrictEqual[5f]]
+      test("double") - testGen[Double, StrictEqual[5d]]
     }
 
     test("interval") {

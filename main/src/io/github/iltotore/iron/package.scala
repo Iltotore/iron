@@ -48,11 +48,10 @@ end IronType
 extension [A](value: A)
 
   /**
-   * Refine the given value at runtime, assuming the constraint holds.
+   * Refine the given value, assuming the constraint holds.
    *
-   * @param constraint the constraint to test with the value to refine.
    * @return a constrained value, without performing constraint checks.
-   * @see [[autoRefine]], [[refineUnsafe]].
+   * @see [[assumeAll]], [[autoRefine]], [[refineUnsafe]].
    */
   inline def assume[B]: A :| B = value
 
@@ -99,3 +98,13 @@ extension [A](value: A)
    */
   inline def refineOption[B](using inline constraint: Constraint[A, B]): Option[A :| B] =
     Option.when(constraint.test(value))(value)
+
+extension [F[_], A](wrapper: F[A])
+
+  /**
+   * Refine the contained value(s), assuming the constraint holds.
+   *
+   * @return constrained values, without performing constraint checks.
+   * @see [[assume]], [[autoRefine]], [[refineUnsafe]].
+   */
+  inline def assumeAll[B]: F[A :| B] = wrapper

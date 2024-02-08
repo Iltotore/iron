@@ -53,6 +53,8 @@ object RefinedTypeOpsSuite extends TestSuite:
 
     test("assume") - assert(Temperature.assume(-15) == -15.0.asInstanceOf[Temperature])
 
+    test("assumeAll") - assert(Temperature.assumeAll(List(1, -15)) == List(1, -15).asInstanceOf[List[Temperature]])
+
     test("nonOpaque") {
       val moisture = Moisture(11)
       val positive: Double :| Positive = 11

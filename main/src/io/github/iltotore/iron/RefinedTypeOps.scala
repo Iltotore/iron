@@ -30,10 +30,10 @@ trait RefinedTypeOps[A, C, T](using private val _rtc: RuntimeConstraint[A, C]):
   inline def apply(value: A :| C): T = value.asInstanceOf[T]
 
   /**
-   * Refine the given value at runtime, assuming the constraint holds.
+   * Refine the given value, assuming the constraint holds.
    *
    * @return a constrained value, without performing constraint checks.
-   * @see [[apply]], [[applyUnsafe]].
+   * @see [[assumeAll]], [[apply]], [[applyUnsafe]].
    */
   inline def assume(value: A): T = value.asInstanceOf[T]
 
@@ -65,6 +65,14 @@ trait RefinedTypeOps[A, C, T](using private val _rtc: RuntimeConstraint[A, C]):
    */
   inline def applyUnsafe(value: A): T =
     if rtc.test(value) then value.asInstanceOf[T] else throw new IllegalArgumentException(rtc.message)
+
+  /**
+   * Refine the given value, assuming the constraint holds.
+   *
+   * @return a constrained value, without performing constraint checks.
+   * @see [[assume]], [[apply]], [[applyUnsafe]].
+   */
+  inline def assumeAll[F[_]](wrapper: F[A]): F[T] = wrapper.asInstanceOf[F[T]]
 
   def unapply(value: T): Option[A :| C] = Some(value.asInstanceOf[A :| C])
 

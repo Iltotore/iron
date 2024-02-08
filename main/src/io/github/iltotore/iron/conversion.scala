@@ -62,10 +62,10 @@ implicit inline def autoDistribute[A, I[_] <: Iterable[?], C1, C2](inline iterab
 extension [A, C1](value: A :| C1)
 
   /**
-   * Refine the given value again at runtime, assuming the constraint holds.
+   * Refine the given value again, assuming the constraint holds.
    *
    * @return a constrained value, without performing constraint checks.
-   * @see [[assume]].
+   * @see [[assume]], [[assumeAllFurther]].
    */
   inline def assumeFurther[C2]: A :| (C1 & C2) = (value: A).assume[C1 & C2]
 
@@ -111,6 +111,16 @@ extension [A, C1](value: A :| C1)
    */
   inline def refineFurtherOption[C2](using inline constraint: Constraint[A, C2]): Option[A :| (C1 & C2)] =
     (value: A).refineOption[C2].map(_.assumeFurther[C1])
+
+extension[F[_], A, C1] (wrapper: F[A :| C1])
+
+  /**
+   * Refine the given value again, assuming the constraint holds.
+   *
+   * @return a constrained value, without performing constraint checks.
+   * @see [[assume]], [[assumeFurther]].
+   */
+  inline def assumeAllFurther[C2]: F[A :| (C1 & C2)] = wrapper.asInstanceOf[F[A :| (C1 & C2)]]
 
 extension [A, C1, C2](value: A :| C1 :| C2)
 

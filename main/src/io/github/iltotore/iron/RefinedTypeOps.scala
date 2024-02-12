@@ -2,6 +2,8 @@ package io.github.iltotore.iron
 
 import scala.compiletime.summonInline
 import scala.reflect.TypeTest
+import scala.util.boundary
+import scala.util.boundary.break
 
 /**
  * Utility trait for new types' companion object.
@@ -38,25 +40,6 @@ trait RefinedTypeOps[A, C, T](using private val _rtc: RuntimeConstraint[A, C]):
   inline def assume(value: A): T = value.asInstanceOf[T]
 
   /**
-   * Refine the given value at runtime, resulting in an [[Either]].
-   *
-   * @return a [[Right]] containing this value as [[T]] or a [[Left]] containing the constraint message.
-   * @see [[fromIronType]], [[option]], [[applyUnsafe]].
-   */
-  def either(value: A): Either[String, T] =
-    Either.cond(rtc.test(value), value.asInstanceOf[T], rtc.message)
-
-  /**
-   * Refine the given value at runtime, resulting in an [[Option]].
-   *
-   * @param constraint the constraint to test with the value to refine.
-   * @return an Option containing this value as [[T]] or [[None]].
-   * @see [[fromIronType]], [[either]], [[applyUnsafe]].
-   */
-  def option(value: A): Option[T] =
-    Option.when(rtc.test(value))(value.asInstanceOf[T])
-
-  /**
    * Refine the given value at runtime.
    *
    * @return this value as [[T]].
@@ -67,12 +50,69 @@ trait RefinedTypeOps[A, C, T](using private val _rtc: RuntimeConstraint[A, C]):
     if rtc.test(value) then value.asInstanceOf[T] else throw new IllegalArgumentException(rtc.message)
 
   /**
-   * Refine the given value, assuming the constraint holds.
+   * Refine the given value at runtime, resulting in an [[Either]].
    *
-   * @return a constrained value, without performing constraint checks.
-   * @see [[assume]], [[apply]], [[applyUnsafe]].
+   * @return a [[Right]] containing this value as [[T]] or a [[Left]] containing the constraint message.
+   * @see [[fromIronType]], [[option]], [[applyUnsafe]].
+   */
+  def either(value: A): Either[String, T] =
+    Either.cond(rtc.test(value), value.asInstanceOf[T], rtc.message)
+
+  /**
+   * Refine the given value at runtime, resulting in an [[Option]].
+   * @return an Option containing this value as [[T]] or [[None]].
+   * @see [[fromIronType]], [[either]], [[applyUnsafe]].
+   */
+  def option(value: A): Option[T] =
+    Option.when(rtc.test(value))(value.asInstanceOf[T])
+
+  /**
+   * Refine the given value(s), assuming the constraint holds.
+   *
+   * @return a wrapper of constrained values, without performing constraint checks.
+   * @see [[assume]].
    */
   inline def assumeAll[F[_]](wrapper: F[A]): F[T] = wrapper.asInstanceOf[F[T]]
+
+  /**
+   * Refine the given value(s) at runtime.
+   *
+   * @return the given values as [[T]].
+   * @throws IllegalArgumentException if the constraint is not satisfied.
+   * @see [[applyUnsafe]].
+   */
+  inline def applyAllUnsafe[F[_]](wrapper: F[A])(using mapLogic: MapLogic[F]): F[T] =
+    mapLogic.map(wrapper, applyUnsafe(_))
+
+  /**
+   * Refine the given value(s) at runtime, resulting in an [[Either]].
+   *
+   * @return a [[Right]] containing the given values as [[T]] or a [[Left]] containing the constraint message.
+   * @see [[either]].
+   */
+  inline def eitherAll[F[_]](wrapper: F[A])(using mapLogic: MapLogic[F]): Either[String, F[T]] =
+    boundary:
+      Right(mapLogic.map(
+        wrapper,
+        either(_) match
+          case Right(value) => value
+          case Left(error)  => break(Left(error))
+      ))
+
+  /**
+   * Refine the given value at runtime, resulting in an [[Option]].
+   *
+   * @return an Option containing the refined values as `F[T]` or [[None]].
+   * @see [[option]].
+   */
+  inline def optionAll[F[_]](wrapper: F[A])(using mapLogic: MapLogic[F]): Option[F[T]] =
+    boundary:
+      Some(mapLogic.map(
+        wrapper,
+        option(_) match
+          case Some(value) => value
+          case None        => break(None)
+      ))
 
   def unapply(value: T): Option[A :| C] = Some(value.asInstanceOf[A :| C])
 

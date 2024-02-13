@@ -245,6 +245,17 @@ createUser("Iltotore", "abc123  ") //Left("Your password should be alphanumeric"
 
 Note: Accumulative versions exist for [Cats](../modules/cats.md) and [ZIO](../modules/zio.md).
 
+### Refining first order types
+
+Iron provides utility methods to easily refine first order types (e.g container types like `List`, `Future`, `IO`...).
+
+```scala
+List(1, 2, 3).refineAllUnsafe[Positive] //List(1, 2, 3): List[Int :| Positive]
+List(1, 2, -3).refineAllUnsafe[Positive] //IllegalArgumentException
+```
+
+Variants exist for `Option/Either`, `assume`, `...Further` as well as `RefinedTypeOps` constructors.
+
 ## Assuming constraints
 
 Sometimes, you know that your value always passes (possibly at runtime) a constraint. For example:

@@ -116,6 +116,7 @@ company to the list.
 - [gvolpe/trading](https://github.com/gvolpe/trading/) ([book](https://leanpub.com/feda))
 - [cheleb/laminar-form-derivation](https://github.com/cheleb/laminar-form-derivation)
 - [Ledger](https://github.com/LedgerHQ)
+- [Marss](https://github.com/marss)
 
 ## Useful links
 

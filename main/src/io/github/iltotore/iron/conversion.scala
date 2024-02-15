@@ -3,6 +3,8 @@ package io.github.iltotore.iron
 import io.github.iltotore.iron.constraint.collection.ForAll
 
 import scala.language.implicitConversions
+import scala.util.boundary
+import scala.util.boundary.break
 
 /**
  * Implicitly refine at compile-time the given value.
@@ -62,10 +64,10 @@ implicit inline def autoDistribute[A, I[_] <: Iterable[?], C1, C2](inline iterab
 extension [A, C1](value: A :| C1)
 
   /**
-   * Refine the given value again at runtime, assuming the constraint holds.
+   * Refine the given value again, assuming the constraint holds.
    *
    * @return a constrained value, without performing constraint checks.
-   * @see [[assume]].
+   * @see [[assume]], [[assumeAllFurther]].
    */
   inline def assumeFurther[C2]: A :| (C1 & C2) = (value: A).assume[C1 & C2]
 
@@ -111,6 +113,59 @@ extension [A, C1](value: A :| C1)
    */
   inline def refineFurtherOption[C2](using inline constraint: Constraint[A, C2]): Option[A :| (C1 & C2)] =
     (value: A).refineOption[C2].map(_.assumeFurther[C1])
+
+extension[F[_], A, C1] (wrapper: F[A :| C1])
+
+  /**
+   * Refine the given value(s) again, assuming the constraint holds.
+   *
+   * @return the constrained values, without performing constraint checks.
+   * @see [[assume]], [[assumeFurther]].
+   */
+  inline def assumeAllFurther[C2]: F[A :| (C1 & C2)] = wrapper.asInstanceOf[F[A :| (C1 & C2)]]
+
+  /**
+   * Refine the given value(s) again at runtime.
+   *
+   * @param constraint the new constraint to test.
+   * @return the given values refined with `C1 & C2`.
+   * @throws IllegalArgumentException if the constraint is not satisfied.
+   * @see [[refineUnsafe]], [[refineFurtherUnsafe]].
+   */
+  inline def refineAllFurtherUnsafe[C2](using mapLogic: MapLogic[F], inline constraint: Constraint[A, C2]): F[A :| (C1 & C2)] =
+    mapLogic.map(wrapper, _.refineFurtherUnsafe[C2])
+
+  /**
+   * Refine the given value(s) again at runtime, resulting in an [[Either]].
+   *
+   * @param constraint the new constraint to test.
+   * @return a [[Right]] containing the given values refined with `C1 & C2` or a [[Left]] containing the constraint message.
+   * @see [[refineEither]], [[refineAllFurtherEither]].
+   */
+  inline def refineAllFurtherEither[C2](using mapLogic: MapLogic[F], inline constraint: Constraint[A, C2]): Either[String, F[A :| (C1 & C2)]] =
+    boundary:
+      Right(mapLogic.map(
+        wrapper,
+        _.refineFurtherEither[C2] match
+          case Right(value) => value
+          case Left(error) => break(Left(error))
+      ))
+
+  /**
+   * Refine the given value(s) again at runtime, resulting in an [[Option]].
+   *
+   * @param constraint the new constraint to test.
+   * @return a [[Option]] containing the given values refined with `C1 & C2` or [[None]].
+   * @see [[refineOption]], [[refineFurtherOption]].
+   */
+  inline def refineAllFurtherOption[C2](using mapLogic: MapLogic[F], inline constraint: Constraint[A, C2]): Option[F[A :| (C1 & C2)]] =
+    boundary:
+      Some(mapLogic.map(
+        wrapper,
+        _.refineFurtherOption[C2] match
+          case Some(value) => value
+          case None        => break(None)
+      ))
 
 extension [A, C1, C2](value: A :| C1 :| C2)
 

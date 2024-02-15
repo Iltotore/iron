@@ -5,7 +5,8 @@ import io.github.iltotore.iron.macros
 import scala.Console.{CYAN, RESET}
 import scala.compiletime.{codeOf, error, summonInline}
 import scala.reflect.TypeTest
-import scala.util.NotGiven
+import scala.util.{boundary, NotGiven}
+import scala.util.boundary.break
 
 /**
  * The main package of Iron. Contains:
@@ -48,11 +49,10 @@ end IronType
 extension [A](value: A)
 
   /**
-   * Refine the given value at runtime, assuming the constraint holds.
+   * Refine the given value, assuming the constraint holds.
    *
-   * @param constraint the constraint to test with the value to refine.
    * @return a constrained value, without performing constraint checks.
-   * @see [[autoRefine]], [[refineUnsafe]].
+   * @see [[assumeAll]], [[autoRefine]], [[refineUnsafe]].
    */
   inline def assume[B]: A :| B = value
 
@@ -99,3 +99,58 @@ extension [A](value: A)
    */
   inline def refineOption[B](using inline constraint: Constraint[A, B]): Option[A :| B] =
     Option.when(constraint.test(value))(value)
+
+extension [F[_], A](wrapper: F[A])
+
+  /**
+   * Refine the contained value(s), assuming the constraint holds.
+   *
+   * @return constrained values, without performing constraint checks.
+   * @see [[assume]], [[autoRefine]], [[refineUnsafe]].
+   */
+  inline def assumeAll[B]: F[A :| B] = wrapper
+
+  /**
+   * Refine the given value(s) at runtime.
+   *
+   * @param constraint the constraint to test with the value to refine.
+   * @return the given values as [[IronType]].
+   * @throws an [[IllegalArgumentException]] if the constraint is not satisfied.
+   * @see [[refineUnsafe]].
+   */
+  inline def refineAllUnsafe[B](using mapLogic: MapLogic[F], inline constraint: Constraint[A, B]): F[A :| B] =
+    mapLogic.map(wrapper, _.refineUnsafe[B])
+
+
+  /**
+   * Refine the given value(s) at runtime, resulting in an [[Either]].
+   *
+   * @param constraint the constraint to test with the value to refine.
+   * @return a [[Right]] containing the given values as [[IronType]] or a [[Left]] containing the constraint message.
+   * @see [[refineEither]].
+   */
+  inline def refineAllEither[B](using mapLogic: MapLogic[F], inline constraint: Constraint[A, B]): Either[String, F[A :| B]] =
+    boundary:
+      Right(mapLogic.map(
+        wrapper,
+        _.refineEither[B] match
+          case Right(value) => value
+          case Left(error)  => break(Left(error))
+      ))
+
+  /**
+   * Refine the given value(s) at runtime, resulting in an [[Option]].
+   *
+   * @param constraint the constraint to test with the value to refine.
+   * @return a [[Some]] containing the given values as [[IronType]] or [[None]].
+   * @see [[refineOption]].
+   */
+  inline def refineAllOption[B](using mapLogic: MapLogic[F], inline constraint: Constraint[A, B]): Option[F[A :| B]] =
+    boundary:
+      Some(mapLogic.map(
+        wrapper,
+        _.refineOption[B] match
+          case Some(value) => value
+          case None        => break(None)
+      ))
+

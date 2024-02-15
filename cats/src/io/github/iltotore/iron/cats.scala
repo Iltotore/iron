@@ -5,7 +5,8 @@ import _root_.cats.kernel.{CommutativeMonoid, Hash, LowerBounded, PartialOrder, 
 import _root_.cats.syntax.either.*
 import _root_.cats.{Eq, Monoid, Order, Show}
 import _root_.cats.data.Validated.{Invalid, Valid}
-import io.github.iltotore.iron.constraint.numeric.{Greater, Less, Positive, Negative}
+import _root_.cats.Functor
+import io.github.iltotore.iron.constraint.numeric.{Greater, Less, Negative, Positive}
 
 import scala.util.NotGiven
 
@@ -172,6 +173,10 @@ object cats extends IronCatsInstances:
    * Represent all Cats' typeclass instances for Iron.
    */
 private trait IronCatsInstances extends IronCatsLowPriority, RefinedTypeOpsCats:
+    
+  given [F[_]](using functor: Functor[F]): MapLogic[F] with
+    
+    override def map[A, B](wrapper: F[A], f: A => B): F[B] = functor.map(wrapper)(f)
 
   // The `NotGiven` implicit parameter is mandatory to avoid ambiguous implicit error when both Eq[A] and Hash[A]/PartialOrder[A] exist
   inline given [A, C](using inline ev: Eq[A], notHashOrOrder: NotGiven[Hash[A] | PartialOrder[A]]): Eq[A :| C] = ev.asInstanceOf[Eq[A :| C]]

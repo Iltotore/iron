@@ -145,4 +145,9 @@ object CatsSuite extends TestSuite:
       val validatedNelWithSucceedingPredicate = Temperature.validatedNel(100)
       assert(validatedNelWithSucceedingPredicate == Valid(Temperature(100)), "valid should contain result of 'apply'")
     }
+
+    test("refineAll") {
+      test - assert(Temperature.optionAll(NonEmptyList.of(1, 2, -3)).isEmpty)
+      test - assert(Temperature.optionAll(NonEmptyList.of(1, 2, 3)).contains(NonEmptyList.of(Temperature(1), Temperature(2), Temperature(3))))
+    }
   }

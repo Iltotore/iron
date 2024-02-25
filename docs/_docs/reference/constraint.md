@@ -189,15 +189,15 @@ trait RefinedTypeOps[A, C, T]:
     Option.when(rtc.test(value))(value.asInstanceOf[T])
 ```
 
-# Pre-defined constraints
+## Pre-defined constraints
 
-Iron provides a set of pre-defined constraints in the `io.github.iltotore.iron.constraint` package.
+Iron provides a set of pre-defined constraints in the [[io.github.iltotore.iron.constraint package]].
 You can find them in the [API documentation](https://iltotore.github.io/iron/api/io/github/iltotore/iron/constraint/index.html).
 
-## Global constraints
+### Global constraints
 
 Some constraints are available for all types.
-They are located in the `io.github.iltotore.iron.constraint.any` object.
+They are located in the [[io.github.iltotore.iron.constraint.any]] object.
 
 Here is a list of the most used ones:
 
@@ -210,10 +210,10 @@ The [[!|io.github.iltotore.iron.constraint.any.!]] alias is also available.
 - [[Xor|io.github.iltotore.iron.constraint.any.Xor]]: a boolean XOR between two constraints.
 - [[In|io.github.iltotore.iron.constraint.any.In]]: check if a value is in a given value tuple.
 
-## Char constraints
+### Char constraints
 
 Some constraints are available for `Char` types.
-They are located in the `io.github.iltotore.iron.constraint.char` object.
+They are located in the [[io.github.iltotore.iron.constraint.char]] object.
 
 Here is a list of the most used ones:
 
@@ -224,10 +224,10 @@ Here is a list of the most used ones:
 - [[Whitespace|io.github.iltotore.iron.constraint.char.Whitespace]]: check if a character is a whitespace character.
 - [[Special|io.github.iltotore.iron.constraint.char.Special]]: check if a character is a special character (i.e. not a digit nor a letter).
 
-## Numeric constraints
+### Numeric constraints
 
 Some constraints are available for numeric types.
-They are located in the `io.github.iltotore.iron.constraint.numeric` object.
+They are located in the [[io.github.iltotore.iron.constraint.numeric]] object.
 
 Here is a list of the most used ones:
 
@@ -250,10 +250,10 @@ Here is a list of the most used ones:
 - [[Odd|io.github.iltotore.iron.constraint.numeric.Odd]]: check if a value is odd.
 - [[Even|io.github.iltotore.iron.constraint.numeric.Even]]: check if a value is even.
 
-## Collection constraints
+### Collection constraints
 
 Some constraints are available for collections.
-They are located in the `io.github.iltotore.iron.constraint.collection` object.
+They are located in the [[io.github.iltotore.iron.constraint.collection]] object.
 
 Here is a list of the most used ones:
 
@@ -270,10 +270,10 @@ Here is a list of the most used ones:
 - [[Tail|io.github.iltotore.iron.constraint.collection.Tail]]: check if a collection's tail satisfies a given constraint.
 - [[Init|io.github.iltotore.iron.constraint.collection.Init]]: check if a collection's init satisfies a given constraint.
 
-## String constraints
+### String constraints
 
 Some constraints are available for `String` types.
-They are located in the `io.github.iltotore.iron.constraint.string` object.
+They are located in the [[io.github.iltotore.iron.constraint.string]] object.
 Note that, as `String` is an `Iterable[Char]`, you can use the collection constraints on `String`.
 
 Here is a list of the most used ones:

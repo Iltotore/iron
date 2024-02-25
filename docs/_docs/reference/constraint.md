@@ -188,3 +188,104 @@ trait RefinedTypeOps[A, C, T]:
   def option(value: A): Option[T] =
     Option.when(rtc.test(value))(value.asInstanceOf[T])
 ```
+
+# Pre-defined constraints
+
+Iron provides a set of pre-defined constraints in the `io.github.iltotore.iron.constraint` package.
+You can find them in the [API documentation](https://iltotore.github.io/iron/api/io/github/iltotore/iron/constraint/index.html).
+
+## Global constraints
+
+Some constraints are available for all types.
+They are located in the `io.github.iltotore.iron.constraint.any` object.
+
+Here is a list of the most used ones:
+
+- [[StrictEqual|io.github.iltotore.iron.constraint.any.StrictEqual]]: check if a value is equal to a given one.
+- [[Not|io.github.iltotore.iron.constraint.any.Not]]: a constraint decorator to negate another constraint.
+The [[!|io.github.iltotore.iron.constraint.any.!]] alias is also available.
+- [[DescribedAs|io.github.iltotore.iron.constraint.any.DescribedAs]]: attach a custom description to a constraint.
+- [[True|io.github.iltotore.iron.constraint.any.True]]: an always-true constraint.
+- [[False|io.github.iltotore.iron.constraint.any.False]]: an always-false constraint.
+- [[Xor|io.github.iltotore.iron.constraint.any.Xor]]: a boolean XOR between two constraints.
+- [[In|io.github.iltotore.iron.constraint.any.In]]: check if a value is in a given value tuple.
+
+## Char constraints
+
+Some constraints are available for `Char` types.
+They are located in the `io.github.iltotore.iron.constraint.char` object.
+
+Here is a list of the most used ones:
+
+- [[Digit|io.github.iltotore.iron.constraint.char.Digit]]: check if a character is a digit.
+- [[Letter|io.github.iltotore.iron.constraint.char.Letter]]: check if a character is a letter.
+- [[LowerCase|io.github.iltotore.iron.constraint.char.LowerCase]]: check if a character is a lower case character.
+- [[UpperCase|io.github.iltotore.iron.constraint.char.UpperCase]]: check if a character is an upper case character.
+- [[Whitespace|io.github.iltotore.iron.constraint.char.Whitespace]]: check if a character is a whitespace character.
+- [[Special|io.github.iltotore.iron.constraint.char.Special]]: check if a character is a special character (i.e. not a digit nor a letter).
+
+## Numeric constraints
+
+Some constraints are available for numeric types.
+They are located in the `io.github.iltotore.iron.constraint.numeric` object.
+
+Here is a list of the most used ones:
+
+- [[Less|io.github.iltotore.iron.constraint.numeric.Less]]: check if a value is less than a given one.
+- [[Greater|io.github.iltotore.iron.constraint.numeric.Greater]]: check if a value is greater than a given one.
+- [[LessEqual|io.github.iltotore.iron.constraint.numeric.LessEqual]]: check if a value is less than or equal to a given one.
+- [[GreaterEqual|io.github.iltotore.iron.constraint.numeric.GreaterEqual]]: check if a value is greater than or equal to a given one.
+- [[Positive|io.github.iltotore.iron.constraint.numeric.Positive]]: check if a value is strictly positive.
+- [[Negative|io.github.iltotore.iron.constraint.numeric.Negative]]: check if a value is strictly negative.
+- [[Positive0|io.github.iltotore.iron.constraint.numeric.Positive0]]: check if a value is positive or zero.
+- [[Negative0|io.github.iltotore.iron.constraint.numeric.Negative0]]: check if a value is negative or zero.
+- [[Interval.Closed|io.github.iltotore.iron.constraint.numeric.Interval.Closed]]: check if a value is in a closed interval.
+- [[Interval.Open|io.github.iltotore.iron.constraint.numeric.Interval.Open]]: check if a value is in an open interval.
+- [[Interval.OpenClosed|io.github.iltotore.iron.constraint.numeric.Interval.OpenClosed]]: check if a value is in an open-closed interval.
+- [[Interval.ClosedOpen|io.github.iltotore.iron.constraint.numeric.Interval.ClosedOpen]]: check if a value is in a closed-open interval.
+- [[Infinity|io.github.iltotore.iron.constraint.numeric.Infinity]]: check if a value is infinite (positive or negative).
+- [[NaN|io.github.iltotore.iron.constraint.numeric.NaN]]: check if a value is not a representable number.
+- [[Multiple|io.github.iltotore.iron.constraint.numeric.Multiple]]: check if a value is a multiple of another one.
+- [[Divide|io.github.iltotore.iron.constraint.numeric.Divide]]: check if a value is a divisor of another one.
+- [[Odd|io.github.iltotore.iron.constraint.numeric.Odd]]: check if a value is odd.
+- [[Even|io.github.iltotore.iron.constraint.numeric.Even]]: check if a value is even.
+
+## Collection constraints
+
+Some constraints are available for collections.
+They are located in the `io.github.iltotore.iron.constraint.collection` object.
+
+Here is a list of the most used ones:
+
+- [[ForAll|io.github.iltotore.iron.constraint.collection.ForAll]]: check if a constraint passes for all elements of a collection.
+- [[Exists|io.github.iltotore.iron.constraint.collection.Exists]]: check if a constraint passes for at least one element of a collection.
+- [[Length|io.github.iltotore.iron.constraint.collection.Length]]: check if the collection length satisfies a given constraint.
+- [[Empty|io.github.iltotore.iron.constraint.collection.Empty]]: check if a collection is empty.
+- [[FixedLength|io.github.iltotore.iron.constraint.collection.FixedLength]]: check if a collection has a fixed length.
+- [[MinLength|io.github.iltotore.iron.constraint.collection.MinLength]]: check if a collection has a minimum length.
+- [[MaxLength|io.github.iltotore.iron.constraint.collection.MaxLength]]: check if a collection has a maximum length.
+- [[Contains|io.github.iltotore.iron.constraint.collection.Contains]]: check if a collection contains a given element.
+- [[Head|io.github.iltotore.iron.constraint.collection.Head]]: check if a collection's head satisfies a given constraint.
+- [[Last|io.github.iltotore.iron.constraint.collection.Last]]: check if a collection's last element satisfies a given constraint.
+- [[Tail|io.github.iltotore.iron.constraint.collection.Tail]]: check if a collection's tail satisfies a given constraint.
+- [[Init|io.github.iltotore.iron.constraint.collection.Init]]: check if a collection's init satisfies a given constraint.
+
+## String constraints
+
+Some constraints are available for `String` types.
+They are located in the `io.github.iltotore.iron.constraint.string` object.
+Note that, as `String` is an `Iterable[Char]`, you can use the collection constraints on `String`.
+
+Here is a list of the most used ones:
+
+- [[Blank|io.github.iltotore.iron.constraint.string.Blank]]: check if a string is blank (i.e. empty or only containing whitespaces).
+- [[StartWith|io.github.iltotore.iron.constraint.string.StartWith]]: check if a string starts with a given prefix.
+- [[EndWith|io.github.iltotore.iron.constraint.string.EndWith]]: check if a string ends with a given suffix.
+- [[Match|io.github.iltotore.iron.constraint.string.Match]]: check if a string matches a given regular expression.
+- [[Alphanumeric|io.github.iltotore.iron.constraint.string.Alphanumeric]]: check if a string contains only alphanumeric characters.
+- [[LettersLowerCase|io.github.iltotore.iron.constraint.string.LettersLowerCase]]: check if all letters of a string are lower-cased letters.
+- [[LettersUpperCase|io.github.iltotore.iron.constraint.string.LettersUpperCase]]: check if all letters of a string are upper-cased letters.
+- [[Trimmed|io.github.iltotore.iron.constraint.string.Trimmed]]: check if a string is trimmed (i.e. without leading and trailing whitespaces).
+- [[ValidUUID|io.github.iltotore.iron.constraint.string.ValidUUID]]: check if a string is a valid UUID.
+- [[ValidURL|io.github.iltotore.iron.constraint.string.ValidURL]]: check if a string is a valid URL.
+- [[SemanticVersion|io.github.iltotore.iron.constraint.string.SemanticVersion]]: check if a string is a valid semantic version as defined on [semver.org](https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string).

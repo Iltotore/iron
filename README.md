@@ -117,6 +117,7 @@ company to the list.
 - [cheleb/laminar-form-derivation](https://github.com/cheleb/laminar-form-derivation)
 - [Ledger](https://github.com/LedgerHQ)
 - [Marss](https://github.com/marss)
+- [Tessella](https://github.com/scala-tessella/tessella)
 
 ## Useful links
 

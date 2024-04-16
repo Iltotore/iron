@@ -1,6 +1,6 @@
 package io.github.iltotore.iron.macros
 
-import scala.Console.{CYAN, RESET}
+import scala.Console.{MAGENTA, RESET}
 import scala.quoted.*
 
 /**
@@ -119,17 +119,17 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
            |
            |To test a constraint at runtime, use one of the `refine...` extension methods.
            |
-           |${CYAN}Inlined input$RESET: ${input.show}
-           |${CYAN}Inlined condition$RESET: ${cond.show}
-           |${CYAN}Message$RESET: $messageValue""".stripMargin
+           |${MAGENTA}Inlined input$RESET: ${input.show}
+           |${MAGENTA}Inlined condition$RESET: ${cond.show}
+           |${MAGENTA}Message$RESET: $messageValue""".stripMargin
       )
     )
 
   if !condValue then
-    compileTimeError(s"""|Could not satisfy a constraint for type $CYAN${inputType.show}$RESET.
+    compileTimeError(s"""|Could not satisfy a constraint for type $MAGENTA${inputType.show}$RESET.
                          |
-                         |${CYAN}Value$RESET: ${input.show}
-                         |${CYAN}Message$RESET: $messageValue""".stripMargin)
+                         |${MAGENTA}Value$RESET: ${input.show}
+                         |${MAGENTA}Message$RESET: $messageValue""".stripMargin)
   '{}
 
 /**

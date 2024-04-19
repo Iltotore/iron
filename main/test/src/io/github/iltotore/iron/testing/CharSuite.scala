@@ -8,7 +8,7 @@ object CharSuite extends TestSuite:
 
   val tests: Tests = Tests {
 
-    test("blank") { //See https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Character.html#isWhitespace(char)
+    test("blank") { // See https://docs.oracle.com/en/java/javase/11/docs/api/java.base/java/lang/Character.html#isWhitespace(char)
       test - ' '.assertRefine[Whitespace]
       test - '\t'.assertRefine[Whitespace]
       test - '\n'.assertRefine[Whitespace]

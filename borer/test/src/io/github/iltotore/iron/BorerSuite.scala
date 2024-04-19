@@ -19,11 +19,11 @@ object BorerSuite extends TestSuite:
     }
 
     test("transparent alias encoding") {
-      Json.encode(15.0:Moisture).toUtf8String ==> "15.0"
+      Json.encode(15.0: Moisture).toUtf8String ==> "15.0"
     }
 
     test("transparent alias decoding") {
-      Json.decode("15.0".getBytes).to[Moisture].valueEither ==> Right(15.0:Moisture)
+      Json.decode("15.0".getBytes).to[Moisture].valueEither ==> Right(15.0: Moisture)
       Json.decode("-15.0".getBytes).to[Moisture].valueEither.left.map(_.getMessage) ==>
         Left("Should be strictly positive (input position 0)")
     }

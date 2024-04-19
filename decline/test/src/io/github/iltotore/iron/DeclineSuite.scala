@@ -11,12 +11,12 @@ object DeclineSuite extends TestSuite:
 
     test("Argument") {
       test("ironType") {
-        test("success") - assert(summon[Argument[Int :| Positive]].read("5") == Valid(5)) 
+        test("success") - assert(summon[Argument[Int :| Positive]].read("5") == Valid(5))
         test("failure") - assert(summon[Argument[Int :| Positive]].read("-5").isInvalid)
       }
 
       test("newType") {
-        test("success") - assert(summon[Argument[Temperature]].read("5") == Valid(5)) 
+        test("success") - assert(summon[Argument[Temperature]].read("5") == Valid(5))
         test("failure") - assert(summon[Argument[Temperature]].read("-5").isInvalid)
       }
     }

@@ -16,7 +16,7 @@ object doobie:
    * @tparam A the base type
    * @tparam C the constraint type
    */
-  inline given[A, C] (using inline get: Get[A])(using Constraint[A, C], Show[A]): Get[A :| C] =
+  inline given [A, C](using inline get: Get[A])(using Constraint[A, C], Show[A]): Get[A :| C] =
     get.temap[A :| C](_.refineEither)
 
   /**
@@ -26,7 +26,7 @@ object doobie:
    * @param ev the value getter of the underlying type
    * @tparam T the new type
    */
-  inline given[T](using m: RefinedTypeOps.Mirror[T], ev: Get[m.IronType]): Get[T] =
+  inline given [T](using m: RefinedTypeOps.Mirror[T], ev: Get[m.IronType]): Get[T] =
     ev.asInstanceOf[Get[T]]
 
   /**
@@ -37,7 +37,7 @@ object doobie:
    * @tparam A the base type
    * @tparam C the constraint type
    */
-  inline given[A, C] (using inline put: Put[A])(using Constraint[A, C], Show[A]): Put[A :| C] =
+  inline given [A, C](using inline put: Put[A])(using Constraint[A, C], Show[A]): Put[A :| C] =
     put.tcontramap(identity)
 
   /**
@@ -47,7 +47,7 @@ object doobie:
    * @param ev the value setter of the underlying type
    * @tparam T the new type
    */
-  inline given[T](using m: RefinedTypeOps.Mirror[T], ev: Put[m.IronType]): Put[T] =
+  inline given [T](using m: RefinedTypeOps.Mirror[T], ev: Put[m.IronType]): Put[T] =
     ev.asInstanceOf[Put[T]]
 
   /**
@@ -58,7 +58,7 @@ object doobie:
    * @tparam A the base type
    * @tparam C the constraint type
    */
-  inline given[A, C] (using inline meta: Meta[A])(using Constraint[A, C], Show[A]): Meta[A :| C] =
+  inline given [A, C](using inline meta: Meta[A])(using Constraint[A, C], Show[A]): Meta[A :| C] =
     meta.tiemap[A :| C](_.refineEither)(identity)
 
   /**
@@ -68,5 +68,5 @@ object doobie:
    * @param ev the value getter/setter of the underlying type
    * @tparam T the new type
    */
-  inline given[T](using m: RefinedTypeOps.Mirror[T], ev: Meta[m.IronType]): Meta[T] =
+  inline given [T](using m: RefinedTypeOps.Mirror[T], ev: Meta[m.IronType]): Meta[T] =
     ev.asInstanceOf[Meta[T]]

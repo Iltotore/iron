@@ -10,7 +10,6 @@ import scala.util.Try
 
 import utest.*
 
-
 object uPickleSuite extends TestSuite:
 
   import scala.runtime.stdLibPatches.Predef.summon
@@ -24,7 +23,7 @@ object uPickleSuite extends TestSuite:
       }
     }
 
-     test("writer") {
+    test("writer") {
       test("ironType") {
         val p: Int :| Positive = 10
         test("success") - assert(write(p) == "10")
@@ -32,5 +31,5 @@ object uPickleSuite extends TestSuite:
     }
 
   }
-  
+
 end uPickleSuite

@@ -22,9 +22,8 @@ object HttpServer:
    * Register the given user passed as a `POST` [[Request]] to `/register` then return it as a `Response`
    */
   val app: HttpApp[Any, Throwable] =
-    Http.collectZIO[Request] {
+    Http.collectZIO[Request]:
       case req @ Method.POST -> !! / "register" =>
         req.body.asString
           .map(_.fromJson[Account])
           .map(_.fold(badApiRequest, account => Response.json(account.toJson)))
-    }

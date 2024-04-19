@@ -11,11 +11,10 @@ object borer:
     encoder.asInstanceOf[Encoder[A :| B]]
 
   inline given [A, B](using inline decoder: Decoder[A], inline constraint: Constraint[A, B]): Decoder[A :| B] =
-    Decoder { r =>
+    Decoder: r =>
       decoder.read(r).refineEither match
         case Left(msg) => r.validationFailure(msg)
         case Right(x)  => x
-    }
 
   inline given [T](using m: RefinedTypeOps.Mirror[T], ev: Encoder[m.IronType]): Encoder[T] =
     ev.asInstanceOf[Encoder[T]]

@@ -57,7 +57,7 @@ object HttpServer:
    * The main logic of our mini web server.
    * Register the given user passed as a `POST` [[Request]] to `/register` then return it as a `Response`
    */
-  val service = HttpRoutes.of[IO] { // Can be replaced with colon + indentation in Scala 3.3
+  val service = HttpRoutes.of[IO]:
     case request @ POST -> Root / "register" =>
       val routine =
         for
@@ -68,4 +68,3 @@ object HttpServer:
       routine.handleErrorWith(handleError)
 
     case unknown => NotFound()
-  }

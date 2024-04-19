@@ -8,7 +8,7 @@ import utest.*
 
 object CharSuite extends TestSuite:
 
-  val tests: Tests = Tests {
+  val tests: Tests = Tests:
 
     test("whitespace") - testGen[Char, Whitespace]
 
@@ -21,4 +21,3 @@ object CharSuite extends TestSuite:
     test("letter") - testGen[Char, Letter]
 
     test("special") - testGen[Char, Special]
-  }

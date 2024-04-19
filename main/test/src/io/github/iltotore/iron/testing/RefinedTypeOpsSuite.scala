@@ -9,20 +9,18 @@ import scala.util.{Failure, Success, Try}
 
 object RefinedTypeOpsSuite extends TestSuite:
   val tests: Tests = Tests {
-    test("compile-time apply") {
+    test("compile-time apply"):
       val temperature = Temperature(100)
       compileError("Temperature(-100)")
-    }
 
-    test("value") {
+    test("value"):
       val t1 = Temperature(100)
       val t2 = Temperature(100)
 
       val result = t1.value + t2.value
       assert(result == 200.0)
-    }
 
-    test("re-eval") {
+    test("re-eval"):
       val x: Double :| Positive = 5.0
       val y: Double :| Greater[10] = 15.0
       val t1 = Temperature(x)
@@ -30,47 +28,42 @@ object RefinedTypeOpsSuite extends TestSuite:
 
       assert(t1 == Temperature(5.0))
       assert(t2 == Temperature(15.0))
-    }
 
     test("assume") - assert(Temperature.assume(-15) == -15.0.asInstanceOf[Temperature])
 
-    test("applyUnsafe") {
-      test - assertMatch(Try(Temperature.applyUnsafe(-100))) { case Failure(e) if e.getMessage == "Should be strictly positive" => }
+    test("applyUnsafe"):
+      test - assertMatch(Try(Temperature.applyUnsafe(-100))):
+        case Failure(e) if e.getMessage == "Should be strictly positive" =>
       test - assert(Temperature.applyUnsafe(100) == Temperature(100))
-    }
 
-    test("either") {
+    test("either"):
       val eitherWithFailingPredicate = Temperature.either(-5.0)
       assert(eitherWithFailingPredicate == Left("Should be strictly positive"))
       val eitherWithSucceedingPredicate = Temperature.either(100)
       assert(eitherWithSucceedingPredicate == Right(Temperature(100)))
-    }
 
-    test("option") {
+    test("option"):
       val fromWithFailingPredicate = Temperature.option(-5.0)
       assert(fromWithFailingPredicate.isEmpty)
       val fromWithSucceedingPredicate = Temperature.option(100)
       assert(fromWithSucceedingPredicate.contains(Temperature(100)))
-    }
 
     test("assumeAll") - assert(Temperature.assumeAll(List(1, -15)) == List(1, -15).asInstanceOf[List[Temperature]])
 
-    test("applyAllUnsafe") {
-      test - assertMatch(Try(Temperature.applyAllUnsafe(List(1, 2, -3)))) { case Failure(e) if e.getMessage == "Should be strictly positive" => }
+    test("applyAllUnsafe"):
+      test - assertMatch(Try(Temperature.applyAllUnsafe(List(1, 2, -3)))):
+        case Failure(e) if e.getMessage == "Should be strictly positive" =>
       test - assert(Temperature.applyAllUnsafe(List(1, 2, 3)) == List(Temperature(1), Temperature(2), Temperature(3)))
-    }
 
-    test("either") {
+    test("either"):
       test - assert(Temperature.eitherAll(List(1, 2, -3)) == Left("Should be strictly positive"))
       test - assert(Temperature.eitherAll(List(1, 2, 3)) == Right(List(Temperature(1), Temperature(2), Temperature(3))))
-    }
 
-    test("option") {
+    test("option"):
       test - assert(Temperature.optionAll(List(1, 2, -3)).isEmpty)
       test - assert(Temperature.optionAll(List(1, 2, 3)).contains(List(Temperature(1), Temperature(2), Temperature(3))))
-    }
 
-    test("nonOpaque") {
+    test("nonOpaque"):
       val moisture = Moisture(11)
       val positive: Double :| Positive = 11
       val greaterThan10: Double :| Greater[10] = 11
@@ -82,18 +75,15 @@ object RefinedTypeOpsSuite extends TestSuite:
       test - assert(Moisture.either(100) == Right(Moisture(100)))
       test - assert(Moisture.option(-5.0).isEmpty)
       test - assert(Moisture.option(100).contains(Moisture(100)))
-    }
 
-    test("mirror") {
+    test("mirror"):
       val mirror = summonInline[RefinedTypeOps.Mirror[Temperature]]
 
       assertGiven[mirror.BaseType =:= Double]
       assertGiven[mirror.ConstraintType =:= Positive]
       assertGiven[mirror.FinalType =:= Temperature]
-    }
 
-    test("value") {
+    test("value"):
       val temperature = Temperature(10)
       assert(temperature.value == 10)
-    }
   }

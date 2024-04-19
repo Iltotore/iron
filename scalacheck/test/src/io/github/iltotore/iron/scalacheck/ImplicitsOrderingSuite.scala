@@ -6,6 +6,5 @@ import utest.*
 
 object ImplicitsOrderingSuite extends TestSuite:
 
-  val tests: Tests = Tests {
+  val tests: Tests = Tests:
     test("should resolve implicits using all.given import") - testGen[String, Empty]
-  }

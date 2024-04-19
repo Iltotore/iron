@@ -26,19 +26,15 @@ object JsoniterSuite extends TestSuite:
     def assertDecodingSuccess[A](expected: A)(using JsonValueCodec[A]): Unit = assert(Try(readFromString[A](value)).fold(_ => false, _ == expected))
     def assertDecodingFailure[A](using JsonValueCodec[A]): Unit = assert(Try(readFromString[A](value)).isFailure)
 
-  val tests: Tests = Tests {
-    test("encoding") {
+  val tests: Tests = Tests:
+    test("encoding"):
       test - zero.assertEncoding("0")
       test - Number(0).assertEncoding("""{"zero":0}""")
-    }
 
-    test("decoding - valid predicate") {
+    test("decoding - valid predicate"):
       test - "0".assertDecodingSuccess[Int :| Zero](zero)
       test - """{"zero":0}""".assertDecodingSuccess[Number](Number(0))
-    }
 
-    test("decoding - invalid predicate") {
+    test("decoding - invalid predicate"):
       test - "1".assertDecodingFailure[Zero]
       test - """{"zero":1}""".assertDecodingFailure[Number]
-    }
-  }

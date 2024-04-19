@@ -8,8 +8,7 @@ import utest.*
 
 object AnySuite extends TestSuite:
 
-  val tests: Tests = Tests {
+  val tests: Tests = Tests:
     test("fallback") - testGen[Boolean, StrictEqual[true]]
 
     test("union") - testGen[Int, StrictEqual[1] | StrictEqual[2] | StrictEqual[3]]
-  }

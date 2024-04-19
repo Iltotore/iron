@@ -9,8 +9,7 @@ import utest.*
 
 object StringSuite extends TestSuite:
 
-  val tests: Tests = Tests {
+  val tests: Tests = Tests:
     test("startWith") - testGen[String, StartWith["abc"]]
     test("endWith") - testGen[String, EndWith["abc"]]
     test("not empty string") - testGen[String, Not[Empty]]
-  }

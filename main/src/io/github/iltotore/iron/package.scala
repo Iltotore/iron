@@ -121,7 +121,6 @@ extension [F[_], A](wrapper: F[A])
   inline def refineAllUnsafe[B](using mapLogic: MapLogic[F], inline constraint: Constraint[A, B]): F[A :| B] =
     mapLogic.map(wrapper, _.refineUnsafe[B])
 
-
   /**
    * Refine the given value(s) at runtime, resulting in an [[Either]].
    *
@@ -153,4 +152,3 @@ extension [F[_], A](wrapper: F[A])
           case Some(value) => value
           case None        => break(None)
       ))
-

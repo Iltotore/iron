@@ -8,17 +8,16 @@ import utest.*
 
 object CharSuite extends TestSuite:
 
-  val tests: Tests = Tests {
+  val tests: Tests = Tests:
 
     test("whitespace") - testGen[Char, Whitespace]
 
     test("lowercase") - testGen[Char, LowerCase]
-    
+
     test("uppercase") - testGen[Char, UpperCase]
 
     test("digit") - testGen[Char, Digit]
-    
+
     test("letter") - testGen[Char, Letter]
-    
+
     test("special") - testGen[Char, Special]
-  }

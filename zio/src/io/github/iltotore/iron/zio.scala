@@ -34,7 +34,7 @@ object zio extends RefinedTypeOpsZio:
      */
     def validation(value: A): Validation[String, T] =
       Validation.fromPredicateWith(ops.rtc.message)(value)(ops.rtc.test(_)).asInstanceOf[Validation[String, T]]
-      
+
   given [F[+_]](using covariant: Covariant[F]): MapLogic[F] with
 
     override def map[A, B](wrapper: F[A], f: A => B): F[B] = covariant.map(f)(wrapper)

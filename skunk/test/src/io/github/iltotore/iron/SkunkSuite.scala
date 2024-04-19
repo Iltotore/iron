@@ -19,39 +19,30 @@ object SkunkSuite extends TestSuite:
 
   val tests: Tests = Tests {
 
-    test("codec") {
-      test("ironType") {
+    test("codec"):
+      test("ironType"):
         test("success") - assert(summon[Codec[Int :| Positive]].decode(0, List(Some("5"))) == Right(5))
         test("failure") - assert(summon[Codec[Int :| Positive]].decode(0, List(Some("-5"))).isLeft)
         test("success") - assert(summon[Codec[Int :| Positive]].encode(5) == List(Some("5")))
-      }
 
-      test("newType") {
+      test("newType"):
         test("success") - assert(summon[Codec[PositiveInt]].decode(0, List(Some("5"))) == Right(PositiveInt(5)))
         test("failure") - assert(summon[Codec[PositiveInt]].decode(0, List(Some("-5"))).isLeft)
         test("success") - assert(summon[Codec[PositiveInt]].encode(PositiveInt(5)) == List(Some("5")))
-      }
-    }
 
-    test("encoder") {
-      test("ironType") {
+    test("encoder"):
+      test("ironType"):
         test("success") - assert(summon[Encoder[Int :| Positive]].encode(5) == List(Some("5")))
-      }
 
-      test("newType") {
+      test("newType"):
         test("success") - assert(summon[Encoder[PositiveInt]].encode(PositiveInt(5)) == List(Some("5")))
-      }
-    }
 
-    test("decoder") {
-      test("ironType") {
+    test("decoder"):
+      test("ironType"):
         test("success") - assert(summon[Decoder[Int :| Positive]].decode(0, List(Some("5"))) == Right(PositiveInt(5)))
         test("failure") - assert(summon[Decoder[Int :| Positive]].decode(0, List(Some("-5"))).isLeft)
-      }
 
-      test("newType") {
+      test("newType"):
         test("success") - assert(summon[Decoder[PositiveInt]].decode(0, List(Some("5"))) == Right(PositiveInt(5)))
         test("failure") - assert(summon[Decoder[PositiveInt]].decode(0, List(Some("-5"))).isLeft)
-      }
-    }
   }

@@ -21,4 +21,3 @@ object Min:
   given Min[Long] = Min(Long.MinValue)
   given Min[Float] = Min(Float.MinValue)
   given Min[Double] = Min(Double.MinValue)
-

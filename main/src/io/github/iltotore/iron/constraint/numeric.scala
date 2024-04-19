@@ -219,7 +219,7 @@ object numeric:
 
       override inline def test(value: BigInt): Boolean = value % BigInt(longValue[V]) == 0
 
-    inline given[V <: NumConstant]: MultipleConstraint[BigDecimal, V] with
+    inline given [V <: NumConstant]: MultipleConstraint[BigDecimal, V] with
 
       override inline def test(value: BigDecimal): Boolean = value % BigDecimal(doubleValue[V]) == 0
 
@@ -244,7 +244,7 @@ object numeric:
     inline given [V <: Int | Long]: DivideConstraint[BigInt, V] with
       override inline def test(value: BigInt): Boolean = BigInt(longValue[V]) % value == 0
 
-    inline given[V <: NumConstant]: DivideConstraint[BigDecimal, V] with
+    inline given [V <: NumConstant]: DivideConstraint[BigDecimal, V] with
       override inline def test(value: BigDecimal): Boolean = BigDecimal(doubleValue[V]) % value == 0
 
   object NaN:

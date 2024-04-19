@@ -114,7 +114,7 @@ extension [A, C1](value: A :| C1)
   inline def refineFurtherOption[C2](using inline constraint: Constraint[A, C2]): Option[A :| (C1 & C2)] =
     (value: A).refineOption[C2].map(_.assumeFurther[C1])
 
-extension[F[_], A, C1] (wrapper: F[A :| C1])
+extension [F[_], A, C1](wrapper: F[A :| C1])
 
   /**
    * Refine the given value(s) again, assuming the constraint holds.
@@ -148,7 +148,7 @@ extension[F[_], A, C1] (wrapper: F[A :| C1])
         wrapper,
         _.refineFurtherEither[C2] match
           case Right(value) => value
-          case Left(error) => break(Left(error))
+          case Left(error)  => break(Left(error))
       ))
 
   /**
@@ -168,14 +168,12 @@ extension[F[_], A, C1] (wrapper: F[A :| C1])
       ))
 
 extension [A, C1, C2](value: A :| C1 :| C2)
-
   /**
    * Transform `A :| C1 :| C2` to `A :| (C1 & C2)`
    */
   inline def compose: A :| (C1 & C2) = (value: A).assume[C1 & C2]
 
 extension [A, C1, C2](value: A :| (C1 & C2))
-
   /**
    * Transform `A :| (C1 & C2)` to `A :| C1 :| C2`
    */

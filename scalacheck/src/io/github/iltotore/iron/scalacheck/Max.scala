@@ -21,4 +21,3 @@ object Max:
   given Max[Long] = Max(Long.MaxValue)
   given Max[Float] = Max(Float.MaxValue)
   given Max[Double] = Max(Double.MaxValue)
-

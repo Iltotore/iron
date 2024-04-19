@@ -173,9 +173,9 @@ object cats extends IronCatsInstances:
    * Represent all Cats' typeclass instances for Iron.
    */
 private trait IronCatsInstances extends IronCatsLowPriority, RefinedTypeOpsCats:
-    
+
   given [F[_]](using functor: Functor[F]): MapLogic[F] with
-    
+
     override def map[A, B](wrapper: F[A], f: A => B): F[B] = functor.map(wrapper)(f)
 
   // The `NotGiven` implicit parameter is mandatory to avoid ambiguous implicit error when both Eq[A] and Hash[A]/PartialOrder[A] exist

@@ -7,7 +7,7 @@ import scala.util.boundary.break
 
 /**
  * Utility trait for new types' companion object.
- * 
+ *
  * @tparam A the base type of the new type
  * @tparam C the constraint type of the new type
  * @tparam T the new type (equivalent to `A :| C` if `T` is a transparent alias)
@@ -120,14 +120,13 @@ trait RefinedTypeOps[A, C, T](using private val _rtc: RuntimeConstraint[A, C]):
     override type BaseType = A
     override type ConstraintType = C
 
-  inline given[R]: TypeTest[T, R] = summonInline[TypeTest[A :| C, R]].asInstanceOf[TypeTest[T, R]]
+  inline given [R]: TypeTest[T, R] = summonInline[TypeTest[A :| C, R]].asInstanceOf[TypeTest[T, R]]
 
-  given[L] (using test: TypeTest[L, A]): TypeTest[L, T] with
+  given [L](using test: TypeTest[L, A]): TypeTest[L, T] with
     override def unapply(value: L): Option[value.type & T] = test.unapply(value).filter(rtc.test(_)).asInstanceOf
 
   extension (wrapper: T)
     inline def value: IronType[A, C] = wrapper.asInstanceOf[IronType[A, C]]
-
 
 object RefinedTypeOps:
 

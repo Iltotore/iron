@@ -25,8 +25,8 @@ object decline:
       def read(string: String): ValidatedNel[String, A :| B] =
         argument.read(string) match
           case Valid(a) => a.refineEither[B] match
-            case Left(value) => Validated.invalidNel(value)
-            case Right(value) => Validated.validNel(value)
+              case Left(value)  => Validated.invalidNel(value)
+              case Right(value) => Validated.validNel(value)
           case Invalid(e) => Validated.invalid(e)
 
       def defaultMetavar: String = argument.defaultMetavar

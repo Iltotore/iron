@@ -13,13 +13,12 @@ private def unionGenImpl[A, C](using Quotes, Type[A], Type[C]): Expr[Gen[A :| C]
 
   def rec(tpe: TypeRepr): Expr[Gen[?]] =
     tpe.dealias match
-      case OrType(left, right) => '{ Gen.oneOf(${rec(left)}, ${rec(right)}) }
+      case OrType(left, right) => '{ Gen.oneOf(${ rec(left) }, ${ rec(right) }) }
       case constraintTpe =>
-
         type ConstraintPart
 
         given Type[ConstraintPart] = constraintTpe.asType.asInstanceOf
 
-        '{scala.compiletime.summonInline[Arbitrary[A :| ConstraintPart]].arbitrary}
+        '{ scala.compiletime.summonInline[Arbitrary[A :| ConstraintPart]].arbitrary }
 
-  '{${rec(TypeRepr.of[C])}.asInstanceOf[Gen[A :| C]]}.asExprOf[Gen[A :| C]]
+  '{ ${ rec(TypeRepr.of[C]) }.asInstanceOf[Gen[A :| C]] }.asExprOf[Gen[A :| C]]

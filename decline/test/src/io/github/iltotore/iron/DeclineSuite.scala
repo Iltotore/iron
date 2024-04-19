@@ -7,17 +7,13 @@ import io.github.iltotore.iron.constraint.numeric.Positive
 import utest.*
 
 object DeclineSuite extends TestSuite:
-  val tests: Tests = Tests {
+  val tests: Tests = Tests:
 
-    test("Argument") {
-      test("ironType") {
-        test("success") - assert(summon[Argument[Int :| Positive]].read("5") == Valid(5)) 
+    test("Argument"):
+      test("ironType"):
+        test("success") - assert(summon[Argument[Int :| Positive]].read("5") == Valid(5))
         test("failure") - assert(summon[Argument[Int :| Positive]].read("-5").isInvalid)
-      }
 
-      test("newType") {
-        test("success") - assert(summon[Argument[Temperature]].read("5") == Valid(5)) 
+      test("newType"):
+        test("success") - assert(summon[Argument[Temperature]].read("5") == Valid(5))
         test("failure") - assert(summon[Argument[Temperature]].read("-5").isInvalid)
-      }
-    }
-  }

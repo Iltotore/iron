@@ -23,9 +23,8 @@ import io.github.iltotore.iron.*
   assert(decoding == Right(account))
 
   val decoding2 = Json.decode(invalidEncoding.getBytes).to[Account].valueEither
-  decoding2 match {
-    case Left(e: Borer.Error.ValidationFailure[_]) =>
+  decoding2 match
+    case Left(e: Borer.Error.ValidationFailure[?]) =>
       // "Password must contain at least a letter, a digit and have a length between 6 and 20 (input position 26)"
       println(e.getMessage)
     case _ => throw new IllegalStateException
-  }

@@ -8,56 +8,48 @@ object StringSuite extends TestSuite:
 
   val tests: Tests = Tests {
 
-    test("blank") {
+    test("blank"):
       test - "".assertRefine[Blank]
       test - " \t\n\u000B\f\r\u001C\u001D\u001E\u001F".assertRefine[Blank]
       test - "a".assertNotRefine[Blank]
-    }
 
-    test("trimmed") {
+    test("trimmed"):
       test - "".assertRefine[Trimmed]
       test - "abc".assertRefine[Trimmed]
       test - " ".assertNotRefine[Trimmed]
       test - " abc ".assertNotRefine[Trimmed]
       test - "abc\n".assertNotRefine[Trimmed]
-    }
 
-    test("lowercase") {
+    test("lowercase"):
       test - "abc 123 \n".assertRefine[LettersLowerCase]
       test - "ABC 123 \n".assertNotRefine[LettersLowerCase]
-    }
 
-    test("uppercase") {
+    test("uppercase"):
       test - "abc 123 \n".assertNotRefine[LettersUpperCase]
       test - "ABC 123 \n".assertRefine[LettersUpperCase]
-    }
 
-    test("alphanumeric") {
+    test("alphanumeric"):
       test - "abc".assertRefine[Alphanumeric]
       test - "123".assertRefine[Alphanumeric]
       test - "abc123".assertRefine[Alphanumeric]
       test - "".assertRefine[Alphanumeric]
       test - "abc123_".assertNotRefine[Alphanumeric]
       test - " ".assertNotRefine[Alphanumeric]
-    }
 
-    test("startWith") {
+    test("startWith"):
       test - "abc".assertRefine[StartWith["abc"]]
       test - "abc123".assertRefine[StartWith["abc"]]
       test - "ab".assertNotRefine[StartWith["abc"]]
-    }
 
-    test("endWith") {
+    test("endWith"):
       test - "abc".assertRefine[EndWith["abc"]]
       test - "123abc".assertRefine[EndWith["abc"]]
       test - "ab".assertNotRefine[EndWith["abc"]]
-    }
 
-    test("match") {
+    test("match"):
       test - "998".assertRefine[Match["[0-9]+"]]
       test - "abc".assertNotRefine[Match["[0-9]+"]]
       test - "".assertNotRefine[Match["[0-9]+"]]
-    }
 
     test("url") {
       test - "localhost".assertRefine[ValidURL]
@@ -78,32 +70,32 @@ object StringSuite extends TestSuite:
     }
 
     test("semantic version") {
-        test - "1.0.0".assertRefine[SemanticVersion]
-        test - "1.0.0-alpha".assertRefine[SemanticVersion]
-        test - "1.0.0-alpha.1".assertRefine[SemanticVersion]
-        test - "1.0.0-0.3.7".assertRefine[SemanticVersion]
-        test - "1.0.0-x.7.z.92".assertRefine[SemanticVersion]
-        test - "1.0.0-alpha+001".assertRefine[SemanticVersion]
-        test - "1.0.0+20130313144700".assertRefine[SemanticVersion]
-        test - "1.0.0-beta+exp.sha.5114f85".assertRefine[SemanticVersion]
-        test - "1.0.0-rc.1+exp.sha.5114f85".assertRefine[SemanticVersion]
-        test - "1".assertNotRefine[SemanticVersion]
-        test - "1.0".assertNotRefine[SemanticVersion]
-        test - "x.0.0".assertNotRefine[SemanticVersion]
-        test - "0.y.0".assertNotRefine[SemanticVersion]
-        test - "0.0.z".assertNotRefine[SemanticVersion]
-        test - "x.y.z".assertNotRefine[SemanticVersion]
-        test - "00000001.0.0".assertNotRefine[SemanticVersion]
-        test - "0.00000001.0".assertNotRefine[SemanticVersion]
-        test - "0.0.00000001".assertNotRefine[SemanticVersion]
-        test - "1.0.0-rc.1+exp.sha.51_14f85".assertNotRefine[SemanticVersion]
-        test - "1.0.0-rc.1+exp.sha.51 14f85".assertNotRefine[SemanticVersion]
-        test - "1.0.0-rc.1+exp.sha.51?14f85".assertNotRefine[SemanticVersion]
-        test - "1.0.0-rc.1+exp.sha.51#14f85".assertNotRefine[SemanticVersion]
-        test - "1.0.0-rc.1+exp.sha.51@14f85".assertNotRefine[SemanticVersion]
-        test - "1.0.0-rc.1+exp.sha.51:14f85".assertNotRefine[SemanticVersion]
-        test - "1.0.0-rc.1+exp.sha.51*14f85".assertNotRefine[SemanticVersion]
-        test - "1.0.0-rc.1+exp.sha.51|14f85".assertNotRefine[SemanticVersion]
+      test - "1.0.0".assertRefine[SemanticVersion]
+      test - "1.0.0-alpha".assertRefine[SemanticVersion]
+      test - "1.0.0-alpha.1".assertRefine[SemanticVersion]
+      test - "1.0.0-0.3.7".assertRefine[SemanticVersion]
+      test - "1.0.0-x.7.z.92".assertRefine[SemanticVersion]
+      test - "1.0.0-alpha+001".assertRefine[SemanticVersion]
+      test - "1.0.0+20130313144700".assertRefine[SemanticVersion]
+      test - "1.0.0-beta+exp.sha.5114f85".assertRefine[SemanticVersion]
+      test - "1.0.0-rc.1+exp.sha.5114f85".assertRefine[SemanticVersion]
+      test - "1".assertNotRefine[SemanticVersion]
+      test - "1.0".assertNotRefine[SemanticVersion]
+      test - "x.0.0".assertNotRefine[SemanticVersion]
+      test - "0.y.0".assertNotRefine[SemanticVersion]
+      test - "0.0.z".assertNotRefine[SemanticVersion]
+      test - "x.y.z".assertNotRefine[SemanticVersion]
+      test - "00000001.0.0".assertNotRefine[SemanticVersion]
+      test - "0.00000001.0".assertNotRefine[SemanticVersion]
+      test - "0.0.00000001".assertNotRefine[SemanticVersion]
+      test - "1.0.0-rc.1+exp.sha.51_14f85".assertNotRefine[SemanticVersion]
+      test - "1.0.0-rc.1+exp.sha.51 14f85".assertNotRefine[SemanticVersion]
+      test - "1.0.0-rc.1+exp.sha.51?14f85".assertNotRefine[SemanticVersion]
+      test - "1.0.0-rc.1+exp.sha.51#14f85".assertNotRefine[SemanticVersion]
+      test - "1.0.0-rc.1+exp.sha.51@14f85".assertNotRefine[SemanticVersion]
+      test - "1.0.0-rc.1+exp.sha.51:14f85".assertNotRefine[SemanticVersion]
+      test - "1.0.0-rc.1+exp.sha.51*14f85".assertNotRefine[SemanticVersion]
+      test - "1.0.0-rc.1+exp.sha.51|14f85".assertNotRefine[SemanticVersion]
     }
 
   }

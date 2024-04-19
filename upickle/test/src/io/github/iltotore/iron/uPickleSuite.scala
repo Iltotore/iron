@@ -10,27 +10,20 @@ import scala.util.Try
 
 import utest.*
 
-
 object uPickleSuite extends TestSuite:
 
   import scala.runtime.stdLibPatches.Predef.summon
 
-  val tests: Tests = Tests {
+  val tests: Tests = Tests:
 
-    test("reader") {
-      test("ironType") {
+    test("reader"):
+      test("ironType"):
         test("success") - assert(Try(read[Int :| Positive]("10")).isSuccess)
         test("failure") - assert(Try(read[Int :| Positive]("-10")).isFailure)
-      }
-    }
 
-     test("writer") {
-      test("ironType") {
+    test("writer"):
+      test("ironType"):
         val p: Int :| Positive = 10
         test("success") - assert(write(p) == "10")
-      }
-    }
 
-  }
-  
 end uPickleSuite

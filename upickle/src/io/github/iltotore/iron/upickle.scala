@@ -17,10 +17,9 @@ object upickle:
    */
   inline given [A, B](using inline reader: Reader[A], inline constraint: Constraint[A, B]): Reader[A :| B] =
     reader.map(value =>
-      value.refineEither match {
+      value.refineEither match
         case Right(refinedValue) => refinedValue
-        case Left(errorMessage) => throw Abort(errorMessage)
-      }
+        case Left(errorMessage)  => throw Abort(errorMessage)
     )
 
   /**
@@ -36,7 +35,7 @@ object upickle:
    * @param mirror the type mirror for refined types.
    * @param ev the underlying `Reader` for the iron type.
    */
-  inline given[T](using mirror: RefinedTypeOps.Mirror[T], ev: Reader[mirror.IronType]): Reader[T] =
+  inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: Reader[mirror.IronType]): Reader[T] =
     ev.asInstanceOf[Reader[T]]
 
   /**
@@ -45,5 +44,5 @@ object upickle:
    * @param mirror the type mirror for refined types.
    * @param ev the underlying `Writer` for the iron type.
    */
-  inline given[T](using mirror: RefinedTypeOps.Mirror[T], ev: Writer[mirror.IronType]): Writer[T] =
+  inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: Writer[mirror.IronType]): Writer[T] =
     ev.asInstanceOf[Writer[T]]

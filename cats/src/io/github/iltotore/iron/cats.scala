@@ -3,12 +3,15 @@ package io.github.iltotore.iron
 import _root_.cats.data.*
 import _root_.cats.kernel.{CommutativeMonoid, Hash, LowerBounded, PartialOrder, UpperBounded}
 import _root_.cats.syntax.either.*
-import _root_.cats.{Eq, Monoid, Order, Show}
+import _root_.cats.{Eq, Monoid, Order, Show, Traverse}
 import _root_.cats.data.Validated.{Invalid, Valid}
 import _root_.cats.Functor
+import _root_.cats.implicits.*
 import io.github.iltotore.iron.constraint.numeric.{Greater, Less, Negative, Positive}
 
 import scala.util.NotGiven
+import scala.util.boundary
+import scala.util.boundary.break
 
 object cats extends IronCatsInstances:
 
@@ -67,6 +70,50 @@ object cats extends IronCatsInstances:
     inline def refineValidatedNel[C](using inline constraint: Constraint[A, C]): ValidatedNel[String, A :| C] =
       Validated.condNel(constraint.test(value), value.asInstanceOf[A :| C], constraint.message)
 
+  extension [F[_], A](wrapper: F[A])
+
+    /**
+     * Refine the wrapped value(s) at runtime, accumulating errors.
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Right]] containing this value as [[IronType]] or an [[Left]] containing a [[NonEmptyChain]] of errors.
+     * @see [[refineNec]].
+     */
+    inline def refineAllNec[C](using traverse: Traverse[F], inline constraint: Constraint[A, C]): EitherNec[InvalidValue[A], F[A :| C]] =
+      wrapper.refineAllValidatedNec[C].toEither
+
+    /**
+     * Refine the wrapped value(s) at runtime, accumulating errors.
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Right]] containing this value as [[IronType]] or an [[Left]] containing a [[NonEmptyList]] of errors.
+     * @see [[refineNec]].
+     */
+    inline def refineAllNel[C](using traverse: Traverse[F], inline constraint: Constraint[A, C]): EitherNel[InvalidValue[A], F[A :| C]] =
+      wrapper.refineAllValidatedNel[C].toEither
+
+    /**
+     * Refine the wrapped value(s) at runtime, accumulating errors.
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyChain]] of errors.
+     * @see [[refineValidatedNec]].
+     */
+    inline def refineAllValidatedNec[C](using traverse: Traverse[F], inline constraint: Constraint[A, C]): ValidatedNec[InvalidValue[A], F[A :| C]] =
+      traverse.traverse(wrapper): value =>
+        Validated.condNec[InvalidValue[A], A :| C](constraint.test(value), value.assume[C], InvalidValue(value, constraint.message))
+
+    /**
+     * Refine the wrapped value(s) at runtime, accumulating errors.
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyList]] of errors.
+     * @see [[refineValidatedNel]].
+     */
+    inline def refineAllValidatedNel[C](using traverse: Traverse[F], inline constraint: Constraint[A, C]): ValidatedNel[InvalidValue[A], F[A :| C]] =
+      traverse.traverse(wrapper): value =>
+        Validated.condNel[InvalidValue[A], A :| C](constraint.test(value), value.assume[C], InvalidValue(value, constraint.message))
+
   extension [A, C1](value: A :| C1)
 
     /**
@@ -119,6 +166,70 @@ object cats extends IronCatsInstances:
     inline def refineFurtherValidatedNel[C2](using inline constraint: Constraint[A, C2]): ValidatedNel[String, A :| (C1 & C2)] =
       (value: A).refineValidatedNel[C2].map(_.assumeFurther[C1])
 
+  extension [F[_], A, C1](wrapper: F[A :| C1])
+
+    /**
+     * Refine further the wrapped value(s) at runtime, accumulating errors.
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Right]] containing this value as [[IronType]] or an [[Left]] containing a [[NonEmptyChain]] of errors.
+     * @see [[refineFurtherNec]].
+     */
+    inline def refineAllFurtherNec[C2](using
+        traverse: Traverse[F],
+        inline constraint: Constraint[A, C2]
+    ): EitherNec[InvalidValue[A], F[A :| (C1 & C2)]] =
+      wrapper.refineAllFurtherValidatedNec[C2].toEither
+
+    /**
+     * Refine further the wrapped value(s) at runtime, accumulating errors.
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Right]] containing this value as [[IronType]] or an [[Left]] containing a [[NonEmptyList]] of errors.
+     * @see [[refineFurtherNel]].
+     */
+    inline def refineAllFurtherNel[C2](using
+        traverse: Traverse[F],
+        inline constraint: Constraint[A, C2]
+    ): EitherNel[InvalidValue[A], F[A :| (C1 & C2)]] =
+      wrapper.refineAllFurtherValidatedNel[C2].toEither
+
+    /**
+     * Refine further the wrapped value(s) at runtime, accumulating errors.
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyChain]] of errors.
+     * @see [[refineFurtherValidatedNec]].
+     */
+    inline def refineAllFurtherValidatedNec[C2](using
+        traverse: Traverse[F],
+        inline constraint: Constraint[A, C2]
+    ): ValidatedNec[InvalidValue[A], F[A :| (C1 & C2)]] =
+      traverse.traverse(wrapper): value =>
+        Validated.condNec[InvalidValue[A], A :| (C1 & C2)](
+          constraint.test(value),
+          (value: A).assume[C1 & C2],
+          InvalidValue(value, constraint.message)
+        )
+
+    /**
+     * Refine further the wrapped value(s) at runtime, accumulating errors.
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyList]] of errors.
+     * @see [[refineFurtherValidatedNel]].
+     */
+    inline def refineAllFurtherValidatedNel[C2](using
+        traverse: Traverse[F],
+        inline constraint: Constraint[A, C2]
+    ): ValidatedNel[InvalidValue[A], F[A :| (C1 & C2)]] =
+      traverse.traverse(wrapper): value =>
+        Validated.condNel[InvalidValue[A], A :| (C1 & C2)](
+          constraint.test(value),
+          (value: A).assume[C1 & C2],
+          InvalidValue(value, constraint.message)
+        )
+
   extension [A, C, T](ops: RefinedTypeOps[A, C, T])
 
     /**
@@ -168,6 +279,48 @@ object cats extends IronCatsInstances:
      */
     def validatedNel(value: A): ValidatedNel[String, T] =
       if ops.rtc.test(value) then Validated.validNel(value.asInstanceOf[T]) else Validated.invalidNel(ops.rtc.message)
+
+    /**
+     * Refine the given values applicatively at runtime, resulting in a [[EitherNec]].
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Right]] containing this value as [[IronType]] or an [[Left]] containing a [[NonEmptyChain]] of error messages.
+     * @see [[eitherNec]], [[eitherAllNel]].
+     */
+    def eitherAllNec[F[_]](value: F[A])(using Traverse[F]): EitherNec[InvalidValue[A], F[T]] =
+      ops.validatedAllNec(value).toEither
+
+    /**
+     * Refine the given values applicatively at runtime, resulting in a [[EitherNel]].
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Right]] containing this value as [[IronType]] or an [[Left]] containing a [[NonEmptyList]] of error messages.
+     * @see [[eitherNel]], [[eitherAllNec]].
+     */
+    def eitherAllNel[F[_]](value: F[A])(using Traverse[F]): EitherNel[InvalidValue[A], F[T]] =
+      ops.validatedAllNel(value).toEither
+
+    /**
+     * Refine the given values applicatively at runtime, resulting in a [[ValidatedNec]].
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyChain]] of error messages.
+     * @see [[validatedNec]], [[validatedAllNel]].
+     */
+    def validatedAllNec[F[_]](wrapper: F[A])(using traverse: Traverse[F]): ValidatedNec[InvalidValue[A], F[T]] =
+      traverse.traverse(wrapper): value =>
+        Validated.condNec[InvalidValue[A], T](ops.rtc.test(value), ops.assume(value), InvalidValue(value, ops.rtc.message))
+
+    /**
+     * Refine the given values applicatively at runtime, resulting in a [[ValidatedNel]].
+     *
+     * @param constraint the constraint to test with the value to refine.
+     * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyList]] of error messages.
+     * @see [[validatedNel]], [[validatedAllNec]].
+     */
+    def validatedAllNel[F[_]](wrapper: F[A])(using traverse: Traverse[F]): ValidatedNel[InvalidValue[A], F[T]] =
+      traverse.traverse(wrapper): value =>
+        Validated.condNel[InvalidValue[A], T](ops.rtc.test(value), ops.assume(value), InvalidValue(value, ops.rtc.message))
 
   /**
    * Represent all Cats' typeclass instances for Iron.

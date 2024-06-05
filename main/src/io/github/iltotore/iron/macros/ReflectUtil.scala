@@ -164,6 +164,10 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
   object ExprDecoder:
 
+    /**
+     * Fallback expression decoder instance using Dotty's [[FromExpr]]. Fails with a [[DecodingFailure.Unknown]] if the
+     * underlying [[FromExpr]] returns [[None]].
+     */
     given [T](using fromExpr: FromExpr[T]): ExprDecoder[T] with
 
       override def decode(expr: Expr[T]): Either[DecodingFailure, T] =
@@ -204,10 +208,15 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
       override def decode(expr: Expr[T]): Either[DecodingFailure, T] =
         decodeTerm(expr.asTerm)
 
-    given [T <: NumConstant]: ExprDecoder[T] = new PrimitiveExprDecoder[T]
+    /**
+     * Decoder for all numeric primitives ([[Byte]], [[Short]], [[Int]], [[Long]], [[Float]], [[Double]]).
+     * 
+     * @tparam T the type of the expression to decode
+     */
+    given [T <: NumConstant | Byte | Short]: ExprDecoder[T] = new PrimitiveExprDecoder[T]
 
     /**
-     * A ExprDecoder[Boolean] that can extract value from partially inlined || and
+     * A boolean [[ExprDecoder]] that can extract value from partially inlined || and
      * && operations.
      *
      * {{{
@@ -242,7 +251,21 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
             case (leftResult, rightResult)             => Left(DecodingFailure.AndNotInlined(leftResult, rightResult))
             
         case _ => super.decodeTerm(tree)
-      
+
+    /**
+     * A String [[ExprDecoder]] that can extract value from concatenated strings if all
+     * arguments are compile-time-extractable strings.
+     *
+     * {{{
+     *   inline val x = "a"
+     *   inline val y = "b"
+     *   val z = "c"
+     *
+     *   x + y //"ab"
+     *   x + z //DecodingFailure
+     *   z + x //DecodingFailure
+     * }}}
+     */
     given ExprDecoder[String] = new PrimitiveExprDecoder[String]:
 
       override def decodeTerm(tree: Term): Either[DecodingFailure, String] = tree match

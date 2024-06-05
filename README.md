@@ -113,10 +113,16 @@ Here is a non-exhaustive list of projects using Iron.
 [Submit a PR](https://github.com/Iltotore/iron/pulls?q=is%3Apr+is%3Aopen+sort%3Aupdated-desc) to add your project or
 company to the list.
 
-- [gvolpe/trading](https://github.com/gvolpe/trading/) ([book](https://leanpub.com/feda))
-- [cheleb/laminar-form-derivation](https://github.com/cheleb/laminar-form-derivation)
+### Companies
+
+- [Clever Cloud](https://www.clever-cloud.com/)
 - [Ledger](https://github.com/LedgerHQ)
 - [Marss](https://github.com/marss)
+
+### Other projects
+
+- [gvolpe/trading](https://github.com/gvolpe/trading/) ([book](https://leanpub.com/feda))
+- [cheleb/laminar-form-derivation](https://github.com/cheleb/laminar-form-derivation)
 - [Tessella](https://github.com/scala-tessella/tessella)
 
 ## Useful links

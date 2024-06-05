@@ -7,7 +7,7 @@ import scala.quoted.*
 /**
  * Low AST related utils.
  *
- * @param _quotes the metaprogramming information
+ * @param q the metaprogramming information
  * @tparam Q the type of `_quotes` to ensure the path is valid to import.
  */
 transparent inline def reflectUtil[Q <: Quotes & Singleton](using inline q: Q): ReflectUtil[Q] = new ReflectUtil[Q]
@@ -150,18 +150,22 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
   /**
    * A compile-time [[Expr]] decoder. Like [[FromExpr]] with more fine-grained errors.
    *
-   * @tparam T the type of the expression to decode
+   * @tparam T the type of the expression to decodeExpr
    */
   trait ExprDecoder[T]:
 
     /**
      * Decode the given expression.
      *
-     * @param expr the expression to decode
+     * @param expr the expression to decodeExpr
      * @return the value decoded from [[expr]] or a [[DecodingFailure]] instead
      */
-    def decode(expr: Expr[T]): Either[DecodingFailure, T]
-
+    def decodeExpr(expr: Expr[T]): Either[DecodingFailure, T]
+    
+  extension [T](expr: Expr[T])
+    
+    def decode(using decoder: ExprDecoder[T]): Either[DecodingFailure, T] = decoder.decodeExpr(expr)
+  
   object ExprDecoder:
 
     /**
@@ -170,7 +174,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      */
     given [T](using fromExpr: FromExpr[T]): ExprDecoder[T] with
 
-      override def decode(expr: Expr[T]): Either[DecodingFailure, T] =
+      override def decodeExpr(expr: Expr[T]): Either[DecodingFailure, T] =
         fromExpr.unapply(expr).toRight(DecodingFailure.Unknown)
 
     private class PrimitiveExprDecoder[T <: NumConstant | Byte | Short | Boolean | String] extends ExprDecoder[T]:
@@ -205,13 +209,13 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
             case ConstantType(c) => Right(c.value.asInstanceOf[T])
             case _ => Left(DecodingFailure.Unknown)
 
-      override def decode(expr: Expr[T]): Either[DecodingFailure, T] =
+      override def decodeExpr(expr: Expr[T]): Either[DecodingFailure, T] =
         decodeTerm(expr.asTerm)
 
     /**
      * Decoder for all numeric primitives ([[Byte]], [[Short]], [[Int]], [[Long]], [[Float]], [[Double]]).
      * 
-     * @tparam T the type of the expression to decode
+     * @tparam T the type of the expression to decodeExpr
      */
     given [T <: NumConstant | Byte | Short]: ExprDecoder[T] = new PrimitiveExprDecoder[T]
 

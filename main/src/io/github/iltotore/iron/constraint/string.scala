@@ -5,6 +5,7 @@ import io.github.iltotore.iron.constraint.any.*
 import io.github.iltotore.iron.constraint.collection.*
 import io.github.iltotore.iron.compileTime.*
 import io.github.iltotore.iron.constraint.char.{Digit, Letter, LowerCase, UpperCase, Whitespace}
+import io.github.iltotore.iron.macros.reflectUtil
 
 import scala.compiletime.constValue
 import scala.quoted.*
@@ -100,8 +101,11 @@ object string:
       override inline def message: String = "Should start with " + stringValue[V]
 
     private def check(expr: Expr[String], prefixExpr: Expr[String])(using Quotes): Expr[Boolean] =
-      (expr.value, prefixExpr.value) match
-        case (Some(value), Some(prefix)) => Expr(value.startsWith(prefix))
+      val rflUtil = reflectUtil
+      import rflUtil.*
+      
+      (expr.decode, prefixExpr.decode) match
+        case (Right(value), Right(prefix)) => Expr(value.startsWith(prefix))
         case _                           => '{ $expr.startsWith($prefixExpr) }
 
   object EndWith:
@@ -113,8 +117,11 @@ object string:
       override inline def message: String = "Should end with " + stringValue[V]
 
     private def check(expr: Expr[String], prefixExpr: Expr[String])(using Quotes): Expr[Boolean] =
-      (expr.value, prefixExpr.value) match
-        case (Some(value), Some(prefix)) => Expr(value.endsWith(prefix))
+      val rflUtil = reflectUtil
+      import rflUtil.*
+      
+      (expr.decode, prefixExpr.decode) match
+        case (Right(value), Right(prefix)) => Expr(value.endsWith(prefix))
         case _                           => '{ $expr.endsWith($prefixExpr) }
 
   object Match:
@@ -126,6 +133,9 @@ object string:
       override inline def message: String = "Should match " + constValue[V]
 
     private def check(valueExpr: Expr[String], regexExpr: Expr[String])(using Quotes): Expr[Boolean] =
-      (valueExpr.value, regexExpr.value) match
-        case (Some(value), Some(regex)) => Expr(value.matches(regex))
+      val rflUtil = reflectUtil
+      import rflUtil.*
+      
+      (valueExpr.decode, regexExpr.decode) match
+        case (Right(value), Right(regex)) => Expr(value.matches(regex))
         case _                          => '{ $valueExpr.matches($regexExpr) }

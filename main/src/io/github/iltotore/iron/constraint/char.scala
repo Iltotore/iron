@@ -3,6 +3,7 @@ package io.github.iltotore.iron.constraint
 import io.github.iltotore.iron.Constraint
 import io.github.iltotore.iron.compileTime.*
 import io.github.iltotore.iron.constraint.any.Not
+import io.github.iltotore.iron.macros.reflectUtil
 
 import scala.quoted.*
 
@@ -47,9 +48,12 @@ object char:
       override inline def message: String = "Should be a whitespace"
 
     private def check(expr: Expr[Char])(using Quotes): Expr[Boolean] =
-      expr.value match
-        case Some(value) => Expr(value.isWhitespace)
-        case None        => '{ $expr.isWhitespace }
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.decode match
+        case Right(value) => Expr(value.isWhitespace)
+        case _            => '{ $expr.isWhitespace }
 
   object LowerCase:
 
@@ -60,9 +64,12 @@ object char:
       override inline def message: String = "Should be a lower cased"
 
     private def check(expr: Expr[Char])(using Quotes): Expr[Boolean] =
-      expr.value match
-        case Some(value) => Expr(value.isLower)
-        case None        => '{ $expr.isLower }
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.decode match
+        case Right(value) => Expr(value.isLower)
+        case _            => '{ $expr.isLower }
 
   object UpperCase:
 
@@ -73,9 +80,12 @@ object char:
       override inline def message: String = "Should be a upper cased"
 
     private def check(expr: Expr[Char])(using Quotes): Expr[Boolean] =
-      expr.value match
-        case Some(value) => Expr(value.isUpper)
-        case None        => '{ $expr.isUpper }
+      val rflUtil = reflectUtil
+      import rflUtil.*
+      
+      expr.decode match
+        case Right(value) => Expr(value.isUpper)
+        case _            => '{ $expr.isUpper }
 
   object Digit:
 
@@ -86,9 +96,12 @@ object char:
       override inline def message: String = "Should be a digit"
 
     private def check(expr: Expr[Char])(using Quotes): Expr[Boolean] =
-      expr.value match
-        case Some(value) => Expr(value.isDigit)
-        case None        => '{ $expr.isDigit }
+      val rflUtil = reflectUtil
+      import rflUtil.*
+      
+      expr.decode match
+        case Right(value) => Expr(value.isDigit)
+        case _            => '{ $expr.isDigit }
 
   object Letter:
 
@@ -99,6 +112,9 @@ object char:
       override inline def message: String = "Should be a letter"
 
     private def check(expr: Expr[Char])(using Quotes): Expr[Boolean] =
-      expr.value match
-        case Some(value) => Expr(value.isLetter)
-        case None        => '{ $expr.isLetter }
+      val rflUtil = reflectUtil
+      import rflUtil.*
+      
+      expr.decode match
+        case Right(value) => Expr(value.isLetter)
+        case _            => '{ $expr.isLetter }

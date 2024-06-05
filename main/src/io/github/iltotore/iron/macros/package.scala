@@ -111,12 +111,10 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
   import rflUtil.*
 
   val inputType = TypeRepr.of[A]
+  
 
-  val messageDecoder = summon[ExprDecoder[String]]
-  val condDecoder = summon[ExprDecoder[Boolean]]
-
-  val messageValue = messageDecoder.decode(message).getOrElse("<Unknown message>")
-  val condValue = condDecoder.decode(cond)
+  val messageValue = message.decode.getOrElse("<Unknown message>")
+  val condValue = cond.decode
     .fold(
       err => compileTimeError(
         s"""Cannot refine value at compile-time because the predicate cannot be evaluated.

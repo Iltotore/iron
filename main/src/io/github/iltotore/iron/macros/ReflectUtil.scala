@@ -28,11 +28,6 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
   enum DecodingFailure:
 
     /**
-     * Unknown failure.
-     */
-    case Unknown
-
-    /**
      * A term is not inlined. Note that an `inline` val/def can still not be inlined by the compiler in some cases.
      *
      * @param term the term that is not inlined
@@ -40,11 +35,18 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
     case NotInlined(term: Term)
 
     /**
+     * A definition is not inlined.
+     *
+     * @param name the name definition
+     */
+    case DefinitionNotInlined(name: String)
+
+    /**
      * The term could not be fully inlined because it has runtime bindings/depends on runtime definitions.
      *
      * @param defFailures the definitions that the decoder failed to evaluate at compile-time
      */
-    case HasBindings(defFailures: List[DecodingFailure])
+    case HasBindings(defFailures: List[(String, DecodingFailure)])
 
     /**
      * The block has possibly side-effecting statements.
@@ -63,7 +65,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
     /**
      * A boolean OR is not inlined.
      *
-     * @param left the left operand
+     * @param left  the left operand
      * @param right the right operand
      */
     case OrNotInlined(left: Either[DecodingFailure, Boolean], right: Either[DecodingFailure, Boolean])
@@ -71,7 +73,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
     /**
      * A boolean AND is not inlined.
      *
-     * @param left the left operand
+     * @param left  the left operand
      * @param right the right operand
      */
     case AndNotInlined(left: Either[DecodingFailure, Boolean], right: Either[DecodingFailure, Boolean])
@@ -84,6 +86,11 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
     case StringPartsNotInlined(parts: List[Either[DecodingFailure, String]])
 
     /**
+     * The given String interpolator cannot be inlined.
+     */
+    case InterpolatorNotInlined(name: String)
+
+    /**
      * Pretty print this failure.
      *
      * @param bodyIdent the identation of the 2nd+ lines
@@ -92,12 +99,12 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      */
     def prettyPrint(bodyIdent: Int = 0, firstLineIdent: Int = 0): String =
       val unindented = this match
-        case Unknown => "Unknown"
         case NotInlined(term) => s"Term not inlined: ${term.show}"
+        case DefinitionNotInlined(name) => s"Definition not inlined: $name. Only vals and zero-arg def can be inlined."
         case HasBindings(defFailures) =>
           val failures = defFailures
-            .map(_.prettyPrint(2))
-            .mkString("- ", "\n- ", "")
+            .map((n, b) => s"- $n:\n${b.prettyPrint(2, 2)}")
+            .mkString("\n")
 
           s"Term depends on runtime definitions:\n$failures"
         case HasStatements(block) => s"Block has statements: ${block.show}"
@@ -143,6 +150,8 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
           s"String contatenation as non inlined arguments:\n$errors"
 
+        case InterpolatorNotInlined(name) => s"This interpolator is not supported: $name. Only `s` and `raw` are supported."
+
       " " * firstLineIdent + unindented.replaceAll("(\r\n|\n|\r)", "$1" + " " * bodyIdent)
 
     override def toString: String = prettyPrint()
@@ -169,27 +178,34 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
   object ExprDecoder:
 
     /**
-     * Fallback expression decoder instance using Dotty's [[FromExpr]]. Fails with a [[DecodingFailure.Unknown]] if the
+     * Fallback expression decoder instance using Dotty's [[FromExpr]]. Fails with a [[DecodingFailure.NotInlined]] if the
      * underlying [[FromExpr]] returns [[None]].
      */
     given [T](using fromExpr: FromExpr[T]): ExprDecoder[T] with
 
       override def decodeExpr(expr: Expr[T]): Either[DecodingFailure, T] =
-        fromExpr.unapply(expr).toRight(DecodingFailure.Unknown)
+        fromExpr.unapply(expr).toRight(DecodingFailure.NotInlined(expr.asTerm))
 
-    private class PrimitiveExprDecoder[T <: NumConstant | Byte | Short | Boolean | String] extends ExprDecoder[T]:
+    private class PrimitiveExprDecoder[T <: NumConstant | Byte | Short | Boolean | String : Type] extends ExprDecoder[T]:
 
-      private def getDefDecodingFailure(definition: Definition): Option[DecodingFailure] = definition match
-        case ValDef(_, _, Some(term)) => decodeTerm(term).left.toOption
-        case DefDef(_, Nil, _, Some(term)) => decodeTerm(term).left.toOption
-        case _ => None
+      private def decodeBinding(definition: Definition): Either[DecodingFailure, T] = definition match
+        case ValDef(name, tpeTree, Some(term)) if tpeTree.tpe <:< TypeRepr.of[T] => decodeTerm(term)
+        case DefDef(name, Nil, tpeTree, Some(term)) if tpeTree.tpe <:< TypeRepr.of[T]  => decodeTerm(term)
+        case _ => Left(DecodingFailure.DefinitionNotInlined(definition.name))
 
       def decodeTerm(tree: Term): Either[DecodingFailure, T] = tree match
         case block@Block(stats, e) => if stats.isEmpty then decodeTerm(e) else Left(DecodingFailure.HasStatements(block))
 
         case Inlined(_, bindings, e) =>
-          if bindings.isEmpty then decodeTerm(e)
-          else Left(DecodingFailure.HasBindings(bindings.flatMap(getDefDecodingFailure)))
+          val failures =
+            for
+              binding <- bindings
+              failure <- decodeBinding(binding).left.toOption
+            yield
+              (binding.name, failure)
+
+          if failures.isEmpty then decodeTerm(e)
+          else Left(DecodingFailure.HasBindings(failures))
 
         case Typed(e, _) => decodeTerm(e)
         case Apply(Select(leftOperand, name), operands) =>
@@ -203,21 +219,20 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
           Left(DecodingFailure.ApplyNotInlined(name, allResults))
 
-        case ref: Ref => Left(DecodingFailure.NotInlined(ref))
         case _ =>
           tree.tpe.widenTermRefByName match
             case ConstantType(c) => Right(c.value.asInstanceOf[T])
-            case _ => Left(DecodingFailure.Unknown)
+            case _ => Left(DecodingFailure.NotInlined(tree))
 
       override def decodeExpr(expr: Expr[T]): Either[DecodingFailure, T] =
         decodeTerm(expr.asTerm)
 
     /**
-     * Decoder for all numeric primitives ([[Byte]], [[Short]], [[Int]], [[Long]], [[Float]], [[Double]]).
+     * Decoder for all primitives except for [[String]] and [[Boolean]] which benefit from some enhancements.
      * 
      * @tparam T the type of the expression to decodeExpr
      */
-    given [T <: NumConstant | Byte | Short]: ExprDecoder[T] = new PrimitiveExprDecoder[T]
+    given [T <: NumConstant | Byte | Short : Type]: ExprDecoder[T] = new PrimitiveExprDecoder[T]
 
     /**
      * A boolean [[ExprDecoder]] that can extract value from partially inlined || and
@@ -245,15 +260,15 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
             case (Right(true), _) => Right(true)
             case (_, Right(true)) => Right(true)
             case (Right(leftValue), Right(rightValue)) => Right(leftValue || rightValue)
-            case (leftResult, rightResult)             => Left(DecodingFailure.OrNotInlined(leftResult, rightResult))
+            case (leftResult, rightResult) => Left(DecodingFailure.OrNotInlined(leftResult, rightResult))
 
         case Apply(Select(left, "&&"), List(right)) if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr.of[Boolean] => // AND
           (decodeTerm(left), decodeTerm(right)) match
             case (Right(false), _) => Right(false)
             case (_, Right(false)) => Right(false)
             case (Right(leftValue), Right(rightValue)) => Right(leftValue && rightValue)
-            case (leftResult, rightResult)             => Left(DecodingFailure.AndNotInlined(leftResult, rightResult))
-            
+            case (leftResult, rightResult) => Left(DecodingFailure.AndNotInlined(leftResult, rightResult))
+
         case _ => super.decodeTerm(tree)
 
     /**

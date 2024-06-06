@@ -4,6 +4,7 @@ import io.github.iltotore.iron.{:|, ==>, Constraint, Implication}
 import io.github.iltotore.iron.compileTime.*
 import io.github.iltotore.iron.constraint.any.{DescribedAs, StrictEqual}
 import io.github.iltotore.iron.constraint.numeric.{GreaterEqual, LessEqual}
+import io.github.iltotore.iron.macros.reflectUtil
 
 import scala.compiletime.{constValue, summonInline}
 import scala.compiletime.ops.string.Length
@@ -111,13 +112,12 @@ object collection:
     inline given lengthString[C, Impl <: Constraint[Int, C]](using inline impl: Impl): LengthString[C, Impl] = new LengthString
 
     private def checkString[C, Impl <: Constraint[Int, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
 
-      import quotes.reflect.*
-
-      expr.value match
-        case Some(value) => applyConstraint(Expr(value.length), constraintExpr)
-
-        case None => applyConstraint('{ $expr.length }, constraintExpr)
+      expr.decode match
+        case Right(value) => applyConstraint(Expr(value.length), constraintExpr)
+        case _ => applyConstraint('{ $expr.length }, constraintExpr)
 
     given [C1, C2](using C1 ==> C2): (Length[C1] ==> Length[C2]) = Implication()
 
@@ -135,8 +135,11 @@ object collection:
       override inline def message: String = "Should contain the string " + constValue[V]
 
     private def checkString(expr: Expr[String], partExpr: Expr[String])(using Quotes): Expr[Boolean] =
-      (expr.value, partExpr.value) match
-        case (Some(value), Some(part)) => Expr(value.contains(part))
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      (expr.decode, partExpr.decode) match
+        case (Right(value), Right(part)) => Expr(value.contains(part))
         case _                         => '{ ${ expr }.contains($partExpr) }
 
   object ForAll:
@@ -159,17 +162,17 @@ object collection:
     inline given forAllString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): ForAllString[C, Impl] = new ForAllString
 
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
 
-      import quotes.reflect.*
-
-      expr.value match
-        case Some(value) =>
+      expr.decode match
+        case Right(value) =>
           value
             .map(Expr.apply)
             .map(applyConstraint(_, constraintExpr))
             .foldLeft(Expr(true))((e, t) => '{ $e && $t })
 
-        case None => '{ $expr.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
+        case _ => '{ $expr.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
 
     given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Exists[C2]) = Implication()
     given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Last[C2]) = Implication()
@@ -196,18 +199,18 @@ object collection:
     inline given initString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): InitString[C, Impl] = new InitString
 
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
 
-      import quotes.reflect.*
-
-      expr.value match
-        case Some(value) =>
+      expr.decode match
+        case Right(value) =>
           value
             .init
             .map(Expr.apply)
             .map(applyConstraint(_, constraintExpr))
             .foldLeft(Expr(true))((e, t) => '{ $e && $t })
 
-        case None => '{ $expr.init.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
+        case _ => '{ $expr.init.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
 
     given [C1, C2](using C1 ==> C2): (Init[C1] ==> Exists[C2]) = Implication()
 
@@ -233,18 +236,18 @@ object collection:
     inline given tailString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): TailString[C, Impl] = new TailString
 
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
 
-      import quotes.reflect.*
-
-      expr.value match
-        case Some(value) =>
+      expr.decode match
+        case Right(value) =>
           value
             .tail
             .map(Expr.apply)
             .map(applyConstraint(_, constraintExpr))
             .foldLeft(Expr(true))((e, t) => '{ $e && $t })
 
-        case None => '{ $expr.tail.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
+        case _ => '{ $expr.tail.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
 
     given [C1, C2](using C1 ==> C2): (Tail[C1] ==> Exists[C2]) = Implication()
     given [C1, C2](using C1 ==> C2): (Tail[C1] ==> Last[C2]) = Implication()
@@ -269,17 +272,17 @@ object collection:
     inline given existsString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): ExistsString[C, Impl] = new ExistsString
 
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
 
-      import quotes.reflect.*
-
-      expr.value match
-        case Some(value) =>
+      expr.decode match
+        case Right(value) =>
           value
             .map(Expr.apply)
             .map(applyConstraint(_, constraintExpr))
             .foldLeft(Expr(false))((e, t) => '{ $e || $t })
 
-        case None => '{ $expr.existsOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
+        case _ => '{ $expr.existsOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
 
   object Head:
 
@@ -301,12 +304,15 @@ object collection:
     inline given headString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): HeadString[C, Impl] = new HeadString
 
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
-      expr.value match
-        case Some(value) =>
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.decode match
+        case Right(value) =>
           value.headOption match
             case Some(head) => applyConstraint(Expr(head), constraintExpr)
             case None       => Expr(false)
-        case None => '{ $expr.headOption.exists(head => ${ applyConstraint('{ head }, constraintExpr) }) }
+        case _ => '{ $expr.headOption.exists(head => ${ applyConstraint('{ head }, constraintExpr) }) }
 
     given [C1, C2](using C1 ==> C2): (Head[C1] ==> Exists[C2]) = Implication()
 
@@ -330,12 +336,15 @@ object collection:
     inline given lastString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): LastString[C, Impl] = new LastString
 
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
-      expr.value match
-        case Some(value) =>
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.decode match
+        case Right(value) =>
           value.lastOption match
             case Some(last) => applyConstraint(Expr(last), constraintExpr)
             case None       => Expr(false)
-        case None => '{ $expr.lastOption.exists(last => ${ applyConstraint('{ last }, constraintExpr) }) }
+        case _ => '{ $expr.lastOption.exists(last => ${ applyConstraint('{ last }, constraintExpr) }) }
 
     given [C1, C2](using C1 ==> C2): (Last[C1] ==> Exists[C2]) = Implication()
 

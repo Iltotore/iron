@@ -1,8 +1,5 @@
 package io.github.iltotore.iron.macros
 
-import io.github.iltotore.iron.compileTime.NumConstant
-
-import scala.annotation.tailrec
 import scala.quoted.*
 
 /**
@@ -130,22 +127,22 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
              |- true || <inlined value>
              |
              |Left member:
-             |${left.fold(_.prettyPrint(2, 2), _.toString)}
+             |${left.fold(_.prettyPrint(2, 2), "  " + _)}
              |
              |Right member:
-             |${right.fold(_.prettyPrint(2, 2), _.toString)}""".stripMargin
+             |${right.fold(_.prettyPrint(2, 2), "  " + _)}""".stripMargin
 
         case AndNotInlined(left, right) =>
-          s"""Non-inlined boolean or. The following patterns are evaluable at compile-time:
-             |- <inlined value> || <inlined value>
-             |- <inlined value> || true
-             |- true || <inlined value>
+          s"""Non-inlined boolean and. The following patterns are evaluable at compile-time:
+             |- <inlined value> && <inlined value>
+             |- <inlined value> && false
+             |- false && <inlined value>
              |
              |Left member:
-             |${left.fold(_.prettyPrint(2, 2), _.toString)}
+             |${left.fold(_.prettyPrint(2, 2), "  " + _)}
              |
              |Right member:
-             |${right.fold(_.prettyPrint(2, 2), _.toString)}""".stripMargin
+             |${right.fold(_.prettyPrint(2, 2), "  " + _)}""".stripMargin
 
         case StringPartsNotInlined(parts) =>
           val errors = parts
@@ -216,7 +213,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
         case Ident(name) => definitions
           .get(name)
-          .toRight(DecodingFailure.Unknown)
+          .toRight(DecodingFailure.NotInlined(tree))
           .asInstanceOf[Either[DecodingFailure, T]]
 
         case _ =>
@@ -229,7 +226,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
       case DefDef(name, Nil, tpeTree, Some(term)) => decodeTerm(term, definitions)
       case _ => Left(DecodingFailure.DefinitionNotInlined(definition.name))
 
-    def decodeBoolean(term: Term, definitions: Map[String, ?]) = term match
+    def decodeBoolean(term: Term, definitions: Map[String, ?]): Either[DecodingFailure, Boolean] = term match
       case Apply(Select(left, "||"), List(right)) if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr.of[Boolean] => // OR
         (decodeTerm[Boolean](left, definitions), decodeTerm[Boolean](right, definitions)) match
           case (Right(true), _) => Right(true)
@@ -246,7 +243,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
       case _ => Left(DecodingFailure.Unknown)
 
-    def decodeString(term: Term, definitions: Map[String, ?]) = term match
+    def decodeString(term: Term, definitions: Map[String, ?]): Either[DecodingFailure, String] = term match
       case Apply(Select(left, "+"), List(right)) if left.tpe <:< TypeRepr.of[String] && right.tpe <:< TypeRepr.of[String] =>
         (decodeTerm[String](left, definitions), decodeTerm[String](right, definitions)) match
           case (Right(leftValue), Right(rightValue)) => Right(leftValue + rightValue)

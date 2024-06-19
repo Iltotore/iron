@@ -2,6 +2,7 @@ package io.github.iltotore.iron.macros
 
 import io.github.iltotore.iron.compileTime.NumConstant
 
+import scala.annotation.tailrec
 import scala.quoted.*
 
 /**
@@ -21,6 +22,9 @@ transparent inline def reflectUtil[Q <: Quotes & Singleton](using inline q: Q): 
 class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
   import _quotes.reflect.*
+
+  extension [T: Type](expr: Expr[T])
+    def decode: Either[DecodingFailure, T] = ExprDecoder.decodeTerm(expr.asTerm, Map.empty)
 
   /**
    * A decoding failure.
@@ -90,6 +94,8 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      */
     case InterpolatorNotInlined(name: String)
 
+    case Unknown
+
     /**
      * Pretty print this failure.
      *
@@ -152,66 +158,53 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
         case InterpolatorNotInlined(name) => s"This interpolator is not supported: $name. Only `s` and `raw` are supported."
 
+        case Unknown => "Unknown reason"
+
       " " * firstLineIdent + unindented.replaceAll("(\r\n|\n|\r)", "$1" + " " * bodyIdent)
 
     override def toString: String = prettyPrint()
 
-  /**
-   * A compile-time [[Expr]] decoder. Like [[FromExpr]] with more fine-grained errors.
-   *
-   * @tparam T the type of the expression to decodeExpr
-   */
-  trait ExprDecoder[T]:
-
-    /**
-     * Decode the given expression.
-     *
-     * @param expr the expression to decodeExpr
-     * @return the value decoded from [[expr]] or a [[DecodingFailure]] instead
-     */
-    def decodeExpr(expr: Expr[T]): Either[DecodingFailure, T]
-    
-  extension [T](expr: Expr[T])
-    
-    def decode(using decoder: ExprDecoder[T]): Either[DecodingFailure, T] = decoder.decodeExpr(expr)
-  
   object ExprDecoder:
 
-    /**
-     * Fallback expression decoder instance using Dotty's [[FromExpr]]. Fails with a [[DecodingFailure.NotInlined]] if the
-     * underlying [[FromExpr]] returns [[None]].
-     */
-    given [T](using fromExpr: FromExpr[T]): ExprDecoder[T] with
+    type EnhancedDecoder = (Term, Map[String, ?]) => Either[DecodingFailure, ?]
 
-      override def decodeExpr(expr: Expr[T]): Either[DecodingFailure, T] =
-        fromExpr.unapply(expr).toRight(DecodingFailure.NotInlined(expr.asTerm))
+    private val enhancedDecoders: Map[TypeRepr, EnhancedDecoder] = Map(
+      TypeRepr.of[Boolean] -> decodeBoolean,
+      TypeRepr.of[String]  -> decodeString
+    )
 
-    private class PrimitiveExprDecoder[T <: NumConstant | Byte | Short | Boolean | String : Type] extends ExprDecoder[T]:
+    def decodeTerm[T](tree: Term, definitions: Map[String, ?]): Either[DecodingFailure, T] =
+      val specializedResult = enhancedDecoders
+        .get(tree.tpe.dealias)
+        .toRight(DecodingFailure.Unknown)
+        .flatMap(_.apply(tree, definitions))
 
-      private def decodeBinding(definition: Definition): Either[DecodingFailure, T] = definition match
-        case ValDef(name, tpeTree, Some(term)) if tpeTree.tpe <:< TypeRepr.of[T] => decodeTerm(term)
-        case DefDef(name, Nil, tpeTree, Some(term)) if tpeTree.tpe <:< TypeRepr.of[T]  => decodeTerm(term)
-        case _ => Left(DecodingFailure.DefinitionNotInlined(definition.name))
+      specializedResult match
+        case Left(DecodingFailure.Unknown) => decodeUnspecializedTerm(tree, definitions)
+        case result => result.asInstanceOf[Either[DecodingFailure, T]]
 
-      def decodeTerm(tree: Term): Either[DecodingFailure, T] = tree match
-        case block@Block(stats, e) => if stats.isEmpty then decodeTerm(e) else Left(DecodingFailure.HasStatements(block))
+    def decodeUnspecializedTerm[T](tree: Term, definitions: Map[String, ?]): Either[DecodingFailure, T] =
+      tree match
+        case block@Block(stats, e) => if stats.isEmpty then decodeTerm(e, definitions) else Left(DecodingFailure.HasStatements(block))
 
         case Inlined(_, bindings, e) =>
-          val failures =
-            for
-              binding <- bindings
-              failure <- decodeBinding(binding).left.toOption
-            yield
-              (binding.name, failure)
+          val (failures, values) = bindings
+            .map[(String, Either[DecodingFailure, ?])](b => (b.name, decodeBinding(b, definitions)))
+            .partitionMap:
+              case (name, Right(value)) => Right((name, value))
+              case (name, Left(failure)) => Left((name, failure))
 
-          if failures.isEmpty then decodeTerm(e)
+          if failures.isEmpty then decodeTerm(e, definitions ++ values.toMap)
           else Left(DecodingFailure.HasBindings(failures))
 
-        case Typed(e, _) => decodeTerm(e)
-        case Apply(Select(leftOperand, name), operands) =>
-          val rightResults = operands.map(decodeTerm)
+        case Apply(Select(left, "=="), List(right)) => (decodeTerm[Any](left, definitions), decodeTerm[Any](right, definitions)) match
+          case (Right(leftValue), Right(rightValue)) => Right((leftValue == rightValue).asInstanceOf[T])
+          case (leftResult, rightResult) => Left(DecodingFailure.ApplyNotInlined("==", List(leftResult, rightResult)))
 
-          val allResults = decodeTerm(leftOperand) match
+        case Apply(Select(leftOperand, name), operands) =>
+          val rightResults = operands.map(decodeTerm(_, definitions))
+
+          val allResults = decodeTerm(leftOperand, definitions) match
             case Left(DecodingFailure.ApplyNotInlined(n, leftResults)) if n == name =>
               leftResults ++ rightResults
             case leftResult =>
@@ -219,84 +212,50 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
           Left(DecodingFailure.ApplyNotInlined(name, allResults))
 
+        case Typed(e, _) => decodeTerm(e, definitions)
+
+        case Ident(name) => definitions
+          .get(name)
+          .toRight(DecodingFailure.Unknown)
+          .asInstanceOf[Either[DecodingFailure, T]]
+
         case _ =>
           tree.tpe.widenTermRefByName match
             case ConstantType(c) => Right(c.value.asInstanceOf[T])
             case _ => Left(DecodingFailure.NotInlined(tree))
 
-      override def decodeExpr(expr: Expr[T]): Either[DecodingFailure, T] =
-        decodeTerm(expr.asTerm)
+    def decodeBinding[T](definition: Definition, definitions: Map[String, ?]): Either[DecodingFailure, T] = definition match
+      case ValDef(name, tpeTree, Some(term)) => decodeTerm(term, definitions)
+      case DefDef(name, Nil, tpeTree, Some(term)) => decodeTerm(term, definitions)
+      case _ => Left(DecodingFailure.DefinitionNotInlined(definition.name))
 
-    /**
-     * Decoder for all primitives except for [[String]] and [[Boolean]] which benefit from some enhancements.
-     * 
-     * @tparam T the type of the expression to decodeExpr
-     */
-    given [T <: NumConstant | Byte | Short : Type]: ExprDecoder[T] = new PrimitiveExprDecoder[T]
+    def decodeBoolean(term: Term, definitions: Map[String, ?]) = term match
+      case Apply(Select(left, "||"), List(right)) if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr.of[Boolean] => // OR
+        (decodeTerm[Boolean](left, definitions), decodeTerm[Boolean](right, definitions)) match
+          case (Right(true), _) => Right(true)
+          case (_, Right(true)) => Right(true)
+          case (Right(leftValue), Right(rightValue)) => Right(leftValue || rightValue)
+          case (leftResult, rightResult) => Left(DecodingFailure.OrNotInlined(leftResult, rightResult))
 
-    /**
-     * A boolean [[ExprDecoder]] that can extract value from partially inlined || and
-     * && operations.
-     *
-     * {{{
-     *   inline val x = true
-     *   val y: Boolean = ???
-     *
-     *   x || y //inlined to `true`
-     *   y || x //inlined to `true`
-     *
-     *   inline val a = false
-     *   val b: Boolean = ???
-     *
-     *   a && b //inlined to `false`
-     *   b && a //inlined to `false`
-     * }}}
-     */
-    given ExprDecoder[Boolean] = new PrimitiveExprDecoder[Boolean]:
+      case Apply(Select(left, "&&"), List(right)) if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr.of[Boolean] => // AND
+        (decodeTerm[Boolean](left, definitions), decodeTerm[Boolean](right, definitions)) match
+          case (Right(false), _) => Right(false)
+          case (_, Right(false)) => Right(false)
+          case (Right(leftValue), Right(rightValue)) => Right(leftValue && rightValue)
+          case (leftResult, rightResult) => Left(DecodingFailure.AndNotInlined(leftResult, rightResult))
 
-      override def decodeTerm(tree: Term): Either[DecodingFailure, Boolean] = tree match
-        case Apply(Select(left, "||"), List(right)) if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr.of[Boolean] => // OR
-          (decodeTerm(left), decodeTerm(right)) match
-            case (Right(true), _) => Right(true)
-            case (_, Right(true)) => Right(true)
-            case (Right(leftValue), Right(rightValue)) => Right(leftValue || rightValue)
-            case (leftResult, rightResult) => Left(DecodingFailure.OrNotInlined(leftResult, rightResult))
+      case _ => Left(DecodingFailure.Unknown)
 
-        case Apply(Select(left, "&&"), List(right)) if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr.of[Boolean] => // AND
-          (decodeTerm(left), decodeTerm(right)) match
-            case (Right(false), _) => Right(false)
-            case (_, Right(false)) => Right(false)
-            case (Right(leftValue), Right(rightValue)) => Right(leftValue && rightValue)
-            case (leftResult, rightResult) => Left(DecodingFailure.AndNotInlined(leftResult, rightResult))
+    def decodeString(term: Term, definitions: Map[String, ?]) = term match
+      case Apply(Select(left, "+"), List(right)) if left.tpe <:< TypeRepr.of[String] && right.tpe <:< TypeRepr.of[String] =>
+        (decodeTerm[String](left, definitions), decodeTerm[String](right, definitions)) match
+          case (Right(leftValue), Right(rightValue)) => Right(leftValue + rightValue)
+          case (Left(DecodingFailure.StringPartsNotInlined(lparts)), Left(DecodingFailure.StringPartsNotInlined(rparts))) =>
+            Left(DecodingFailure.StringPartsNotInlined(lparts ++ rparts))
+          case (Left(DecodingFailure.StringPartsNotInlined(lparts)), rightResult) =>
+            Left(DecodingFailure.StringPartsNotInlined(lparts :+ rightResult))
+          case (leftResult, Left(DecodingFailure.StringPartsNotInlined(rparts))) =>
+            Left(DecodingFailure.StringPartsNotInlined(leftResult +: rparts))
+          case (leftResult, rightResult) => Left(DecodingFailure.StringPartsNotInlined(List(leftResult, rightResult)))
 
-        case _ => super.decodeTerm(tree)
-
-    /**
-     * A String [[ExprDecoder]] that can extract value from concatenated strings if all
-     * arguments are compile-time-extractable strings.
-     *
-     * {{{
-     *   inline val x = "a"
-     *   inline val y = "b"
-     *   val z = "c"
-     *
-     *   x + y //"ab"
-     *   x + z //DecodingFailure
-     *   z + x //DecodingFailure
-     * }}}
-     */
-    given ExprDecoder[String] = new PrimitiveExprDecoder[String]:
-
-      override def decodeTerm(tree: Term): Either[DecodingFailure, String] = tree match
-        case Apply(Select(left, "+"), List(right)) if left.tpe <:< TypeRepr.of[String] && right.tpe <:< TypeRepr.of[String] =>
-          (decodeTerm(left), decodeTerm(right)) match
-            case (Right(leftValue), Right(rightValue)) => Right(leftValue + rightValue)
-            case (Left(DecodingFailure.StringPartsNotInlined(lparts)), Left(DecodingFailure.StringPartsNotInlined(rparts))) =>
-              Left(DecodingFailure.StringPartsNotInlined(lparts ++ rparts))
-            case (Left(DecodingFailure.StringPartsNotInlined(lparts)), rightResult) =>
-              Left(DecodingFailure.StringPartsNotInlined(lparts :+ rightResult))
-            case (leftResult, Left(DecodingFailure.StringPartsNotInlined(rparts))) =>
-              Left(DecodingFailure.StringPartsNotInlined(leftResult +: rparts))
-            case (leftResult, rightResult) => Left(DecodingFailure.StringPartsNotInlined(List(leftResult, rightResult)))
-
-        case _ => super.decodeTerm(tree)
+      case _ => Left(DecodingFailure.Unknown)

@@ -1,5 +1,6 @@
 package io.github.iltotore.iron.macros
 
+import io.github.iltotore.iron.internal.{IronConfig, colorized}
 import scala.Console.{MAGENTA, RESET}
 import scala.quoted.*
 
@@ -18,7 +19,10 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
 
   import quotes.reflect.*
 
-  given Printer[Tree] = Printer.TreeAnsiCode
+  given config: IronConfig = IronConfig.fromSystem
+  given Printer[Tree] =
+    if config.color then Printer.TreeAnsiCode
+    else Printer.TreeCode
 
   val rflUtil = reflectUtil(using quotes)
   import rflUtil.*
@@ -26,27 +30,35 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
   val inputType = TypeRepr.of[A]
 
   val messageValue = message.decode.getOrElse("<Unknown message>")
-  val condValue = cond.decode
-    .fold(
-      err => compileTimeError(
+
+  def condError(failure: DecodingFailure): Nothing =
+    if config.shortMessages then
+      report.errorAndAbort("Cannot refine value at compile-time.")
+    else
+      compileTimeError(
         s"""Cannot refine value at compile-time because the predicate cannot be evaluated.
            |This is likely because the condition or the input value isn't fully inlined.
            |
            |To test a constraint at runtime, use one of the `refine...` extension methods.
            |
-           |${MAGENTA}Inlined input$RESET: ${input.asTerm.show}
-           |${MAGENTA}Inlined condition$RESET: ${cond.asTerm.show}
-           |${MAGENTA}Message$RESET: $messageValue
-           |${MAGENTA}Reason$RESET: ${err.prettyPrint()}""".stripMargin
-      ),
-      identity
-    )
+           |${"Inlined input".colorized(MAGENTA)}: ${input.asTerm.show}
+           |${"Inlined condition".colorized(MAGENTA)}: ${cond.asTerm.show}
+           |${"Message".colorized(MAGENTA)}: $messageValue
+           |${"Reason".colorized(MAGENTA)}: ${failure.prettyPrint()}""".stripMargin
+      )
+
+  val inputValue = input.decode.toOption
+  val condValue = cond.decode.fold(condError, identity)
 
   if !condValue then
-    compileTimeError(s"""|Could not satisfy a constraint for type $MAGENTA${inputType.show}$RESET.
-                         |
-                         |${MAGENTA}Value$RESET: ${input.asTerm.show}
-                         |${MAGENTA}Message$RESET: $messageValue""".stripMargin)
+    if config.shortMessages then
+      report.errorAndAbort(s"$messageValue: ${inputValue.getOrElse(input.show)}")
+    else
+      compileTimeError(s"""|Could not satisfy a constraint for type ${inputType.show.colorized(MAGENTA)}.
+                           |
+                           |${"Value".colorized(MAGENTA)}: ${inputValue.getOrElse(input.show)}
+                           |${"Message".colorized(MAGENTA)}: $messageValue""".stripMargin)
+
   '{}
 
 def compileTimeError(msg: String)(using Quotes): Nothing =

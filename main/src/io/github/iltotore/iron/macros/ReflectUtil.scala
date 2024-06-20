@@ -100,7 +100,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      * @param firstLineIdent the identation of the first line
      * @return a pretty-formatted [[String]] representation of this failure
      */
-    def prettyPrint(bodyIdent: Int = 0, firstLineIdent: Int = 0): String =
+    def prettyPrint(bodyIdent: Int = 0, firstLineIdent: Int = 0)(using Printer[Tree]): String =
       val unindented = this match
         case NotInlined(term) => s"Term not inlined: ${term.show}"
         case DefinitionNotInlined(name) => s"Definition not inlined: $name. Only vals and zero-arg def can be inlined."
@@ -158,8 +158,6 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
         case Unknown => "Unknown reason"
 
       " " * firstLineIdent + unindented.replaceAll("(\r\n|\n|\r)", "$1" + " " * bodyIdent)
-
-    override def toString: String = prettyPrint()
 
   object ExprDecoder:
 

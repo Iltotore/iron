@@ -17,6 +17,9 @@ inline def assertCondition[A](inline input: A, inline cond: Boolean, inline mess
 private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], message: Expr[String])(using Quotes): Expr[Unit] =
 
   import quotes.reflect.*
+
+  given Printer[Tree] = Printer.TreeAnsiCode
+
   val rflUtil = reflectUtil(using quotes)
   import rflUtil.*
 
@@ -31,10 +34,10 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
            |
            |To test a constraint at runtime, use one of the `refine...` extension methods.
            |
-           |${MAGENTA}Inlined input$RESET: ${input.show}
-           |${MAGENTA}Inlined condition$RESET: ${cond.show}
+           |${MAGENTA}Inlined input$RESET: ${input.asTerm.show}
+           |${MAGENTA}Inlined condition$RESET: ${cond.asTerm.show}
            |${MAGENTA}Message$RESET: $messageValue
-           |${MAGENTA}Reason$RESET: $err""".stripMargin
+           |${MAGENTA}Reason$RESET: ${err.prettyPrint()}""".stripMargin
       ),
       identity
     )
@@ -42,7 +45,7 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
   if !condValue then
     compileTimeError(s"""|Could not satisfy a constraint for type $MAGENTA${inputType.show}$RESET.
                          |
-                         |${MAGENTA}Value$RESET: ${input.show}
+                         |${MAGENTA}Value$RESET: ${input.asTerm.show}
                          |${MAGENTA}Message$RESET: $messageValue""".stripMargin)
   '{}
 

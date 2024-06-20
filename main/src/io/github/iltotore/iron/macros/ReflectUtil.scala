@@ -21,6 +21,12 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
   import _quotes.reflect.*
 
   extension [T: Type](expr: Expr[T])
+
+    /**
+     * Decode this expression.
+     *
+     * @return the value of this expression found at compile time or a [[DecodingFailure]]
+     */
     def decode: Either[DecodingFailure, T] = ExprDecoder.decodeTerm(expr.asTerm, Map.empty)
 
   /**
@@ -93,6 +99,9 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      */
     case InterpolatorNotInlined(name: String)
 
+    /**
+     * An unknown failure.
+     */
     case Unknown
 
     /**
@@ -172,13 +181,19 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
   object ExprDecoder:
 
-    type EnhancedDecoder = (Term, Map[String, ?]) => Either[DecodingFailure, ?]
-
-    private val enhancedDecoders: Map[TypeRepr, EnhancedDecoder] = Map(
+    private val enhancedDecoders: Map[TypeRepr, (Term, Map[String, ?]) => Either[DecodingFailure, ?]] = Map(
       TypeRepr.of[Boolean] -> decodeBoolean,
       TypeRepr.of[String]  -> decodeString
     )
 
+    /**
+     * Decode a term.
+     *
+     * @param tree the term to decode
+     * @param definitions the decoded definitions in scope
+     * @tparam T the expected type of this term used as implicit cast for convenience
+     * @return the value of the given term found at compile time or a [[DecodingFailure]]
+     */
     def decodeTerm[T](tree: Term, definitions: Map[String, ?]): Either[DecodingFailure, T] =
       val specializedResult = enhancedDecoders
         .collectFirst:
@@ -190,6 +205,14 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
         case Left(DecodingFailure.Unknown) => decodeUnspecializedTerm(tree, definitions)
         case result => result.asInstanceOf[Either[DecodingFailure, T]]
 
+    /**
+     * Decode a term using only unspecialized cases.
+     *
+     * @param tree        the term to decode
+     * @param definitions the decoded definitions in scope
+     * @tparam T the expected type of this term used as implicit cast for convenience
+     * @return the value of the given term found at compile time or a [[DecodingFailure]]
+     */
     def decodeUnspecializedTerm[T](tree: Term, definitions: Map[String, ?]): Either[DecodingFailure, T] =
       tree match
         case block@Block(stats, e) => if stats.isEmpty then decodeTerm(e, definitions) else Left(DecodingFailure.HasStatements(block))
@@ -245,11 +268,26 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
             case ConstantType(c) => Right(c.value.asInstanceOf[T])
             case _ => Left(DecodingFailure.NotInlined(tree))
 
+    /**
+     * Decode a binding/definition.
+     *
+     * @param definition the definition to decode
+     * @param definitions the definitions already decoded in scope
+     * @tparam T the expected type of this term used as implicit cast for convenience
+     * @return the value of the given definition found at compile time or a [[DecodingFailure]]
+     */
     def decodeBinding[T](definition: Definition, definitions: Map[String, ?]): Either[DecodingFailure, T] = definition match
       case ValDef(name, tpeTree, Some(term)) => decodeTerm(term, definitions)
       case DefDef(name, Nil, tpeTree, Some(term)) => decodeTerm(term, definitions)
       case _ => Left(DecodingFailure.DefinitionNotInlined(definition.name))
 
+    /**
+     * Decode a [[Boolean]] term using only [[Boolean]]-specific cases.
+     *
+     * @param term        the term to decode
+     * @param definitions the decoded definitions in scope
+     * @return the value of the given term found at compile time or a [[DecodingFailure]]
+     */
     def decodeBoolean(term: Term, definitions: Map[String, ?]): Either[DecodingFailure, Boolean] = term match
       case Apply(Select(left, "||"), List(right)) if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr.of[Boolean] => // OR
         (decodeTerm[Boolean](left, definitions), decodeTerm[Boolean](right, definitions)) match
@@ -267,6 +305,13 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
       case _ => Left(DecodingFailure.Unknown)
 
+    /**
+     * Decode a [[String]] term using only [[String]]-specific cases.
+     *
+     * @param term        the term to decode
+     * @param definitions the decoded definitions in scope
+     * @return the value of the given term found at compile time or a [[DecodingFailure]]
+     */
     def decodeString(term: Term, definitions: Map[String, ?]): Either[DecodingFailure, String] = term match
       case Apply(Select(left, "+"), List(right)) if left.tpe <:< TypeRepr.of[String] && right.tpe <:< TypeRepr.of[String] =>
         (decodeTerm[String](left, definitions), decodeTerm[String](right, definitions)) match

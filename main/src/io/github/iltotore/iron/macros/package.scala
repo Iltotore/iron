@@ -49,35 +49,6 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
                          |${MAGENTA}Message$RESET: $messageValue""".stripMargin)
   '{}
 
-/**
- * Checks if the given value is constant (aka evaluable at compile time).
- *
- * @param value the value to test.
- * @tparam A the type of `value`.
- * @return `true` if the given value is constant, `false` otherwise.
- */
-inline def isConstant[A](inline value: A): Boolean = ${ isConstantImpl('{ value }) }
-
-private def isConstantImpl[A: Type](expr: Expr[A])(using Quotes): Expr[Boolean] =
-
-  import quotes.reflect.*
-
-  val aType = TypeRepr.of[A]
-
-  val result: Boolean =
-    if aType <:< TypeRepr.of[Boolean] then expr.asExprOf[Boolean].value.isDefined
-    else if aType <:< TypeRepr.of[Byte] then expr.asExprOf[Byte].value.isDefined
-    else if aType <:< TypeRepr.of[Short] then expr.asExprOf[Short].value.isDefined
-    else if aType <:< TypeRepr.of[Int] then expr.asExprOf[Int].value.isDefined
-    else if aType <:< TypeRepr.of[Long] then expr.asExprOf[Long].value.isDefined
-    else if aType <:< TypeRepr.of[Float] then expr.asExprOf[Float].value.isDefined
-    else if aType <:< TypeRepr.of[Double] then expr.asExprOf[Double].value.isDefined
-    else if aType <:< TypeRepr.of[Char] then expr.asExprOf[Char].value.isDefined
-    else if aType <:< TypeRepr.of[String] then expr.asExprOf[String].value.isDefined
-    else false
-
-  Expr(result)
-
 def compileTimeError(msg: String)(using Quotes): Nothing =
   quotes.reflect.report.errorAndAbort(
     s"""|-- Constraint Error --------------------------------------------------------

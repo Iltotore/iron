@@ -63,6 +63,8 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      */
     case ApplyNotInlined(name: String, parameters: List[Either[DecodingFailure, ?]])
 
+    case VarArgsNotInlined(args: List[Either[DecodingFailure, ?]])
+
     /**
      * A boolean OR is not inlined.
      *
@@ -120,6 +122,15 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
           s"Some arguments of `$name` are not inlined:\n$errors"
 
+        case VarArgsNotInlined(args) =>
+          val errors = args
+            .zipWithIndex
+            .collect:
+              case (Left(failure), i) => s"Arg $i:\n${failure.prettyPrint(2, 2)}"
+            .mkString("\n\n")
+
+          s"Some varargs are not inlined:\n$errors"
+
         case OrNotInlined(left, right) =>
           s"""Non-inlined boolean or. The following patterns are evaluable at compile-time:
              |- <inlined value> || <inlined value>
@@ -151,7 +162,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
                 case (Left(failure), i) => s"Arg $i:\n${failure.prettyPrint(2, 2)}"
               .mkString("\n\n")
 
-          s"String contatenation as non inlined arguments:\n$errors"
+          s"String contatenation has non inlined arguments:\n$errors"
 
         case InterpolatorNotInlined(name) => s"This interpolator is not supported: $name. Only `s` and `raw` are supported."
 
@@ -170,7 +181,8 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
     def decodeTerm[T](tree: Term, definitions: Map[String, ?]): Either[DecodingFailure, T] =
       val specializedResult = enhancedDecoders
-        .get(tree.tpe.dealias)
+        .collectFirst:
+          case (k, v) if k =:= tree.tpe => v
         .toRight(DecodingFailure.Unknown)
         .flatMap(_.apply(tree, definitions))
 
@@ -189,8 +201,11 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
               case (name, Right(value)) => Right((name, value))
               case (name, Left(failure)) => Left((name, failure))
 
-          if failures.isEmpty then decodeTerm(e, definitions ++ values.toMap)
-          else Left(DecodingFailure.HasBindings(failures))
+          (failures, decodeTerm[T](e, definitions ++ values.toMap)) match
+            case (_, Right(value)) =>
+              Right(value)
+            case (Nil, Left(failure)) => Left(failure)
+            case (failures, Left(_)) => Left(DecodingFailure.HasBindings(failures))
 
         case Apply(Select(left, "=="), List(right)) => (decodeTerm[Any](left, definitions), decodeTerm[Any](right, definitions)) match
           case (Right(leftValue), Right(rightValue)) => Right((leftValue == rightValue).asInstanceOf[T])
@@ -206,6 +221,17 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
               leftResult +: rightResults
 
           Left(DecodingFailure.ApplyNotInlined(name, allResults))
+
+        case Repeated(terms, _) =>
+          var hasFailure = false
+          val results =
+            for term <- terms yield
+              val result = decodeTerm(term, definitions)
+              if result.isLeft then hasFailure = true
+              result
+
+          if hasFailure then Left(DecodingFailure.VarArgsNotInlined(results))
+          else Right(results.map(_.getOrElse((???): String)).asInstanceOf[T])
 
         case Typed(e, _) => decodeTerm(e, definitions)
 

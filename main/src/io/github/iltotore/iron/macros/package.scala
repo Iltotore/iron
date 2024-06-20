@@ -30,9 +30,12 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
   val inputType = TypeRepr.of[A]
 
   val messageValue = message.decode.getOrElse("<Unknown message>")
-  val condValue = cond.decode
-    .fold(
-      err => compileTimeError(
+
+  def condError(failure: DecodingFailure): Nothing =
+    if config.shortMessages then
+      report.errorAndAbort("Cannot refine value at compile-time.")
+    else
+      compileTimeError(
         s"""Cannot refine value at compile-time because the predicate cannot be evaluated.
            |This is likely because the condition or the input value isn't fully inlined.
            |
@@ -41,16 +44,21 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
            |${"Inlined input".colorized(MAGENTA)}: ${input.asTerm.show}
            |${"Inlined condition".colorized(MAGENTA)}: ${cond.asTerm.show}
            |${"Message".colorized(MAGENTA)}: $messageValue
-           |${"Reason".colorized(MAGENTA)}: ${err.prettyPrint()}""".stripMargin
-      ),
-      identity
-    )
+           |${"Reason".colorized(MAGENTA)}: ${failure.prettyPrint()}""".stripMargin
+      )
+
+  val inputValue = input.decode.toOption
+  val condValue = cond.decode.fold(condError, identity)
 
   if !condValue then
-    compileTimeError(s"""|Could not satisfy a constraint for type ${inputType.show.colorized(MAGENTA)}.
-                         |
-                         |${"Value".colorized(MAGENTA)}: ${input.asTerm.show}
-                         |${"Message".colorized(MAGENTA)}: $messageValue""".stripMargin)
+    if config.shortMessages then
+      report.errorAndAbort(s"$messageValue: ${inputValue.getOrElse(input.show)}")
+    else
+      compileTimeError(s"""|Could not satisfy a constraint for type ${inputType.show.colorized(MAGENTA)}.
+                           |
+                           |${"Value".colorized(MAGENTA)}: ${inputValue.getOrElse(input.show)}
+                           |${"Message".colorized(MAGENTA)}: $messageValue""".stripMargin)
+
   '{}
 
 def compileTimeError(msg: String)(using Quotes): Nothing =

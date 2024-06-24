@@ -118,6 +118,7 @@ company to the list.
 - [Clever Cloud](https://www.clever-cloud.com/)
 - [Ledger](https://github.com/LedgerHQ)
 - [Marss](https://github.com/marss)
+- [Association familiale Mulliez](https://fr.wikipedia.org/wiki/Association_familiale_Mulliez)
 
 ### Other projects
 

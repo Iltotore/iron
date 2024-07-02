@@ -44,7 +44,7 @@ trait RefinedTypeOps[A, C, T](using private val _rtc: RuntimeConstraint[A, C]):
    *
    * @return this value as [[T]].
    * @throws an [[IllegalArgumentException]] if the constraint is not satisfied.
-   * @see [[fromIronType]], [[either]], [[option]].
+   * @see [[either]], [[option]].
    */
   inline def applyUnsafe(value: A): T =
     if rtc.test(value) then value.asInstanceOf[T] else throw new IllegalArgumentException(rtc.message)
@@ -53,7 +53,7 @@ trait RefinedTypeOps[A, C, T](using private val _rtc: RuntimeConstraint[A, C]):
    * Refine the given value at runtime, resulting in an [[Either]].
    *
    * @return a [[Right]] containing this value as [[T]] or a [[Left]] containing the constraint message.
-   * @see [[fromIronType]], [[option]], [[applyUnsafe]].
+   * @see [[option]], [[applyUnsafe]].
    */
   def either(value: A): Either[String, T] =
     Either.cond(rtc.test(value), value.asInstanceOf[T], rtc.message)
@@ -61,7 +61,7 @@ trait RefinedTypeOps[A, C, T](using private val _rtc: RuntimeConstraint[A, C]):
   /**
    * Refine the given value at runtime, resulting in an [[Option]].
    * @return an Option containing this value as [[T]] or [[None]].
-   * @see [[fromIronType]], [[either]], [[applyUnsafe]].
+   * @see [[either]], [[applyUnsafe]].
    */
   def option(value: A): Option[T] =
     Option.when(rtc.test(value))(value.asInstanceOf[T])

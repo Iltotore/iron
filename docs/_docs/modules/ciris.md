@@ -4,7 +4,7 @@ title: "Ciris Support"
 
 # Ciris Support
 
-This module provides refined types Encoder/Decoder instances for [Ciris](https://circe.github.io/circe/).
+This module provides refined types Encoder/Decoder instances for [Ciris](https://cir.is/).
 
 ## Dependency
 

@@ -177,7 +177,7 @@ opaque type Temperature = Double :| Positive
 object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
 
 opaque type Moisture = Double :| Positive
-object Temperature extends RefinedTypeOps[Double, Positive, Moisture]
+object Moisture extends RefinedTypeOps[Double, Positive, Moisture]
 ```
 
 ```scala

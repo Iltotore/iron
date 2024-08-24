@@ -64,6 +64,7 @@ object StringSuite extends TestSuite:
       test - "http://example.com/#section".assertRefine[ValidURL]
       test - "http://example.com/?q=with%20space".assertRefine[ValidURL]
       test - "http://example.com/?q=with+space".assertRefine[ValidURL]
+      test - "https://aaaaa-bbb-cccccc-dddddddd.eeeeeeee-fff.ggg.hhhhhhhhh:1234".assertRefine[ValidURL]
       test - "/example.com".assertNotRefine[ValidURL]
       test - "://example.com".assertNotRefine[ValidURL]
       test - "http:///".assertNotRefine[ValidURL]

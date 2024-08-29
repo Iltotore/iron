@@ -74,9 +74,9 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.cats.*
 import io.github.iltotore.iron.constraint.all.*
 //}
-type Username = Alphanumeric DescribedAs "Username should be alphanumeric"
+type Username = DescribedAs[Alphanumeric, "Username should be alphanumeric"]
 
-type Age = Positive DescribedAs "Age should be positive"
+type Age = DescribedAs[Positive, "Age should be positive"]
 
 case class User(name: String :| Username, age: Int :| Age)
 

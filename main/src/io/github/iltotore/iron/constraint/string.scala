@@ -21,29 +21,31 @@ object string:
    * Tests if the input only contains whitespaces.
    * @see [[Whitespace]]
    */
-  type Blank = ForAll[Whitespace] DescribedAs "Should only contain whitespaces"
+  type Blank = DescribedAs[ForAll[Whitespace], "Should only contain whitespaces"]
 
   /**
    * Tests if the input does not have leading or trailing whitespaces.
    * @see [[Whitespace]]
    */
-  type Trimmed = (Empty | Not[Head[Whitespace] | Last[Whitespace]]) DescribedAs
+  type Trimmed = DescribedAs[
+    Empty | Not[Head[Whitespace] | Last[Whitespace]],
     "Should not have leading or trailing whitespaces"
+  ]
 
   /**
    * Tests if all letters of the input are lower cased.
    */
-  type LettersLowerCase = ForAll[Not[Letter] | LowerCase] DescribedAs "All letters should be lower cased"
+  type LettersLowerCase = DescribedAs[ForAll[Not[Letter] | LowerCase], "All letters should be lower cased"]
 
   /**
    * Tests if all letters of the input are upper cased.
    */
-  type LettersUpperCase = ForAll[Not[Letter] | UpperCase] DescribedAs "All letters should be upper cased"
+  type LettersUpperCase = DescribedAs[ForAll[Not[Letter] | UpperCase], "All letters should be upper cased"]
 
   /**
    * Tests if the input only contains alphanumeric characters.
    */
-  type Alphanumeric = ForAll[Digit | Letter] DescribedAs "Should be alphanumeric"
+  type Alphanumeric = DescribedAs[ForAll[Digit | Letter], "Should be alphanumeric"]
 
   /**
    * Tests if the input starts with the given prefix.
@@ -70,16 +72,18 @@ object string:
    *
    * @note it only checks if the input fits the URL pattern. Not if the given URL exists/is accessible.
    */
-  type ValidURL =
-    Match[
-      "((\\w+:)+\\/\\/)?(([-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,63})|(localhost))(:\\d{1,5})?(\\/|\\/([-a-zA-Z0-9@:%_\\+.~#?&//=]*))?"
-    ] DescribedAs "Should be an URL"
+  type ValidURL = DescribedAs[
+    Match["((\\w+:)+\\/\\/)?(([-a-zA-Z0-9@:%._\\+~#=]{2,256}\\.[a-z]{2,63})|(localhost))(:\\d{1,5})?(\\/|\\/([-a-zA-Z0-9@:%_\\+.~#?&//=]*))?"],
+    "Should be an URL"
+  ]
 
   /**
    * Tests if the input is a valid UUID.
    */
-  type ValidUUID =
-    Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"] DescribedAs "Should be an UUID"
+  type ValidUUID = DescribedAs[
+    Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"],
+    "Should be an UUID"
+  ]
 
   /**
    * Tests if the input is a valid semantic version as defined in [semver site](https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string).
@@ -103,10 +107,10 @@ object string:
     private def check(expr: Expr[String], prefixExpr: Expr[String])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
-      
+
       (expr.decode, prefixExpr.decode) match
         case (Right(value), Right(prefix)) => Expr(value.startsWith(prefix))
-        case _                           => '{ $expr.startsWith($prefixExpr) }
+        case _                             => '{ $expr.startsWith($prefixExpr) }
 
   object EndWith:
 
@@ -119,10 +123,10 @@ object string:
     private def check(expr: Expr[String], prefixExpr: Expr[String])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
-      
+
       (expr.decode, prefixExpr.decode) match
         case (Right(value), Right(prefix)) => Expr(value.endsWith(prefix))
-        case _                           => '{ $expr.endsWith($prefixExpr) }
+        case _                             => '{ $expr.endsWith($prefixExpr) }
 
   object Match:
 
@@ -135,7 +139,7 @@ object string:
     private def check(valueExpr: Expr[String], regexExpr: Expr[String])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
-      
+
       (valueExpr.decode, regexExpr.decode) match
         case (Right(value), Right(regex)) => Expr(value.matches(regex))
-        case _                          => '{ $valueExpr.matches($regexExpr) }
+        case _                            => '{ $valueExpr.matches($regexExpr) }

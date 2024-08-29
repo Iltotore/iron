@@ -36,7 +36,7 @@ object any:
    * @tparam V the description to attach.
    * @example {{{
    * //Literal
-   * type PosInt = Greater[0] DescribedAs "Should be positive"
+   * type PosInt = DescribedAs[Greater[0], "Should be positive"]
    *
    * //Using type-level String concatenation (example taken from `numeric`)
    * import io.github.iltotore.iron.ops.*
@@ -123,12 +123,12 @@ object any:
     /**
      * A described constraint C1 implies C1.
      */
-    given [C1, C2, V <: String](using C1 ==> C2): ((C1 DescribedAs V) ==> C2) = Implication()
+    given [C1, C2, V <: String](using C1 ==> C2): (DescribedAs[C1, V] ==> C2) = Implication()
 
     /**
      * A constraint C1 implies its "described" form.
      */
-    given [C1, C2, V <: String](using C1 ==> C2): (C1 ==> (C2 DescribedAs V)) = Implication()
+    given [C1, C2, V <: String](using C1 ==> C2): (C1 ==> DescribedAs[C2, V]) = Implication()
 
   object Not:
     class NotConstraint[A, C, Impl <: Constraint[A, C]](using Impl) extends Constraint[A, Not[C]]:

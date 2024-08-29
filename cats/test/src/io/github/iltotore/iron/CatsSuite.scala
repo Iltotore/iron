@@ -166,9 +166,9 @@ object CatsSuite extends TestSuite:
             test("validatedNel"):
               test - assert(valid.refineAllValidatedNel[Positive] == Valid(valid))
               test - assert(invalid.refineAllValidatedNel[Positive] == Invalid(NonEmptyList.of(
-              InvalidValue(-2, "Should be strictly positive"),
-              InvalidValue(-3, "Should be strictly positive")
-            )))
+                InvalidValue(-2, "Should be strictly positive"),
+                InvalidValue(-3, "Should be strictly positive")
+              )))
 
       test("further"):
 
@@ -231,6 +231,5 @@ object CatsSuite extends TestSuite:
             InvalidValue(-2, "Should be strictly positive"),
             InvalidValue(-3, "Should be strictly positive")
           )))
-          
-        
+
   }

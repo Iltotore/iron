@@ -28,24 +28,24 @@ object collection:
    *
    * @tparam V the minimum length of the tested input
    */
-  type MinLength[V <: Int] = Length[GreaterEqual[V]] DescribedAs "Should have a minimum length of " + V
+  type MinLength[V <: Int] = DescribedAs[Length[GreaterEqual[V]], "Should have a minimum length of " + V]
 
   /**
    * Tests maximum length. Supports [[Iterable]] and [[String]] by default.
    *
    * @tparam V the maximum length of the tested input
    */
-  type MaxLength[V <: Int] = Length[LessEqual[V]] DescribedAs "Should have a maximum length of " + V
+  type MaxLength[V <: Int] = DescribedAs[Length[LessEqual[V]], "Should have a maximum length of " + V]
 
   /**
    * Tests exact length. Supports [[Iterable]] and [[String]] by default.
    */
-  type FixedLength[V <: Int] = Length[StrictEqual[V]] DescribedAs "Should have an exact length of " + V
+  type FixedLength[V <: Int] = DescribedAs[Length[StrictEqual[V]], "Should have an exact length of " + V]
 
   /**
    * Tests if the input is empty.
    */
-  type Empty = FixedLength[0] DescribedAs "Should be empty"
+  type Empty = DescribedAs[FixedLength[0], "Should be empty"]
 
   /**
    * Tests if the given collection contains a specific value.
@@ -117,7 +117,7 @@ object collection:
 
       expr.decode match
         case Right(value) => applyConstraint(Expr(value.length), constraintExpr)
-        case _ => applyConstraint('{ $expr.length }, constraintExpr)
+        case _            => applyConstraint('{ $expr.length }, constraintExpr)
 
     given [C1, C2](using C1 ==> C2): (Length[C1] ==> Length[C2]) = Implication()
 
@@ -140,7 +140,7 @@ object collection:
 
       (expr.decode, partExpr.decode) match
         case (Right(value), Right(part)) => Expr(value.contains(part))
-        case _                         => '{ ${ expr }.contains($partExpr) }
+        case _                           => '{ ${ expr }.contains($partExpr) }
 
   object ForAll:
 

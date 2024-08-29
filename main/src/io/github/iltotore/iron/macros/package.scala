@@ -70,8 +70,8 @@ def compileTimeError(msg: String)(using Quotes): Nothing =
         |----------------------------------------------------------------------------""".stripMargin
   )
 
-inline def isIronType[T, C]: Boolean = ${isIronTypeImpl[T, C]}
-def isIronTypeImpl[T : Type, C : Type](using Quotes): Expr[Boolean] =
+inline def isIronType[T, C]: Boolean = ${ isIronTypeImpl[T, C] }
+def isIronTypeImpl[T: Type, C: Type](using Quotes): Expr[Boolean] =
   import quotes.reflect.*
 
   val ironType = TypeRepr.of[IronType]

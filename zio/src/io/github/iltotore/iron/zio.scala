@@ -16,7 +16,6 @@ object zio extends RefinedTypeOpsZio:
       Validation.fromPredicateWith(constraint.message)(value.asInstanceOf[A :| C])(constraint.test(_))
 
   extension [F[+_], A](wrapper: F[A])
-    
     inline def refineAllValidation[C](using forEach: ForEach[F], inline constraint: Constraint[A, C]): Validation[InvalidValue[A], F[A :| C]] =
       forEach.forEach(wrapper): value =>
         Validation.fromPredicateWith[InvalidValue[A], A :| C](InvalidValue(value, constraint.message))(value.assume[C])(constraint.test(_))
@@ -32,10 +31,14 @@ object zio extends RefinedTypeOpsZio:
       (value: A).refineValidation[C2].map(_.assumeFurther[C1])
 
   extension [F[+_], A, C1](wrapper: F[A :| C1])
-
-    inline def refineAllFurtherValidation[C2](using forEach: ForEach[F], inline constraint: Constraint[A, C2]): Validation[InvalidValue[A], F[A :| (C1 & C2)]] =
+    inline def refineAllFurtherValidation[C2](using
+        forEach: ForEach[F],
+        inline constraint: Constraint[A, C2]
+    ): Validation[InvalidValue[A], F[A :| (C1 & C2)]] =
       forEach.forEach(wrapper): value =>
-        Validation.fromPredicateWith[InvalidValue[A], A :| (C1 & C2)](InvalidValue(value, constraint.message))(value.assume[C1 & C2])(constraint.test(_))
+        Validation.fromPredicateWith[InvalidValue[A], A :| (C1 & C2)](InvalidValue(value, constraint.message))(value.assume[C1 & C2])(
+          constraint.test(_)
+        )
 
   extension [A, C, T](ops: RefinedTypeOps[A, C, T])
     /**
@@ -47,7 +50,6 @@ object zio extends RefinedTypeOpsZio:
       Validation.fromPredicateWith(ops.rtc.message)(value)(ops.rtc.test(_)).asInstanceOf[Validation[String, T]]
 
   extension [A, C, T](ops: RefinedTypeOps[A, C, T])
-
     /**
      * Refine the given values applicatively at runtime, resulting in a [[Validation]].
      *

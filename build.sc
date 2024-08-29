@@ -7,9 +7,9 @@ import mill._, define._, api.Result
 import scalalib._, scalalib.scalafmt._, scalalib.publish._, scalajslib._, scalanativelib._
 
 object versions {
-  val scala = "3.3.1"
-  val scalaJS = "1.13.2"
-  val scalaNative = "0.4.15"
+  val scala = "3.4.3"
+  val scalaJS = "1.16.0"
+  val scalaNative = "0.4.17"
 }
 
 trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { outer =>
@@ -291,7 +291,7 @@ object cats extends SubModule {
   object test extends Tests {
     def ivyDeps = Agg(
       ivy"com.lihaoyi::utest:0.8.1",
-      ivy"org.typelevel::kittens:3.0.0"
+      ivy"org.typelevel::kittens:3.4.0"
     )
   }
 

@@ -12,8 +12,8 @@ object AnySuite extends TestSuite:
       test("false") - Dummy.assertNotRefine[False]
 
     test("describedAs"):
-      test - Dummy.assertRefine[True DescribedAs "test"]
-      test - Dummy.assertNotRefine[False DescribedAs "test"]
+      test - Dummy.assertRefine[DescribedAs[True, "test"]]
+      test - Dummy.assertNotRefine[DescribedAs[False, "test"]]
 
     test("not"):
       test - Dummy.assertRefine[Not[False]]

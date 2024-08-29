@@ -30,34 +30,40 @@ object numeric:
    *
    * @tparam V the value the input must be greater than or equal to.
    */
-  type GreaterEqual[V] = (Greater[V] | StrictEqual[V]) DescribedAs ("Should be greater than or equal to " + V)
+  type GreaterEqual[V] = DescribedAs[
+    Greater[V] | StrictEqual[V],
+    "Should be greater than or equal to " + V
+  ]
 
   /**
    * Tests non-strict inferiority.
    *
    * @tparam V the value the input must be less than or equal to.
    */
-  type LessEqual[V] = (Less[V] | StrictEqual[V]) DescribedAs ("Should be less than or equal to " + V)
+  type LessEqual[V] = DescribedAs[
+    Less[V] | StrictEqual[V],
+    "Should be less than or equal to " + V
+  ]
 
   /**
    * Tests if the input is strictly positive.
    */
-  type Positive = Greater[0] DescribedAs "Should be strictly positive"
+  type Positive = DescribedAs[Greater[0], "Should be strictly positive"]
 
   /**
    * Tests if the input is positive or zero.
    */
-  type Positive0 = GreaterEqual[0] DescribedAs "Should be positive or zero"
+  type Positive0 = DescribedAs[GreaterEqual[0], "Should be positive or zero"]
 
   /**
    * Tests if the input is strictly negative.
    */
-  type Negative = Less[0] DescribedAs "Should be strictly negative"
+  type Negative = DescribedAs[Less[0], "Should be strictly negative"]
 
   /**
    * Tests if the input is negative or zero.
    */
-  type Negative0 = LessEqual[0] DescribedAs "Should be negative or zero"
+  type Negative0 = DescribedAs[LessEqual[0], "Should be negative or zero"]
 
   object Interval:
 
@@ -67,7 +73,10 @@ object numeric:
      * @tparam V1 the lower bound, exclusive.
      * @tparam V2 the upper bound, exclusive.
      */
-    type Open[V1, V2] = (Greater[V1] & Less[V2]) DescribedAs ("Should be included in (" + V1 + ", " + V2 + ")")
+    type Open[V1, V2] = DescribedAs[
+      Greater[V1] & Less[V2],
+      "Should be included in (" + V1 + ", " + V2 + ")"
+    ]
 
     /**
      * Tests if the input is included in `(V1, V2]`
@@ -75,7 +84,10 @@ object numeric:
      * @tparam V1 the lower bound, exclusive.
      * @tparam V2 the upper bound, inclusive.
      */
-    type OpenClosed[V1, V2] = (Greater[V1] & LessEqual[V2]) DescribedAs ("Should be included in (" + V1 + ", " + V2 + "]")
+    type OpenClosed[V1, V2] = DescribedAs[
+      Greater[V1] & LessEqual[V2],
+      "Should be included in (" + V1 + ", " + V2 + "]"
+    ]
 
     /**
      * Tests if the input is included in `[V1, V2)`
@@ -83,7 +95,10 @@ object numeric:
      * @tparam V1 the lower bound, inclusive.
      * @tparam V2 the upper bound, exclusive.
      */
-    type ClosedOpen[V1, V2] = (GreaterEqual[V1] & Less[V2]) DescribedAs ("Should be included in [" + V1 + ", " + V2 + ")")
+    type ClosedOpen[V1, V2] = DescribedAs[
+      GreaterEqual[V1] & Less[V2],
+      "Should be included in [" + V1 + ", " + V2 + ")"
+    ]
 
     /**
      * Tests if the input is included in `[V1, V2]`
@@ -91,7 +106,10 @@ object numeric:
      * @tparam V1 the lower bound, inclusive.
      * @tparam V2 the upper bound, inclusive.
      */
-    type Closed[V1, V2] = (GreaterEqual[V1] & LessEqual[V2]) DescribedAs ("Should be included in [" + V1 + ", " + V2 + "]")
+    type Closed[V1, V2] = DescribedAs[
+      GreaterEqual[V1] & LessEqual[V2],
+      "Should be included in [" + V1 + ", " + V2 + "]"
+    ]
 
   /**
    * Tests if the input is a multiple of V.

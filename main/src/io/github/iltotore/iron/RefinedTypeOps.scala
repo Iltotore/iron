@@ -24,12 +24,13 @@ trait RefinedTypeOps[A, C, T](using private val _rtc: RuntimeConstraint[A, C]):
    * Implicitly refine at compile-time the given value.
    *
    * @param value the value to refine.
-   * @tparam A the refined type.
-   * @tparam C the constraint applied to the type.
-   * @return the given value typed as [[IronType]]
    * @note This method ensures that the value satisfies the constraint. If it doesn't or isn't evaluable at compile-time, the compilation is aborted.
    */
-  inline def apply(value: A :| C): T = value.asInstanceOf[T]
+  inline def apply[A1 <: A](inline value: A1)(using inline constraint: Constraint[A, C]): T =
+    inline if macros.isIronType[A1, C] then value.asInstanceOf[T]
+    else
+      macros.assertCondition(value, constraint.test(value), constraint.message)
+      value.asInstanceOf[T]
 
   /**
    * Refine the given value, assuming the constraint holds.

@@ -3,6 +3,8 @@ package io.github.iltotore.iron.macros
 import io.github.iltotore.iron.internal.{IronConfig, colorized}
 import scala.Console.{MAGENTA, RESET}
 import scala.quoted.*
+import io.github.iltotore.iron.IronType
+import io.github.iltotore.iron.Implication
 
 /**
  * Asserts at compile time if the given condition is true.
@@ -67,3 +69,19 @@ def compileTimeError(msg: String)(using Quotes): Nothing =
         |$msg
         |----------------------------------------------------------------------------""".stripMargin
   )
+
+inline def isIronType[T, C]: Boolean = ${isIronTypeImpl[T, C]}
+def isIronTypeImpl[T : Type, C : Type](using Quotes): Expr[Boolean] =
+  import quotes.reflect.*
+
+  val ironType = TypeRepr.of[IronType]
+  val implicationType = TypeRepr.of[Implication]
+  val targetConstraintType = TypeRepr.of[C]
+
+  TypeRepr.of[T] match
+    case AppliedType(tpe, List(baseType, constraintType)) if tpe =:= ironType =>
+      Implicits.search(implicationType.appliedTo(List(constraintType, targetConstraintType))) match
+        case _: ImplicitSearchSuccess => Expr(true)
+        case _: ImplicitSearchFailure => Expr(false)
+
+    case _ => Expr(false)

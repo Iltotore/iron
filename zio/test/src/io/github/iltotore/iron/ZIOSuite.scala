@@ -30,24 +30,33 @@ object ZIOSuite extends TestSuite:
 
       test("validation"):
         test - assert(valid.refineAllValidation[Positive] == ZValidation.Success(Chunk.empty, Chunk.from(valid)))
-        test - assert(invalid.refineAllValidation[Positive] == ZValidation.Failure(Chunk.empty, NonEmptyChunk(
-          InvalidValue(-2, "Should be strictly positive"),
-          InvalidValue(-3, "Should be strictly positive")
-        )))
-        
+        test - assert(invalid.refineAllValidation[Positive] == ZValidation.Failure(
+          Chunk.empty,
+          NonEmptyChunk(
+            InvalidValue(-2, "Should be strictly positive"),
+            InvalidValue(-3, "Should be strictly positive")
+          )
+        ))
+
       test("newtype"):
         test - assert(Temperature.validationAll(valid) == ZValidation.Success(Chunk.empty, Chunk.from(valid)))
-        test - assert(Temperature.validationAll(invalid) == ZValidation.Failure(Chunk.empty, NonEmptyChunk(
-          InvalidValue(-2, "Should be strictly positive"),
-          InvalidValue(-3, "Should be strictly positive")
-        )))
-        
+        test - assert(Temperature.validationAll(invalid) == ZValidation.Failure(
+          Chunk.empty,
+          NonEmptyChunk(
+            InvalidValue(-2, "Should be strictly positive"),
+            InvalidValue(-3, "Should be strictly positive")
+          )
+        ))
+
       test("furtherValidation"):
         val furtherValid = List(2, 4, 6).refineAllUnsafe[Positive]
         val furtherInvalid = List(1, 2, 3).refineAllUnsafe[Positive]
-        
+
         test - assert(furtherValid.refineAllFurtherValidation[Even] == ZValidation.Success(Chunk.empty, Chunk.from(furtherValid)))
-        test - assert(furtherInvalid.refineAllFurtherValidation[Even] == ZValidation.Failure(Chunk.empty, NonEmptyChunk(
-          InvalidValue(1, "Should be a multiple of 2"),
-          InvalidValue(3, "Should be a multiple of 2")
-        )))
+        test - assert(furtherInvalid.refineAllFurtherValidation[Even] == ZValidation.Failure(
+          Chunk.empty,
+          NonEmptyChunk(
+            InvalidValue(1, "Should be a multiple of 2"),
+            InvalidValue(3, "Should be a multiple of 2")
+          )
+        ))

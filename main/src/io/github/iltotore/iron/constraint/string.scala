@@ -107,10 +107,10 @@ object string:
     private def check(expr: Expr[String], prefixExpr: Expr[String])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
-      
+
       (expr.decode, prefixExpr.decode) match
         case (Right(value), Right(prefix)) => Expr(value.startsWith(prefix))
-        case _                           => '{ $expr.startsWith($prefixExpr) }
+        case _                             => '{ $expr.startsWith($prefixExpr) }
 
   object EndWith:
 
@@ -123,10 +123,10 @@ object string:
     private def check(expr: Expr[String], prefixExpr: Expr[String])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
-      
+
       (expr.decode, prefixExpr.decode) match
         case (Right(value), Right(prefix)) => Expr(value.endsWith(prefix))
-        case _                           => '{ $expr.endsWith($prefixExpr) }
+        case _                             => '{ $expr.endsWith($prefixExpr) }
 
   object Match:
 
@@ -139,7 +139,7 @@ object string:
     private def check(valueExpr: Expr[String], regexExpr: Expr[String])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
-      
+
       (valueExpr.decode, regexExpr.decode) match
         case (Right(value), Right(regex)) => Expr(value.matches(regex))
-        case _                          => '{ $valueExpr.matches($regexExpr) }
+        case _                            => '{ $valueExpr.matches($regexExpr) }

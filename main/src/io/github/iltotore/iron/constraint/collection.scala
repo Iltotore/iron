@@ -117,7 +117,7 @@ object collection:
 
       expr.decode match
         case Right(value) => applyConstraint(Expr(value.length), constraintExpr)
-        case _ => applyConstraint('{ $expr.length }, constraintExpr)
+        case _            => applyConstraint('{ $expr.length }, constraintExpr)
 
     given [C1, C2](using C1 ==> C2): (Length[C1] ==> Length[C2]) = Implication()
 
@@ -140,7 +140,7 @@ object collection:
 
       (expr.decode, partExpr.decode) match
         case (Right(value), Right(part)) => Expr(value.contains(part))
-        case _                         => '{ ${ expr }.contains($partExpr) }
+        case _                           => '{ ${ expr }.contains($partExpr) }
 
   object ForAll:
 

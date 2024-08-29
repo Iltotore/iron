@@ -82,7 +82,7 @@ object char:
     private def check(expr: Expr[Char])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
-      
+
       expr.decode match
         case Right(value) => Expr(value.isUpper)
         case _            => '{ $expr.isUpper }
@@ -98,7 +98,7 @@ object char:
     private def check(expr: Expr[Char])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
-      
+
       expr.decode match
         case Right(value) => Expr(value.isDigit)
         case _            => '{ $expr.isDigit }
@@ -114,7 +114,7 @@ object char:
     private def check(expr: Expr[Char])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
-      
+
       expr.decode match
         case Right(value) => Expr(value.isLetter)
         case _            => '{ $expr.isLetter }

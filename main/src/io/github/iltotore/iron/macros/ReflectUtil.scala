@@ -21,7 +21,6 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
   import _quotes.reflect.*
 
   extension [T: Type](expr: Expr[T])
-
     /**
      * Decode this expression.
      *
@@ -113,7 +112,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      */
     def prettyPrint(bodyIdent: Int = 0, firstLineIdent: Int = 0)(using Printer[Tree]): String =
       val unindented = this match
-        case NotInlined(term) => s"Term not inlined: ${term.show}"
+        case NotInlined(term)           => s"Term not inlined: ${term.show}"
         case DefinitionNotInlined(name) => s"Definition not inlined: $name. Only vals and zero-arg def can be inlined."
         case HasBindings(defFailures) =>
           val failures = defFailures
@@ -167,9 +166,9 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
         case StringPartsNotInlined(parts) =>
           val errors = parts
             .zipWithIndex
-              .collect:
-                case (Left(failure), i) => s"Arg $i:\n${failure.prettyPrint(2, 2)}"
-              .mkString("\n\n")
+            .collect:
+              case (Left(failure), i) => s"Arg $i:\n${failure.prettyPrint(2, 2)}"
+            .mkString("\n\n")
 
           s"String contatenation has non inlined arguments:\n$errors"
 
@@ -183,7 +182,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
     private val enhancedDecoders: Map[TypeRepr, (Term, Map[String, ?]) => Either[DecodingFailure, ?]] = Map(
       TypeRepr.of[Boolean] -> decodeBoolean,
-      TypeRepr.of[String]  -> decodeString
+      TypeRepr.of[String] -> decodeString
     )
 
     /**
@@ -203,7 +202,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
       specializedResult match
         case Left(DecodingFailure.Unknown) => decodeUnspecializedTerm(tree, definitions)
-        case result => result.asInstanceOf[Either[DecodingFailure, T]]
+        case result                        => result.asInstanceOf[Either[DecodingFailure, T]]
 
     /**
      * Decode a term using only unspecialized cases.
@@ -215,24 +214,24 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      */
     def decodeUnspecializedTerm[T](tree: Term, definitions: Map[String, ?]): Either[DecodingFailure, T] =
       tree match
-        case block@Block(stats, e) => if stats.isEmpty then decodeTerm(e, definitions) else Left(DecodingFailure.HasStatements(block))
+        case block @ Block(stats, e) => if stats.isEmpty then decodeTerm(e, definitions) else Left(DecodingFailure.HasStatements(block))
 
         case Inlined(_, bindings, e) =>
           val (failures, values) = bindings
             .map[(String, Either[DecodingFailure, ?])](b => (b.name, decodeBinding(b, definitions)))
             .partitionMap:
-              case (name, Right(value)) => Right((name, value))
+              case (name, Right(value))  => Right((name, value))
               case (name, Left(failure)) => Left((name, failure))
 
           (failures, decodeTerm[T](e, definitions ++ values.toMap)) match
             case (_, Right(value)) =>
               Right(value)
             case (Nil, Left(failure)) => Left(failure)
-            case (failures, Left(_)) => Left(DecodingFailure.HasBindings(failures))
+            case (failures, Left(_))  => Left(DecodingFailure.HasBindings(failures))
 
         case Apply(Select(left, "=="), List(right)) => (decodeTerm[Any](left, definitions), decodeTerm[Any](right, definitions)) match
-          case (Right(leftValue), Right(rightValue)) => Right((leftValue == rightValue).asInstanceOf[T])
-          case (leftResult, rightResult) => Left(DecodingFailure.ApplyNotInlined("==", List(leftResult, rightResult)))
+            case (Right(leftValue), Right(rightValue)) => Right((leftValue == rightValue).asInstanceOf[T])
+            case (leftResult, rightResult)             => Left(DecodingFailure.ApplyNotInlined("==", List(leftResult, rightResult)))
 
         case Apply(Select(leftOperand, name), operands) =>
           val rightResults = operands.map(decodeTerm(_, definitions))
@@ -259,14 +258,14 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
         case Typed(e, _) => decodeTerm(e, definitions)
 
         case Ident(name) => definitions
-          .get(name)
-          .toRight(DecodingFailure.NotInlined(tree))
-          .asInstanceOf[Either[DecodingFailure, T]]
+            .get(name)
+            .toRight(DecodingFailure.NotInlined(tree))
+            .asInstanceOf[Either[DecodingFailure, T]]
 
         case _ =>
           tree.tpe.widenTermRefByName match
             case ConstantType(c) => Right(c.value.asInstanceOf[T])
-            case _ => Left(DecodingFailure.NotInlined(tree))
+            case _               => Left(DecodingFailure.NotInlined(tree))
 
     /**
      * Decode a binding/definition.
@@ -277,9 +276,9 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      * @return the value of the given definition found at compile time or a [[DecodingFailure]]
      */
     def decodeBinding[T](definition: Definition, definitions: Map[String, ?]): Either[DecodingFailure, T] = definition match
-      case ValDef(name, tpeTree, Some(term)) => decodeTerm(term, definitions)
+      case ValDef(name, tpeTree, Some(term))      => decodeTerm(term, definitions)
       case DefDef(name, Nil, tpeTree, Some(term)) => decodeTerm(term, definitions)
-      case _ => Left(DecodingFailure.DefinitionNotInlined(definition.name))
+      case _                                      => Left(DecodingFailure.DefinitionNotInlined(definition.name))
 
     /**
      * Decode a [[Boolean]] term using only [[Boolean]]-specific cases.
@@ -291,17 +290,17 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
     def decodeBoolean(term: Term, definitions: Map[String, ?]): Either[DecodingFailure, Boolean] = term match
       case Apply(Select(left, "||"), List(right)) if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr.of[Boolean] => // OR
         (decodeTerm[Boolean](left, definitions), decodeTerm[Boolean](right, definitions)) match
-          case (Right(true), _) => Right(true)
-          case (_, Right(true)) => Right(true)
+          case (Right(true), _)                      => Right(true)
+          case (_, Right(true))                      => Right(true)
           case (Right(leftValue), Right(rightValue)) => Right(leftValue || rightValue)
-          case (leftResult, rightResult) => Left(DecodingFailure.OrNotInlined(leftResult, rightResult))
+          case (leftResult, rightResult)             => Left(DecodingFailure.OrNotInlined(leftResult, rightResult))
 
       case Apply(Select(left, "&&"), List(right)) if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr.of[Boolean] => // AND
         (decodeTerm[Boolean](left, definitions), decodeTerm[Boolean](right, definitions)) match
-          case (Right(false), _) => Right(false)
-          case (_, Right(false)) => Right(false)
+          case (Right(false), _)                     => Right(false)
+          case (_, Right(false))                     => Right(false)
           case (Right(leftValue), Right(rightValue)) => Right(leftValue && rightValue)
-          case (leftResult, rightResult) => Left(DecodingFailure.AndNotInlined(leftResult, rightResult))
+          case (leftResult, rightResult)             => Left(DecodingFailure.AndNotInlined(leftResult, rightResult))
 
       case _ => Left(DecodingFailure.Unknown)
 

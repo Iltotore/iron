@@ -152,25 +152,25 @@ object numeric:
       override inline def message: String = "Should be greater than " + stringValue[V]
 
     inline given [V <: NumConstant]: GreaterConstraint[Int, V] with
-      override inline def test(value: Int): Boolean = value > doubleValue[V]
+      override inline def test(inline value: Int): Boolean = value > doubleValue[V]
 
     inline given [V <: NumConstant]: GreaterConstraint[Long, V] with
-      override inline def test(value: Long): Boolean = value > doubleValue[V]
+      override inline def test(inline value: Long): Boolean = value > doubleValue[V]
 
     inline given [V <: NumConstant]: GreaterConstraint[Float, V] with
-      override inline def test(value: Float): Boolean = value > doubleValue[V]
+      override inline def test(inline value: Float): Boolean = value > doubleValue[V]
 
     inline given [V <: NumConstant]: GreaterConstraint[Double, V] with
-      override inline def test(value: Double): Boolean = value > doubleValue[V]
+      override inline def test(inline value: Double): Boolean = value > doubleValue[V]
 
     inline given bigDecimalDouble[V <: NumConstant]: GreaterConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean = value > BigDecimal(doubleValue[V])
+      override inline def test(inline value: BigDecimal): Boolean = value > BigDecimal(doubleValue[V])
 
     inline given bigDecimalLong[V <: Int | Long]: GreaterConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean = value > BigDecimal(longValue[V])
+      override inline def test(inline value: BigDecimal): Boolean = value > BigDecimal(longValue[V])
 
     inline given [V <: Int | Long]: GreaterConstraint[BigInt, V] with
-      override inline def test(value: BigInt): Boolean = value > BigInt(longValue[V])
+      override inline def test(inline value: BigInt): Boolean = value > BigInt(longValue[V])
 
     given [V1, V2](using V1 > V2 =:= true): (Greater[V1] ==> Greater[V2]) = Implication()
 
@@ -187,25 +187,25 @@ object numeric:
       override inline def message: String = "Should be less than " + stringValue[V]
 
     inline given [V <: NumConstant]: LessConstraint[Int, V] with
-      override inline def test(value: Int): Boolean = value < doubleValue[V]
+      override inline def test(inline value: Int): Boolean = value < doubleValue[V]
 
     inline given [V <: NumConstant]: LessConstraint[Long, V] with
-      override inline def test(value: Long): Boolean = value < doubleValue[V]
+      override inline def test(inline value: Long): Boolean = value < doubleValue[V]
 
     inline given [V <: NumConstant]: LessConstraint[Float, V] with
-      override inline def test(value: Float): Boolean = value < doubleValue[V]
+      override inline def test(inline value: Float): Boolean = value < doubleValue[V]
 
     inline given [V <: NumConstant]: LessConstraint[Double, V] with
-      override inline def test(value: Double): Boolean = value < doubleValue[V]
+      override inline def test(inline value: Double): Boolean = value < doubleValue[V]
 
     inline given bigDecimalDouble[V <: NumConstant]: LessConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean = value < BigDecimal(doubleValue[V])
+      override inline def test(inline value: BigDecimal): Boolean = value < BigDecimal(doubleValue[V])
 
     inline given bigDecimalLong[V <: Int | Long]: LessConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean = value < BigDecimal(longValue[V])
+      override inline def test(inline value: BigDecimal): Boolean = value < BigDecimal(longValue[V])
 
     inline given [V <: Int | Long]: LessConstraint[BigInt, V] with
-      override inline def test(value: BigInt): Boolean = value < BigInt(longValue[V])
+      override inline def test(inline value: BigInt): Boolean = value < BigInt(longValue[V])
 
     given [V1, V2](using V1 < V2 =:= true): (Less[V1] ==> Less[V2]) = Implication()
 
@@ -222,24 +222,24 @@ object numeric:
       override inline def message: String = "Should be a multiple of " + stringValue[V]
 
     inline given [V <: NumConstant]: MultipleConstraint[Int, V] with
-      override inline def test(value: Int): Boolean = value % doubleValue[V] == 0
+      override inline def test(inline value: Int): Boolean = value % doubleValue[V] == 0
 
     inline given [V <: NumConstant]: MultipleConstraint[Long, V] with
-      override inline def test(value: Long): Boolean = value % doubleValue[V] == 0
+      override inline def test(inline value: Long): Boolean = value % doubleValue[V] == 0
 
     inline given [V <: NumConstant]: MultipleConstraint[Float, V] with
-      override inline def test(value: Float): Boolean = value % doubleValue[V] == 0
+      override inline def test(inline value: Float): Boolean = value % doubleValue[V] == 0
 
     inline given [V <: NumConstant]: MultipleConstraint[Double, V] with
-      override inline def test(value: Double): Boolean = value % doubleValue[V] == 0
+      override inline def test(inline value: Double): Boolean = value % doubleValue[V] == 0
 
     inline given [V <: Int | Long]: MultipleConstraint[BigInt, V] with
 
-      override inline def test(value: BigInt): Boolean = value % BigInt(longValue[V]) == 0
+      override inline def test(inline value: BigInt): Boolean = value % BigInt(longValue[V]) == 0
 
     inline given [V <: NumConstant]: MultipleConstraint[BigDecimal, V] with
 
-      override inline def test(value: BigDecimal): Boolean = value % BigDecimal(doubleValue[V]) == 0
+      override inline def test(inline value: BigDecimal): Boolean = value % BigDecimal(doubleValue[V]) == 0
 
     given [A, V1 <: A, V2 <: A](using V1 % V2 =:= Zero[A]): (Multiple[V1] ==> Multiple[V2]) = Implication()
 
@@ -248,39 +248,39 @@ object numeric:
       override inline def message: String = "Should divide " + stringValue[V]
 
     inline given [V <: NumConstant]: DivideConstraint[Int, V] with
-      override inline def test(value: Int): Boolean = doubleValue[V] % value == 0
+      override inline def test(inline value: Int): Boolean = doubleValue[V] % value == 0
 
     inline given [V <: NumConstant]: DivideConstraint[Long, V] with
-      override inline def test(value: Long): Boolean = doubleValue[V] % value == 0
+      override inline def test(inline value: Long): Boolean = doubleValue[V] % value == 0
 
     inline given [V <: NumConstant]: DivideConstraint[Float, V] with
-      override inline def test(value: Float): Boolean = doubleValue[V] % value == 0
+      override inline def test(inline value: Float): Boolean = doubleValue[V] % value == 0
 
     inline given [V <: NumConstant]: DivideConstraint[Double, V] with
-      override inline def test(value: Double): Boolean = doubleValue[V] % value == 0
+      override inline def test(inline value: Double): Boolean = doubleValue[V] % value == 0
 
     inline given [V <: Int | Long]: DivideConstraint[BigInt, V] with
-      override inline def test(value: BigInt): Boolean = BigInt(longValue[V]) % value == 0
+      override inline def test(inline value: BigInt): Boolean = BigInt(longValue[V]) % value == 0
 
     inline given [V <: NumConstant]: DivideConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean = BigDecimal(doubleValue[V]) % value == 0
+      override inline def test(inline value: BigDecimal): Boolean = BigDecimal(doubleValue[V]) % value == 0
 
   object NaN:
     private trait NaNConstraint[A] extends Constraint[A, NaN]:
       override inline def message: String = "Should be an unrepresentable number"
 
     inline given NaNConstraint[Float] with
-      override inline def test(value: Float): Boolean = value.isNaN
+      override inline def test(inline value: Float): Boolean = value.isNaN
 
     inline given NaNConstraint[Double] with
-      override inline def test(value: Double): Boolean = value.isNaN
+      override inline def test(inline value: Double): Boolean = value.isNaN
 
   object Infinity:
     private trait InfinityConstraint[A] extends Constraint[A, Infinity]:
       override inline def message: String = "Should be -infinity or +infinity"
 
     inline given InfinityConstraint[Float] with
-      override inline def test(value: Float): Boolean = value.isInfinity
+      override inline def test(inline value: Float): Boolean = value.isInfinity
 
     inline given InfinityConstraint[Double] with
-      override inline def test(value: Double): Boolean = value.isInfinity
+      override inline def test(inline value: Double): Boolean = value.isInfinity

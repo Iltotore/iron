@@ -100,7 +100,7 @@ object string:
 
     inline given [V <: String]: Constraint[String, StartWith[V]] with
 
-      override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }
+      override inline def test(inline value: String): Boolean = ${ check('value, '{ constValue[V] }) }
 
       override inline def message: String = "Should start with " + stringValue[V]
 
@@ -116,7 +116,7 @@ object string:
 
     inline given [V <: String]: Constraint[String, EndWith[V]] with
 
-      override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }
+      override inline def test(inline value: String): Boolean = ${ check('value, '{ constValue[V] }) }
 
       override inline def message: String = "Should end with " + stringValue[V]
 
@@ -132,7 +132,7 @@ object string:
 
     inline given [V <: String]: Constraint[String, Match[V]] with
 
-      override inline def test(value: String): Boolean = ${ check('value, '{ constValue[V] }) }
+      override inline def test(inline value: String): Boolean = ${ check('value, '{ constValue[V] }) }
 
       override inline def message: String = "Should match " + constValue[V]
 

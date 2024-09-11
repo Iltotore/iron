@@ -11,7 +11,7 @@ object CollectionSuite extends TestSuite:
 
   given Constraint[Char, IsA] with
 
-    override inline def test(value: Char): Boolean = value == 'a'
+    override inline def test(inline value: Char): Boolean = value == 'a'
 
     override inline def message: String = "Should be 'a'"
 

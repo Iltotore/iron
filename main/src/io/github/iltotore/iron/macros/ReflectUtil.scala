@@ -257,15 +257,16 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
         case Typed(e, _) => decodeTerm(e, definitions)
 
-        case Ident(name) => definitions
-            .get(name)
-            .toRight(DecodingFailure.NotInlined(tree))
-            .asInstanceOf[Either[DecodingFailure, T]]
-
         case _ =>
           tree.tpe.widenTermRefByName match
             case ConstantType(c) => Right(c.value.asInstanceOf[T])
-            case _               => Left(DecodingFailure.NotInlined(tree))
+            case _               => tree match
+              case Ident(name) => definitions
+                .get(name)
+                .toRight(DecodingFailure.NotInlined(tree))
+                .asInstanceOf[Either[DecodingFailure, T]]
+            
+              case _ => Left(DecodingFailure.NotInlined(tree))
 
     /**
      * Decode a binding/definition.

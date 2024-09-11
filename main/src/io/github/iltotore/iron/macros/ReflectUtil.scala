@@ -182,7 +182,8 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
     private val enhancedDecoders: Map[TypeRepr, (Term, Map[String, ?]) => Either[DecodingFailure, ?]] = Map(
       TypeRepr.of[Boolean] -> decodeBoolean,
-      TypeRepr.of[String] -> decodeString
+      TypeRepr.of[BigInt]  -> decodeBigInt,
+      TypeRepr.of[String]  -> decodeString
     )
 
     /**
@@ -325,3 +326,11 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
           case (leftResult, rightResult) => Left(DecodingFailure.StringPartsNotInlined(List(leftResult, rightResult)))
 
       case _ => Left(DecodingFailure.Unknown)
+
+    def decodeBigInt(term: Term, definitions: Map[String, ?]): Either[DecodingFailure, BigInt] =
+      term match
+        case Apply(Select(Ident("BigInt"), "apply"), List(value)) =>
+          if value.tpe <:< TypeRepr.of[Int] then decodeTerm[Int](value, definitions).map(BigInt.apply)
+          else if value.tpe <:< TypeRepr.of[Long] then decodeTerm[Long](value, definitions).map(BigInt.apply)
+          else Left(DecodingFailure.Unknown)
+        case _ => Left(DecodingFailure.Unknown)

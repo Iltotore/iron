@@ -3,7 +3,10 @@ package io.github.iltotore.iron.constraint
 import io.github.iltotore.iron.constraint.any.*
 import io.github.iltotore.iron.compileTime.*
 import io.github.iltotore.iron.{==>, Constraint, Implication}
+import io.github.iltotore.iron.macros.reflectUtil
 
+import scala.compiletime.summonInline
+import scala.quoted.*
 import scala.util.NotGiven
 
 /**
@@ -170,8 +173,16 @@ object numeric:
       override inline def test(inline value: BigDecimal): Boolean = value > BigDecimal(longValue[V])
 
     inline given [V <: Int | Long]: GreaterConstraint[BigInt, V] with
-      override inline def test(inline value: BigInt): Boolean = value > BigInt(longValue[V])
+      override inline def test(inline value: BigInt): Boolean = ${checkBigInt('value, '{longValue[V]})}
 
+    private def checkBigInt(expr: Expr[BigInt], thanExpr: Expr[Long])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      (expr.decode, thanExpr.decode) match
+        case (Right(value), Right(than)) => Expr(value > BigInt(than))
+        case _                           => '{$expr > BigInt($thanExpr)}
+      
     given [V1, V2](using V1 > V2 =:= true): (Greater[V1] ==> Greater[V2]) = Implication()
 
     given [V1, V2](using V1 > V2 =:= true): (StrictEqual[V1] ==> Greater[V2]) = Implication()
@@ -205,7 +216,15 @@ object numeric:
       override inline def test(inline value: BigDecimal): Boolean = value < BigDecimal(longValue[V])
 
     inline given [V <: Int | Long]: LessConstraint[BigInt, V] with
-      override inline def test(inline value: BigInt): Boolean = value < BigInt(longValue[V])
+      override inline def test(inline value: BigInt): Boolean = ${checkBigInt('value, '{longValue[V]})}
+
+    private def checkBigInt(expr: Expr[BigInt], thanExpr: Expr[Long])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      (expr.decode, thanExpr.decode) match
+        case (Right(value), Right(than)) => Expr(value < BigInt(than))
+        case _                           => '{$expr < BigInt($thanExpr)}
 
     given [V1, V2](using V1 < V2 =:= true): (Less[V1] ==> Less[V2]) = Implication()
 
@@ -235,11 +254,19 @@ object numeric:
 
     inline given [V <: Int | Long]: MultipleConstraint[BigInt, V] with
 
-      override inline def test(inline value: BigInt): Boolean = value % BigInt(longValue[V]) == 0
+      override inline def test(inline value: BigInt): Boolean = ${checkBigInt('value, '{longValue[V]})}
 
     inline given [V <: NumConstant]: MultipleConstraint[BigDecimal, V] with
 
       override inline def test(inline value: BigDecimal): Boolean = value % BigDecimal(doubleValue[V]) == 0
+
+    private def checkBigInt(expr: Expr[BigInt], thanExpr: Expr[Long])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      (expr.decode, thanExpr.decode) match
+        case (Right(value), Right(than)) => Expr(value % BigInt(than) == 0)
+        case _                           => '{$expr % BigInt($thanExpr) == 0}
 
     given [A, V1 <: A, V2 <: A](using V1 % V2 =:= Zero[A]): (Multiple[V1] ==> Multiple[V2]) = Implication()
 
@@ -260,10 +287,18 @@ object numeric:
       override inline def test(inline value: Double): Boolean = doubleValue[V] % value == 0
 
     inline given [V <: Int | Long]: DivideConstraint[BigInt, V] with
-      override inline def test(inline value: BigInt): Boolean = BigInt(longValue[V]) % value == 0
+      override inline def test(inline value: BigInt): Boolean = ${checkBigInt('value, '{longValue[V]})}
 
     inline given [V <: NumConstant]: DivideConstraint[BigDecimal, V] with
       override inline def test(inline value: BigDecimal): Boolean = BigDecimal(doubleValue[V]) % value == 0
+
+    private def checkBigInt(expr: Expr[BigInt], thanExpr: Expr[Long])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      (expr.decode, thanExpr.decode) match
+        case (Right(value), Right(than)) => Expr(BigInt(than) % value == 0)
+        case _                           => '{BigInt($thanExpr) % $expr == 0}
 
   object NaN:
     private trait NaNConstraint[A] extends Constraint[A, NaN]:

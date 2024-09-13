@@ -111,7 +111,9 @@ object collection:
 
     inline given lengthString[C, Impl <: Constraint[Int, C]](using inline impl: Impl): LengthString[C, Impl] = new LengthString
 
-    private def checkIterable[I <: Iterable[?] : Type, C, Impl <: Constraint[Int, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+    private def checkIterable[I <: Iterable[?]: Type, C, Impl <: Constraint[Int, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using
+        Quotes
+    ): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
 
@@ -142,7 +144,7 @@ object collection:
 
       override inline def message: String = "Should contain the string " + constValue[V]
 
-    private def checkIterable[I <: Iterable[?] : Type, V : Type](expr: Expr[I], partExpr: Expr[V])(using Quotes): Expr[Boolean] =
+    private def checkIterable[I <: Iterable[?]: Type, V: Type](expr: Expr[I], partExpr: Expr[V])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
 

@@ -22,8 +22,8 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
   import _quotes.reflect.*
 
   type DecodingResult[+T] = Either[DecodingFailure, T]
-    extension [T](result: DecodingResult[T])
-      private def as[U]: DecodingResult[U] = result.asInstanceOf[DecodingResult[U]]
+  extension [T](result: DecodingResult[T])
+    private def as[U]: DecodingResult[U] = result.asInstanceOf[DecodingResult[U]]
 
   extension [T: Type](expr: Expr[T])
     /**
@@ -186,11 +186,11 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
   object ExprDecoder:
 
     private val enhancedDecoders: Map[TypeRepr, (Term, Map[String, ?]) => DecodingResult[?]] = Map(
-      TypeRepr.of[Boolean]    -> decodeBoolean,
+      TypeRepr.of[Boolean] -> decodeBoolean,
       TypeRepr.of[BigDecimal] -> decodeBigDecimal,
-      TypeRepr.of[BigInt]     -> decodeBigInt,
-      TypeRepr.of[List[?]]    -> decodeList,
-      TypeRepr.of[String]     -> decodeString
+      TypeRepr.of[BigInt] -> decodeBigInt,
+      TypeRepr.of[List[?]] -> decodeList,
+      TypeRepr.of[String] -> decodeString
     )
 
     /**
@@ -267,12 +267,12 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
         case _ =>
           tree.tpe.widenTermRefByName match
             case ConstantType(c) => Right(c.value)
-            case _               => tree match
-              case Ident(name) => definitions
-                .get(name)
-                .toRight(DecodingFailure.NotInlined(tree))
-            
-              case _ => Left(DecodingFailure.NotInlined(tree))
+            case _ => tree match
+                case Ident(name) => definitions
+                    .get(name)
+                    .toRight(DecodingFailure.NotInlined(tree))
+
+                case _ => Left(DecodingFailure.NotInlined(tree))
 
     /**
      * Decode a binding/definition.
@@ -343,7 +343,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
       term match
         case Apply(Select(Ident("BigInt"), "apply"), List(value)) =>
           decodeTerm(value, definitions).as[Int | Long].map:
-            case x: Int => BigInt(x)
+            case x: Int  => BigInt(x)
             case x: Long => BigInt(x)
         case _ => Left(DecodingFailure.Unknown)
 
@@ -358,11 +358,11 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
       term match
         case Apply(Select(Ident("BigDecimal"), "apply"), List(value)) =>
           decodeTerm(value, definitions).as[NumConstant].map:
-            case x: Int => BigDecimal(x)
-            case x: Long => BigDecimal(x)
-            case x: Float => BigDecimal(x)
+            case x: Int    => BigDecimal(x)
+            case x: Long   => BigDecimal(x)
+            case x: Float  => BigDecimal(x)
             case x: Double => BigDecimal(x)
-          
+
         case _ => Left(DecodingFailure.Unknown)
 
     /**

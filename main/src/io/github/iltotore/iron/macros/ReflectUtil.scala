@@ -181,9 +181,10 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
   object ExprDecoder:
 
     private val enhancedDecoders: Map[TypeRepr, (Term, Map[String, ?]) => Either[DecodingFailure, ?]] = Map(
-      TypeRepr.of[Boolean] -> decodeBoolean,
-      TypeRepr.of[BigInt]  -> decodeBigInt,
-      TypeRepr.of[String]  -> decodeString
+      TypeRepr.of[Boolean]    -> decodeBoolean,
+      TypeRepr.of[BigDecimal] -> decodeBigDecimal,
+      TypeRepr.of[BigInt]     -> decodeBigInt,
+      TypeRepr.of[String]     -> decodeString
     )
 
     /**
@@ -327,10 +328,34 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
       case _ => Left(DecodingFailure.Unknown)
 
+    /**
+     * Decode a [[BigInt]] term using only [[BigInt]]-specific cases.
+     *
+     * @param term        the term to decode
+     * @param definitions the decoded definitions in scope
+     * @return the value of the given term found at compile time or a [[DecodingFailure]]
+     */
     def decodeBigInt(term: Term, definitions: Map[String, ?]): Either[DecodingFailure, BigInt] =
       term match
         case Apply(Select(Ident("BigInt"), "apply"), List(value)) =>
           if value.tpe <:< TypeRepr.of[Int] then decodeTerm[Int](value, definitions).map(BigInt.apply)
           else if value.tpe <:< TypeRepr.of[Long] then decodeTerm[Long](value, definitions).map(BigInt.apply)
+          else Left(DecodingFailure.Unknown)
+        case _ => Left(DecodingFailure.Unknown)
+
+    /**
+     * Decode a [[BigDecimal]] term using only [[BigDecimal]]-specific cases.
+     *
+     * @param term        the term to decode
+     * @param definitions the decoded definitions in scope
+     * @return the value of the given term found at compile time or a [[DecodingFailure]]
+     */
+    def decodeBigDecimal(term: Term, definitions: Map[String, ?]): Either[DecodingFailure, BigDecimal] =
+      term match
+        case Apply(Select(Ident("BigDecimal"), "apply"), List(value)) =>
+          if value.tpe <:< TypeRepr.of[Int] then decodeTerm[Int](value, definitions).map(BigDecimal.apply)
+          else if value.tpe <:< TypeRepr.of[Long] then decodeTerm[Long](value, definitions).map(BigDecimal.apply)
+          else if value.tpe <:< TypeRepr.of[Double] then decodeTerm[Double](value, definitions).map(BigDecimal.apply)
+          else if value.tpe <:< TypeRepr.of[BigInt] then decodeTerm[BigInt](value, definitions).map(BigDecimal.apply)
           else Left(DecodingFailure.Unknown)
         case _ => Left(DecodingFailure.Unknown)

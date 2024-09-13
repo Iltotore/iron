@@ -167,13 +167,29 @@ object numeric:
       override inline def test(inline value: Double): Boolean = value > doubleValue[V]
 
     inline given bigDecimalDouble[V <: NumConstant]: GreaterConstraint[BigDecimal, V] with
-      override inline def test(inline value: BigDecimal): Boolean = value > BigDecimal(doubleValue[V])
+      override inline def test(inline value: BigDecimal): Boolean = ${checkBigDecimalDouble('value, '{doubleValue[V]})}
 
     inline given bigDecimalLong[V <: Int | Long]: GreaterConstraint[BigDecimal, V] with
-      override inline def test(inline value: BigDecimal): Boolean = value > BigDecimal(longValue[V])
+      override inline def test(inline value: BigDecimal): Boolean = ${checkBigDecimalLong('value, '{longValue[V]})}
 
     inline given [V <: Int | Long]: GreaterConstraint[BigInt, V] with
       override inline def test(inline value: BigInt): Boolean = ${checkBigInt('value, '{longValue[V]})}
+
+    private def checkBigDecimalDouble(expr: Expr[BigDecimal], thanExpr: Expr[Double])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      (expr.decode, thanExpr.decode) match
+        case (Right(value), Right(than)) => Expr(value > BigDecimal(than))
+        case _                           => '{$expr > BigDecimal($thanExpr)}
+
+    private def checkBigDecimalLong(expr: Expr[BigDecimal], thanExpr: Expr[Long])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      (expr.decode, thanExpr.decode) match
+        case (Right(value), Right(than)) => Expr(value > BigDecimal(than))
+        case _                           => '{$expr > BigDecimal($thanExpr)}
 
     private def checkBigInt(expr: Expr[BigInt], thanExpr: Expr[Long])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
@@ -210,13 +226,29 @@ object numeric:
       override inline def test(inline value: Double): Boolean = value < doubleValue[V]
 
     inline given bigDecimalDouble[V <: NumConstant]: LessConstraint[BigDecimal, V] with
-      override inline def test(inline value: BigDecimal): Boolean = value < BigDecimal(doubleValue[V])
+      override inline def test(inline value: BigDecimal): Boolean = ${checkBigDecimalDouble('value, '{doubleValue[V]})}
 
     inline given bigDecimalLong[V <: Int | Long]: LessConstraint[BigDecimal, V] with
-      override inline def test(inline value: BigDecimal): Boolean = value < BigDecimal(longValue[V])
+      override inline def test(inline value: BigDecimal): Boolean = ${checkBigDecimalLong('value, '{longValue[V]})}
 
     inline given [V <: Int | Long]: LessConstraint[BigInt, V] with
       override inline def test(inline value: BigInt): Boolean = ${checkBigInt('value, '{longValue[V]})}
+
+    private def checkBigDecimalDouble(expr: Expr[BigDecimal], thanExpr: Expr[Double])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      (expr.decode, thanExpr.decode) match
+        case (Right(value), Right(than)) => Expr(value < BigDecimal(than))
+        case _                           => '{$expr < BigDecimal($thanExpr)}
+
+    private def checkBigDecimalLong(expr: Expr[BigDecimal], thanExpr: Expr[Long])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      (expr.decode, thanExpr.decode) match
+        case (Right(value), Right(than)) => Expr(value < BigDecimal(than))
+        case _                           => '{$expr < BigDecimal($thanExpr)}
 
     private def checkBigInt(expr: Expr[BigInt], thanExpr: Expr[Long])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
@@ -252,13 +284,21 @@ object numeric:
     inline given [V <: NumConstant]: MultipleConstraint[Double, V] with
       override inline def test(inline value: Double): Boolean = value % doubleValue[V] == 0
 
+    inline given [V <: NumConstant]: MultipleConstraint[BigDecimal, V] with
+
+      override inline def test(inline value: BigDecimal): Boolean = ${checkBigDecimal('value, '{doubleValue[V]})}
+
     inline given [V <: Int | Long]: MultipleConstraint[BigInt, V] with
 
       override inline def test(inline value: BigInt): Boolean = ${checkBigInt('value, '{longValue[V]})}
 
-    inline given [V <: NumConstant]: MultipleConstraint[BigDecimal, V] with
+    private def checkBigDecimal(expr: Expr[BigDecimal], thanExpr: Expr[Double])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
 
-      override inline def test(inline value: BigDecimal): Boolean = value % BigDecimal(doubleValue[V]) == 0
+      (expr.decode, thanExpr.decode) match
+        case (Right(value), Right(than)) => Expr(value % BigDecimal(than) == 0)
+        case _                           => '{$expr % BigDecimal($thanExpr) == 0}
 
     private def checkBigInt(expr: Expr[BigInt], thanExpr: Expr[Long])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
@@ -286,11 +326,19 @@ object numeric:
     inline given [V <: NumConstant]: DivideConstraint[Double, V] with
       override inline def test(inline value: Double): Boolean = doubleValue[V] % value == 0
 
+    inline given [V <: NumConstant]: DivideConstraint[BigDecimal, V] with
+      override inline def test(inline value: BigDecimal): Boolean = ${checkBigDecimal('value, '{doubleValue[V]})}
+
     inline given [V <: Int | Long]: DivideConstraint[BigInt, V] with
       override inline def test(inline value: BigInt): Boolean = ${checkBigInt('value, '{longValue[V]})}
 
-    inline given [V <: NumConstant]: DivideConstraint[BigDecimal, V] with
-      override inline def test(inline value: BigDecimal): Boolean = BigDecimal(doubleValue[V]) % value == 0
+    private def checkBigDecimal(expr: Expr[BigDecimal], thanExpr: Expr[Double])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      (expr.decode, thanExpr.decode) match
+        case (Right(value), Right(than)) => Expr(BigDecimal(than) % value == 0)
+        case _                           => '{BigDecimal($thanExpr) % $expr == 0}
 
     private def checkBigInt(expr: Expr[BigInt], thanExpr: Expr[Long])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil

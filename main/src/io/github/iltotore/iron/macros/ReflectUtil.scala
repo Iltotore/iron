@@ -23,7 +23,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
   type DecodingResult[+T] = Either[DecodingFailure, T]
     extension [T](result: DecodingResult[T])
-      private def as[U]: DecodingResult[U] = result.asInstanceOf[Either[DecodingFailure, U]]
+      private def as[U]: DecodingResult[U] = result.asInstanceOf[DecodingResult[U]]
 
   extension [T: Type](expr: Expr[T])
     /**
@@ -31,7 +31,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      *
      * @return the value of this expression found at compile time or a [[DecodingFailure]]
      */
-    def decode: Either[DecodingFailure, T] = ExprDecoder.decodeTerm(expr.asTerm, Map.empty).as[T]
+    def decode: DecodingResult[T] = ExprDecoder.decodeTerm(expr.asTerm, Map.empty).as[T]
 
   /**
    * A decoding failure.
@@ -71,9 +71,9 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      *
      * @param parameters the list of decoded parameters, whether an failure or a value of unknown type
      */
-    case ApplyNotInlined(name: String, parameters: List[Either[DecodingFailure, ?]])
+    case ApplyNotInlined(name: String, parameters: List[DecodingResult[?]])
 
-    case VarArgsNotInlined(args: List[Either[DecodingFailure, ?]])
+    case VarArgsNotInlined(args: List[DecodingResult[?]])
 
     /**
      * A boolean OR is not inlined.
@@ -81,7 +81,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      * @param left  the left operand
      * @param right the right operand
      */
-    case OrNotInlined(left: Either[DecodingFailure, Boolean], right: Either[DecodingFailure, Boolean])
+    case OrNotInlined(left: DecodingResult[Boolean], right: Either[DecodingFailure, Boolean])
 
     /**
      * A boolean AND is not inlined.
@@ -89,14 +89,14 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      * @param left  the left operand
      * @param right the right operand
      */
-    case AndNotInlined(left: Either[DecodingFailure, Boolean], right: Either[DecodingFailure, Boolean])
+    case AndNotInlined(left: DecodingResult[Boolean], right: Either[DecodingFailure, Boolean])
 
     /**
      * Some part of the decoded String are not inlined. A more specialized version of [[ApplyNotInlined]].
      *
      * @param parts the parts of the String
      */
-    case StringPartsNotInlined(parts: List[Either[DecodingFailure, String]])
+    case StringPartsNotInlined(parts: List[DecodingResult[String]])
 
     /**
      * The given String interpolator cannot be inlined.
@@ -185,10 +185,11 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
 
   object ExprDecoder:
 
-    private val enhancedDecoders: Map[TypeRepr, (Term, Map[String, ?]) => Either[DecodingFailure, ?]] = Map(
+    private val enhancedDecoders: Map[TypeRepr, (Term, Map[String, ?]) => DecodingResult[?]] = Map(
       TypeRepr.of[Boolean]    -> decodeBoolean,
       TypeRepr.of[BigDecimal] -> decodeBigDecimal,
       TypeRepr.of[BigInt]     -> decodeBigInt,
+      TypeRepr.of[List[?]]    -> decodeList,
       TypeRepr.of[String]     -> decodeString
     )
 
@@ -199,10 +200,10 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      * @param definitions the decoded definitions in scope
      * @return the value of the given term found at compile time or a [[DecodingFailure]]
      */
-    def decodeTerm(tree: Term, definitions: Map[String, ?]): Either[DecodingFailure, ?] =
+    def decodeTerm(tree: Term, definitions: Map[String, ?]): DecodingResult[?] =
       val specializedResult = enhancedDecoders
         .collectFirst:
-          case (k, v) if k =:= tree.tpe => v
+          case (k, v) if tree.tpe <:< k => v
         .toRight(DecodingFailure.Unknown)
         .flatMap(_.apply(tree, definitions))
 
@@ -218,13 +219,13 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      * @tparam T the expected type of this term used as implicit cast for convenience
      * @return the value of the given term found at compile time or a [[DecodingFailure]]
      */
-    def decodeUnspecializedTerm(tree: Term, definitions: Map[String, ?]): Either[DecodingFailure, ?] =
+    def decodeUnspecializedTerm(tree: Term, definitions: Map[String, ?]): DecodingResult[?] =
       tree match
         case block @ Block(stats, e) => if stats.isEmpty then decodeTerm(e, definitions) else Left(DecodingFailure.HasStatements(block))
 
         case Inlined(_, bindings, e) =>
           val (failures, values) = bindings
-            .map[(String, Either[DecodingFailure, ?])](b => (b.name, decodeBinding(b, definitions)))
+            .map[(String, DecodingResult[?])](b => (b.name, decodeBinding(b, definitions)))
             .partitionMap:
               case (name, Right(value))  => Right((name, value))
               case (name, Left(failure)) => Left((name, failure))
@@ -281,7 +282,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      * @tparam T the expected type of this term used as implicit cast for convenience
      * @return the value of the given definition found at compile time or a [[DecodingFailure]]
      */
-    def decodeBinding(definition: Definition, definitions: Map[String, ?]): Either[DecodingFailure, ?] = definition match
+    def decodeBinding(definition: Definition, definitions: Map[String, ?]): DecodingResult[?] = definition match
       case ValDef(name, tpeTree, Some(term))      => decodeTerm(term, definitions)
       case DefDef(name, Nil, tpeTree, Some(term)) => decodeTerm(term, definitions)
       case _                                      => Left(DecodingFailure.DefinitionNotInlined(definition.name))
@@ -293,7 +294,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      * @param definitions the decoded definitions in scope
      * @return the value of the given term found at compile time or a [[DecodingFailure]]
      */
-    def decodeBoolean(term: Term, definitions: Map[String, ?]): Either[DecodingFailure, ?] = term match
+    def decodeBoolean(term: Term, definitions: Map[String, ?]): DecodingResult[?] = term match
       case Apply(Select(left, "||"), List(right)) if left.tpe <:< TypeRepr.of[Boolean] && right.tpe <:< TypeRepr.of[Boolean] => // OR
         (decodeTerm(left, definitions).as[Boolean], decodeTerm(right, definitions).as[Boolean]) match
           case (Right(true), _)                      => Right(true)
@@ -317,7 +318,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      * @param definitions the decoded definitions in scope
      * @return the value of the given term found at compile time or a [[DecodingFailure]]
      */
-    def decodeString(term: Term, definitions: Map[String, ?]): Either[DecodingFailure, String] = term match
+    def decodeString(term: Term, definitions: Map[String, ?]): DecodingResult[String] = term match
       case Apply(Select(left, "+"), List(right)) if left.tpe <:< TypeRepr.of[String] && right.tpe <:< TypeRepr.of[String] =>
         (decodeTerm(left, definitions).as[String], decodeTerm(right, definitions).as[String]) match
           case (Right(leftValue), Right(rightValue)) => Right(leftValue + rightValue)
@@ -338,7 +339,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      * @param definitions the decoded definitions in scope
      * @return the value of the given term found at compile time or a [[DecodingFailure]]
      */
-    def decodeBigInt(term: Term, definitions: Map[String, ?]): Either[DecodingFailure, BigInt] =
+    def decodeBigInt(term: Term, definitions: Map[String, ?]): DecodingResult[BigInt] =
       term match
         case Apply(Select(Ident("BigInt"), "apply"), List(value)) =>
           decodeTerm(value, definitions).as[Int | Long].map:
@@ -353,7 +354,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      * @param definitions the decoded definitions in scope
      * @return the value of the given term found at compile time or a [[DecodingFailure]]
      */
-    def decodeBigDecimal(term: Term, definitions: Map[String, ?]): Either[DecodingFailure, BigDecimal] =
+    def decodeBigDecimal(term: Term, definitions: Map[String, ?]): DecodingResult[BigDecimal] =
       term match
         case Apply(Select(Ident("BigDecimal"), "apply"), List(value)) =>
           decodeTerm(value, definitions).as[NumConstant].map:
@@ -362,4 +363,17 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
             case x: Float => BigDecimal(x)
             case x: Double => BigDecimal(x)
           
+        case _ => Left(DecodingFailure.Unknown)
+
+    /**
+     * Decode a [[List]] term using only [[List]]-specific cases.
+     *
+     * @param term        the term to decode
+     * @param definitions the decoded definitions in scope
+     * @return the value of the given term found at compile time or a [[DecodingFailure]]
+     */
+    def decodeList(term: Term, definitions: Map[String, ?]): DecodingResult[List[?]] =
+      term match
+        case Apply(TypeApply(Select(Ident("List"), "apply"), _), List(values)) =>
+          decodeTerm(values, definitions).as[List[?]]
         case _ => Left(DecodingFailure.Unknown)

@@ -96,7 +96,7 @@ object collection:
 
     class LengthIterable[I <: Iterable[?], C, Impl <: Constraint[Int, C]](using Impl) extends Constraint[I, Length[C]]:
 
-      override inline def test(inline value: I): Boolean = summonInline[Impl].test(value.size)
+      override inline def test(inline value: I): Boolean = ${ checkIterable('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "Length: (" + summonInline[Impl].message + ")"
 
@@ -111,6 +111,14 @@ object collection:
 
     inline given lengthString[C, Impl <: Constraint[Int, C]](using inline impl: Impl): LengthString[C, Impl] = new LengthString
 
+    private def checkIterable[I <: Iterable[?] : Type, C, Impl <: Constraint[Int, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.decode match
+        case Right(value) => applyConstraint(Expr(value.size), constraintExpr)
+        case _            => applyConstraint('{ $expr.size }, constraintExpr)
+
     private def checkString[C, Impl <: Constraint[Int, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
@@ -124,15 +132,23 @@ object collection:
   object Contain:
     inline given [A, V <: A, I <: Iterable[A]]: Constraint[I, Contain[V]] with
 
-      override inline def test(inline value: I): Boolean = value.iterator.contains(constValue[V])
+      override inline def test(inline value: I): Boolean = ${ checkIterable('value, '{ constValue[V] }) }
 
-      override inline def message: String = "Should contain at most " + stringValue[V] + " elements"
+      override inline def message: String = "Should contain the value " + stringValue[V]
 
     inline given [V <: String]: Constraint[String, Contain[V]] with
 
       override inline def test(inline value: String): Boolean = ${ checkString('value, '{ constValue[V] }) }
 
       override inline def message: String = "Should contain the string " + constValue[V]
+
+    private def checkIterable[I <: Iterable[?] : Type, V : Type](expr: Expr[I], partExpr: Expr[V])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      (expr.decode, partExpr.decode) match
+        case (Right(value), Right(part)) => Expr(value.iterator.contains(part))
+        case _                           => '{ ${ expr }.iterator.contains($partExpr) }
 
     private def checkString(expr: Expr[String], partExpr: Expr[String])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil

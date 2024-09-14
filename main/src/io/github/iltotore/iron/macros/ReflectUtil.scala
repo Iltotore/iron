@@ -190,6 +190,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
       TypeRepr.of[BigDecimal] -> decodeBigDecimal,
       TypeRepr.of[BigInt] -> decodeBigInt,
       TypeRepr.of[List[?]] -> decodeList,
+      TypeRepr.of[Set[?]] -> decodeSet,
       TypeRepr.of[String] -> decodeString
     )
 
@@ -377,3 +378,17 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
         case Apply(TypeApply(Select(Ident("List"), "apply"), _), List(values)) =>
           decodeTerm(values, definitions).as[List[?]]
         case _ => Left(DecodingFailure.Unknown)
+
+    /**
+     * Decode a [[Set]] term using only [[Set]]-specific cases.
+     *
+     * @param term        the term to decode
+     * @param definitions the decoded definitions in scope
+     * @return the value of the given term found at compile time or a [[DecodingFailure]]
+     */
+    def decodeSet(term: Term, definitions: Map[String, ?]): DecodingResult[Set[?]] =
+      term match
+        case Apply(TypeApply(Select(Ident("Set"), "apply"), _), List(values)) =>
+          decodeTerm(values, definitions).as[List[?]].map(_.toSet)
+        case _ => Left(DecodingFailure.Unknown)
+

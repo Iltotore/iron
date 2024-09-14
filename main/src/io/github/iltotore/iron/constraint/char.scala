@@ -43,7 +43,7 @@ object char:
 
     inline given Constraint[Char, Whitespace] with
 
-      override inline def test(value: Char): Boolean = ${ check('value) }
+      override inline def test(inline value: Char): Boolean = ${ check('value) }
 
       override inline def message: String = "Should be a whitespace"
 
@@ -59,7 +59,7 @@ object char:
 
     inline given Constraint[Char, LowerCase] with
 
-      override inline def test(value: Char): Boolean = ${ check('value) }
+      override inline def test(inline value: Char): Boolean = ${ check('value) }
 
       override inline def message: String = "Should be a lower cased"
 
@@ -75,7 +75,7 @@ object char:
 
     inline given Constraint[Char, UpperCase] with
 
-      override inline def test(value: Char): Boolean = ${ check('value) }
+      override inline def test(inline value: Char): Boolean = ${ check('value) }
 
       override inline def message: String = "Should be a upper cased"
 
@@ -91,7 +91,7 @@ object char:
 
     inline given Constraint[Char, Digit] with
 
-      override inline def test(value: Char): Boolean = ${ check('value) }
+      override inline def test(inline value: Char): Boolean = ${ check('value) }
 
       override inline def message: String = "Should be a digit"
 
@@ -107,7 +107,7 @@ object char:
 
     inline given Constraint[Char, Letter] with
 
-      override inline def test(value: Char): Boolean = ${ check('value) }
+      override inline def test(inline value: Char): Boolean = ${ check('value) }
 
       override inline def message: String = "Should be a letter"
 

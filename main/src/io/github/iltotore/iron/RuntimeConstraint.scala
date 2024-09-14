@@ -17,7 +17,7 @@ import scala.util.NotGiven
  * In cases that one does not exist in scope, one will be automatically derived from a [[Constraint]].
  */
 final class RuntimeConstraint[A, C](_test: A => Boolean, val message: String):
-  inline def test(value: A): Boolean = _test(value)
+  inline def test(inline value: A): Boolean = _test(value)
 
 object RuntimeConstraint:
   inline given derived[A, C](using inline c: Constraint[A, C]): RuntimeConstraint[A, C] =

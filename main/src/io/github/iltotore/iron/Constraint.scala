@@ -11,14 +11,14 @@ import io.github.iltotore.iron.macros.intersection.*
  */
 trait Constraint[A, C]:
 
-  inline def test(value: A): Boolean
+  inline def test(inline value: A): Boolean
 
   inline def message: String
 
 object Constraint:
   class UnionConstraint[A, C] extends Constraint[A, C]:
 
-    override inline def test(value: A): Boolean = unionCond[A, C](value)
+    override inline def test(inline value: A): Boolean = unionCond[A, C](value)
 
     override inline def message: String = unionMessage[A, C]
 
@@ -26,7 +26,7 @@ object Constraint:
 
   class IntersectionConstraint[A, C] extends Constraint[A, C]:
 
-    override inline def test(value: A): Boolean = intersectionCond[A, C](value)
+    override inline def test(inline value: A): Boolean = intersectionCond[A, C](value)
 
     override inline def message: String = intersectionMessage[A, C]
 

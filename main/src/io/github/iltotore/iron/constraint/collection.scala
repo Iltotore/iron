@@ -96,7 +96,7 @@ object collection:
 
     class LengthIterable[I <: Iterable[?], C, Impl <: Constraint[Int, C]](using Impl) extends Constraint[I, Length[C]]:
 
-      override inline def test(value: I): Boolean = summonInline[Impl].test(value.size)
+      override inline def test(inline value: I): Boolean = ${ checkIterable('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "Length: (" + summonInline[Impl].message + ")"
 
@@ -105,11 +105,21 @@ object collection:
 
     class LengthString[C, Impl <: Constraint[Int, C]](using Impl) extends Constraint[String, Length[C]]:
 
-      override inline def test(value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
+      override inline def test(inline value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "Length: (" + summonInline[Impl].message + ")"
 
     inline given lengthString[C, Impl <: Constraint[Int, C]](using inline impl: Impl): LengthString[C, Impl] = new LengthString
+
+    private def checkIterable[I <: Iterable[?]: Type, C, Impl <: Constraint[Int, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using
+        Quotes
+    ): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.decode match
+        case Right(value) => applyConstraint(Expr(value.size), constraintExpr)
+        case _            => applyConstraint('{ $expr.size }, constraintExpr)
 
     private def checkString[C, Impl <: Constraint[Int, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
@@ -124,15 +134,23 @@ object collection:
   object Contain:
     inline given [A, V <: A, I <: Iterable[A]]: Constraint[I, Contain[V]] with
 
-      override inline def test(value: I): Boolean = value.iterator.contains(constValue[V])
+      override inline def test(inline value: I): Boolean = ${ checkIterable('value, '{ constValue[V] }) }
 
-      override inline def message: String = "Should contain at most " + stringValue[V] + " elements"
+      override inline def message: String = "Should contain the value " + stringValue[V]
 
     inline given [V <: String]: Constraint[String, Contain[V]] with
 
-      override inline def test(value: String): Boolean = ${ checkString('value, '{ constValue[V] }) }
+      override inline def test(inline value: String): Boolean = ${ checkString('value, '{ constValue[V] }) }
 
       override inline def message: String = "Should contain the string " + constValue[V]
+
+    private def checkIterable[I <: Iterable[?]: Type, V: Type](expr: Expr[I], partExpr: Expr[V])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      (expr.decode, partExpr.decode) match
+        case (Right(value), Right(part)) => Expr(value.iterator.contains(part))
+        case _                           => '{ ${ expr }.iterator.contains($partExpr) }
 
     private def checkString(expr: Expr[String], partExpr: Expr[String])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
@@ -146,7 +164,7 @@ object collection:
 
     class ForAllIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, ForAll[C]]:
 
-      override inline def test(value: I): Boolean = value.forall(summonInline[Impl].test(_))
+      override inline def test(inline value: I): Boolean = value.forall(summonInline[Impl].test(_))
 
       override inline def message: String = "For each element: (" + summonInline[Impl].message + ")"
 
@@ -155,7 +173,7 @@ object collection:
 
     class ForAllString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, ForAll[C]]:
 
-      override inline def test(value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
+      override inline def test(inline value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "For each element: (" + summonInline[Impl].message + ")"
 
@@ -183,7 +201,7 @@ object collection:
 
     class InitIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Init[C]]:
 
-      override inline def test(value: I): Boolean = value.isEmpty || value.init.forall(summonInline[Impl].test(_))
+      override inline def test(inline value: I): Boolean = value.isEmpty || value.init.forall(summonInline[Impl].test(_))
 
       override inline def message: String = "For each element except head: (" + summonInline[Impl].message + ")"
 
@@ -192,7 +210,7 @@ object collection:
 
     class InitString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, Init[C]]:
 
-      override inline def test(value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
+      override inline def test(inline value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "For each element except last: (" + summonInline[Impl].message + ")"
 
@@ -220,7 +238,7 @@ object collection:
 
     class TailIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Tail[C]]:
 
-      override inline def test(value: I): Boolean = value.isEmpty || value.tail.forall(summonInline[Impl].test(_))
+      override inline def test(inline value: I): Boolean = value.isEmpty || value.tail.forall(summonInline[Impl].test(_))
 
       override inline def message: String = "For each element: (" + summonInline[Impl].message + ")"
 
@@ -229,7 +247,7 @@ object collection:
 
     class TailString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, Tail[C]]:
 
-      override inline def test(value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
+      override inline def test(inline value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "For each element: (" + summonInline[Impl].message + ")"
 
@@ -256,7 +274,7 @@ object collection:
 
     class ExistsIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Exists[C]]:
 
-      override inline def test(value: I): Boolean = value.exists(summonInline[Impl].test(_))
+      override inline def test(inline value: I): Boolean = value.exists(summonInline[Impl].test(_))
 
       override inline def message: String = "At least one: (" + summonInline[Impl].message + ")"
 
@@ -265,7 +283,7 @@ object collection:
 
     class ExistsString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, Exists[C]]:
 
-      override inline def test(value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
+      override inline def test(inline value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "At least one element: (" + summonInline[Impl].message + ")"
 
@@ -288,7 +306,7 @@ object collection:
 
     class HeadIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Head[C]]:
 
-      override inline def test(value: I): Boolean = value.headOption.exists(summonInline[Impl].test(_))
+      override inline def test(inline value: I): Boolean = value.headOption.exists(summonInline[Impl].test(_))
 
       override inline def message: String = "Head: (" + summonInline[Impl].message + ")"
 
@@ -297,7 +315,7 @@ object collection:
 
     class HeadString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, Head[C]]:
 
-      override inline def test(value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
+      override inline def test(inline value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "Head: (" + summonInline[Impl].message + ")"
 
@@ -320,7 +338,7 @@ object collection:
 
     class LastIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Last[C]]:
 
-      override inline def test(value: I): Boolean = value.lastOption.exists(summonInline[Impl].test(_))
+      override inline def test(inline value: I): Boolean = value.lastOption.exists(summonInline[Impl].test(_))
 
       override inline def message: String = "Last: (" + summonInline[Impl].message + ")"
 
@@ -329,7 +347,7 @@ object collection:
 
     class LastString[C, Impl <: Constraint[Char, C]](using Impl) extends Constraint[String, Last[C]]:
 
-      override inline def test(value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
+      override inline def test(inline value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "Last: (" + summonInline[Impl].message + ")"
 

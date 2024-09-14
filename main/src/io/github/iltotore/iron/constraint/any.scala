@@ -88,7 +88,7 @@ object any:
 
     inline given [A]: Constraint[A, True] with
 
-      override inline def test(value: A): Boolean = true
+      override inline def test(inline value: A): Boolean = true
 
       override inline def message: String = "Always valid"
 
@@ -101,7 +101,7 @@ object any:
 
     inline given [A]: Constraint[A, False] with
 
-      override inline def test(value: A): Boolean = false
+      override inline def test(inline value: A): Boolean = false
 
       override inline def message: String = "Always invalid"
 
@@ -113,7 +113,7 @@ object any:
   object DescribedAs:
     class DescribedAsConstraint[A, C, Impl <: Constraint[A, C], V <: String](using Impl) extends Constraint[A, DescribedAs[C, V]]:
 
-      override inline def test(value: A): Boolean = summonInline[Impl].test(value)
+      override inline def test(inline value: A): Boolean = summonInline[Impl].test(value)
 
       override inline def message: String = constValue[V]
 
@@ -133,7 +133,7 @@ object any:
   object Not:
     class NotConstraint[A, C, Impl <: Constraint[A, C]](using Impl) extends Constraint[A, Not[C]]:
 
-      override inline def test(value: A): Boolean =
+      override inline def test(inline value: A): Boolean =
         !summonInline[Impl].test(value)
 
       override inline def message: String =
@@ -157,7 +157,7 @@ object any:
 
     class XorConstraint[A, C1, C2, Impl1 <: Constraint[A, C1], Impl2 <: Constraint[A, C2]] extends Constraint[A, Xor[C1, C2]]:
 
-      override inline def test(value: A): Boolean = summonInline[Impl1].test(value) != summonInline[Impl2].test(value)
+      override inline def test(inline value: A): Boolean = summonInline[Impl1].test(value) != summonInline[Impl2].test(value)
 
       override inline def message: String = "(" + summonInline[Impl1].message + " xor " + summonInline[Impl2].message + ")"
 
@@ -188,13 +188,13 @@ object any:
       override inline def message: String = "Should strictly equal to " + stringValue[V]
 
     inline given [A, V]: StrictEqualConstraint[A, V] with
-      override inline def test(value: A): Boolean = value == constValue[V]
+      override inline def test(inline value: A): Boolean = value == constValue[V]
 
     inline given bigDecimalDouble[V <: Float | Double]: StrictEqualConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean = value == BigDecimal(doubleValue[V])
+      override inline def test(inline value: BigDecimal): Boolean = value == BigDecimal(doubleValue[V])
 
     inline given bigDecimalLong[V <: Int | Long]: StrictEqualConstraint[BigDecimal, V] with
-      override inline def test(value: BigDecimal): Boolean = value == BigDecimal(longValue[V])
+      override inline def test(inline value: BigDecimal): Boolean = value == BigDecimal(longValue[V])
 
     inline given [V <: Int | Long]: StrictEqualConstraint[BigInt, V] with
-      override inline def test(value: BigInt): Boolean = value == BigInt(longValue[V])
+      override inline def test(inline value: BigInt): Boolean = value == BigInt(longValue[V])

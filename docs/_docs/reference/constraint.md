@@ -70,7 +70,7 @@ import io.github.iltotore.iron.*
 //}
 given Constraint[Int, Positive] with
 
-  override inline def test(value: Int): Boolean = value > 0
+  override inline def test(inline value: Int): Boolean = value > 0
 
   override inline def message: String = "Should be strictly positive"
 ```
@@ -87,10 +87,10 @@ trait PositiveConstraint[A] extends Constraint[A, Positive]:
   override inline def message: String = "Should be strictly positive"
 
 given PositiveConstraint[Int] with
-  override inline def test(value: Int): Boolean = value > 0
+  override inline def test(inline value: Int): Boolean = value > 0
 
 given PositiveConstraint[Double] with
-  override inline def test(value: Double): Boolean = value > 0.0
+  override inline def test(inline value: Double): Boolean = value > 0.0
 ```
 
 This constraint can now be used like any other:
@@ -121,7 +121,7 @@ import scala.compiletime.constValue
 
 given [V]: Constraint[Int, Greater[V]] with
 
-  override inline def test(value: Int): Boolean = value > constValue[V]
+  override inline def test(inline value: Int): Boolean = value > constValue[V]
 
   override inline def message: String = "Should be greater than " + stringValue[V]
 ```

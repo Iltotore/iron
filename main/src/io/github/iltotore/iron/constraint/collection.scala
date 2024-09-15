@@ -179,6 +179,20 @@ object collection:
 
     inline given forAllString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): ForAllString[C, Impl] = new ForAllString
 
+    private def checkIterable[I <: Iterable[?], C, Impl <: Constraint[Char, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      ???
+      /*val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.decode match
+        case Right(value) =>
+          value
+            .map(Expr.apply)
+            .map(applyConstraint(_, constraintExpr))
+            .foldLeft(Expr(true))((e, t) => '{ $e && $t })
+
+        case _ => '{ $expr.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }*/
+
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*

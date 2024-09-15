@@ -391,4 +391,3 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
         case Apply(TypeApply(Select(Ident("Set"), "apply"), _), List(values)) =>
           decodeTerm(values, definitions).as[List[?]].map(_.toSet)
         case _ => Left(DecodingFailure.Unknown)
-

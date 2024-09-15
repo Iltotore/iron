@@ -4,6 +4,7 @@ import scala.compiletime.constValue
 import scala.compiletime.ops.*
 import scala.compiletime.ops.any.ToString
 import scala.quoted.*
+import scala.annotation.targetName
 
 /**
  * Methods and types to ease compile-time operations.
@@ -199,3 +200,18 @@ object compileTime:
     import quotes.reflect.*
 
     Apply(Select.unique(constraintExpr.asTerm, "test"), List(expr.asTerm)).asExprOf[Boolean]
+
+  extension [T : Type](expr: Expr[Iterable[T]])
+
+    def toExprList(using Quotes): Option[List[Expr[T]]] = expr match
+      case '{ scala.List[T](${Varargs(elems)}*) } => Some(elems.toList)
+      case '{ scala.List.empty[T] } => Some(Nil)
+      case '{ Nil } => Some(Nil)
+      case '{ scala.collection.immutable.List[T](${Varargs(elems)}*) } => Some(elems.toList)
+      case '{ scala.collection.immutable.List.empty[T] } => Some(Nil)
+      case '{ Set[T](${Varargs(elems)}*) } => Some(elems.toList)
+      case '{ Set.empty[T] } => Some(Nil)
+      case '{ scala.collection.immutable.List[T](${Varargs(elems)}*) } => Some(elems.toList)
+      case '{ scala.collection.immutable.List.empty[T] } => Some(Nil)
+      case _ => None
+    

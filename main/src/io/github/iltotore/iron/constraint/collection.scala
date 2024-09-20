@@ -312,7 +312,7 @@ object collection:
 
     class ExistsIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Exists[C]]:
 
-      override inline def test(inline value: I): Boolean = value.exists(summonInline[Impl].test(_))
+      override inline def test(inline value: I): Boolean = ${ checkIterable('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "At least one: (" + summonInline[Impl].message + ")"
 
@@ -326,6 +326,18 @@ object collection:
       override inline def message: String = "At least one element: (" + summonInline[Impl].message + ")"
 
     inline given existsString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): ExistsString[C, Impl] = new ExistsString
+
+    private def checkIterable[A : Type, I <: Iterable[A] : Type, C, Impl <: Constraint[A, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.toExprList match
+        case Some(list) =>
+          list
+            .map(applyConstraint(_, constraintExpr))
+            .foldLeft(Expr(false))((e, t) => '{ $e || $t })
+      
+        case None => '{ $expr.exists(c => ${ applyConstraint('c, constraintExpr) }) }
 
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil

@@ -234,10 +234,13 @@ object collection:
 
       expr.toExprList match
         case Some(list) =>
-          list
-            .init
-            .map(applyConstraint(_, constraintExpr))
-            .foldLeft(Expr(true))((e, t) => '{ $e && $t })
+          list match
+            case Nil => Expr(true)
+            case _ =>
+              list
+                .init
+                .map(applyConstraint(_, constraintExpr))
+                .foldLeft(Expr(true))((e, t) => '{ $e && $t })
       
         case None => '{ $expr.init.forall(c => ${ applyConstraint('c, constraintExpr) }) }
 
@@ -284,10 +287,13 @@ object collection:
 
       expr.toExprList match
         case Some(list) =>
-          list
-            .tail
-            .map(applyConstraint(_, constraintExpr))
-            .foldLeft(Expr(true))((e, t) => '{ $e && $t })
+          list match
+            case Nil => Expr(true)
+            case _ =>
+              list
+                .tail
+                .map(applyConstraint(_, constraintExpr))
+                .foldLeft(Expr(true))((e, t) => '{ $e && $t })
       
         case None => '{ $expr.tail.forall(c => ${ applyConstraint('c, constraintExpr) }) }
 
@@ -381,7 +387,7 @@ object collection:
             case Some(head) => applyConstraint(head, constraintExpr)
             case None       => Expr(false)
           
-        case None => '{ $expr.exists(c => ${ applyConstraint('c, constraintExpr) }) }
+        case None => '{ $expr.headOption.exists(c => ${ applyConstraint('c, constraintExpr) }) }
 
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil

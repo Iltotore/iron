@@ -378,7 +378,7 @@ object collection:
       expr.toExprList match
         case Some(list) =>
           list.headOption match
-            case Some(head) => applyConstraint(list.head, constraintExpr)
+            case Some(head) => applyConstraint(head, constraintExpr)
             case None       => Expr(false)
           
         case None => '{ $expr.exists(c => ${ applyConstraint('c, constraintExpr) }) }
@@ -400,7 +400,7 @@ object collection:
 
     class LastIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Last[C]]:
 
-      override inline def test(inline value: I): Boolean = value.lastOption.exists(summonInline[Impl].test(_))
+      override inline def test(inline value: I): Boolean = ${ checkIterable('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "Last: (" + summonInline[Impl].message + ")"
 
@@ -414,6 +414,18 @@ object collection:
       override inline def message: String = "Last: (" + summonInline[Impl].message + ")"
 
     inline given lastString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): LastString[C, Impl] = new LastString
+
+    private def checkIterable[A : Type, I <: Iterable[A] : Type, C, Impl <: Constraint[A, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.toExprList match
+        case Some(list) =>
+          list.lastOption match
+            case Some(last) => applyConstraint(last, constraintExpr)
+            case None       => Expr(false)
+          
+        case None => '{ $expr.lastOption.exists(c => ${ applyConstraint('c, constraintExpr) }) }
 
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil

@@ -117,8 +117,8 @@ object collection:
       val rflUtil = reflectUtil
       import rflUtil.*
 
-      expr.decode match
-        case Right(value) => applyConstraint(Expr(value.size), constraintExpr)
+      expr.toExprList match
+        case Some(list) => applyConstraint(Expr(list.size), constraintExpr)
         case _            => applyConstraint('{ $expr.size }, constraintExpr)
 
     private def checkString[C, Impl <: Constraint[Int, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =

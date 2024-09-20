@@ -164,7 +164,7 @@ object collection:
 
     class ForAllIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, ForAll[C]]:
 
-      override inline def test(inline value: I): Boolean = value.forall(summonInline[Impl].test(_))
+      override inline def test(inline value: I): Boolean = ${ checkIterable('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "For each element: (" + summonInline[Impl].message + ")"
 
@@ -179,19 +179,17 @@ object collection:
 
     inline given forAllString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): ForAllString[C, Impl] = new ForAllString
 
-    private def checkIterable[I <: Iterable[?], C, Impl <: Constraint[Char, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
-      ???
-      /*val rflUtil = reflectUtil
+    private def checkIterable[A : Type, I <: Iterable[A] : Type, C, Impl <: Constraint[A, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
       import rflUtil.*
 
-      expr.decode match
-        case Right(value) =>
-          value
-            .map(Expr.apply)
+      expr.toExprList match
+        case Some(list) =>
+          list
             .map(applyConstraint(_, constraintExpr))
             .foldLeft(Expr(true))((e, t) => '{ $e && $t })
-
-        case _ => '{ $expr.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }*/
+      
+        case None => '{ $expr.forall(c => ${ applyConstraint('c, constraintExpr) }) }
 
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil

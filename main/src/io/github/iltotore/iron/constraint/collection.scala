@@ -356,7 +356,7 @@ object collection:
 
     class HeadIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Head[C]]:
 
-      override inline def test(inline value: I): Boolean = value.headOption.exists(summonInline[Impl].test(_))
+      override inline def test(inline value: I): Boolean = ${ checkIterable('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "Head: (" + summonInline[Impl].message + ")"
 
@@ -370,6 +370,18 @@ object collection:
       override inline def message: String = "Head: (" + summonInline[Impl].message + ")"
 
     inline given headString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): HeadString[C, Impl] = new HeadString
+
+    private def checkIterable[A : Type, I <: Iterable[A] : Type, C, Impl <: Constraint[A, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.toExprList match
+        case Some(list) =>
+          list.headOption match
+            case Some(head) => applyConstraint(list.head, constraintExpr)
+            case None       => Expr(false)
+          
+        case None => '{ $expr.exists(c => ${ applyConstraint('c, constraintExpr) }) }
 
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil

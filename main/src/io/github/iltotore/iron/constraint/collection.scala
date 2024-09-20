@@ -213,9 +213,9 @@ object collection:
 
     class InitIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Init[C]]:
 
-      override inline def test(inline value: I): Boolean = value.isEmpty || value.init.forall(summonInline[Impl].test(_))
+      override inline def test(inline value: I): Boolean = ${ checkIterable('value, '{ summonInline[Impl] }) }
 
-      override inline def message: String = "For each element except head: (" + summonInline[Impl].message + ")"
+      override inline def message: String = "For each element except last: (" + summonInline[Impl].message + ")"
 
     inline given [A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): InitIterable[A, I, C, Impl] =
       new InitIterable
@@ -227,6 +227,19 @@ object collection:
       override inline def message: String = "For each element except last: (" + summonInline[Impl].message + ")"
 
     inline given initString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): InitString[C, Impl] = new InitString
+
+    private def checkIterable[A : Type, I <: Iterable[A] : Type, C, Impl <: Constraint[A, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.toExprList match
+        case Some(list) =>
+          list
+            .init
+            .map(applyConstraint(_, constraintExpr))
+            .foldLeft(Expr(true))((e, t) => '{ $e && $t })
+      
+        case None => '{ $expr.init.forall(c => ${ applyConstraint('c, constraintExpr) }) }
 
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
@@ -250,9 +263,9 @@ object collection:
 
     class TailIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Tail[C]]:
 
-      override inline def test(inline value: I): Boolean = value.isEmpty || value.tail.forall(summonInline[Impl].test(_))
+      override inline def test(inline value: I): Boolean = ${ checkIterable('value, '{ summonInline[Impl] }) }
 
-      override inline def message: String = "For each element: (" + summonInline[Impl].message + ")"
+      override inline def message: String = "For each element except head: (" + summonInline[Impl].message + ")"
 
     inline given [A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): TailIterable[A, I, C, Impl] =
       new TailIterable
@@ -261,9 +274,22 @@ object collection:
 
       override inline def test(inline value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
 
-      override inline def message: String = "For each element: (" + summonInline[Impl].message + ")"
+      override inline def message: String = "For each element except head: (" + summonInline[Impl].message + ")"
 
     inline given tailString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): TailString[C, Impl] = new TailString
+
+    private def checkIterable[A : Type, I <: Iterable[A] : Type, C, Impl <: Constraint[A, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.toExprList match
+        case Some(list) =>
+          list
+            .tail
+            .map(applyConstraint(_, constraintExpr))
+            .foldLeft(Expr(true))((e, t) => '{ $e && $t })
+      
+        case None => '{ $expr.tail.forall(c => ${ applyConstraint('c, constraintExpr) }) }
 
     private def checkString[C, Impl <: Constraint[Char, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil

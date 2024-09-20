@@ -116,15 +116,16 @@ company to the list.
 
 ### Companies
 
-- [Clever Cloud](https://www.clever-cloud.com/)
+- [Clever Cloud](https://www.clever-cloud.com)
 - [Ledger](https://github.com/LedgerHQ)
 - [Marss](https://github.com/marss)
 - [Association familiale Mulliez](https://fr.wikipedia.org/wiki/Association_familiale_Mulliez)
 
 ### Other projects
 
-- [gvolpe/trading](https://github.com/gvolpe/trading/) ([book](https://leanpub.com/feda))
+- [gvolpe/trading](https://github.com/gvolpe/trading) ([book](https://leanpub.com/feda))
 - [cheleb/laminar-form-derivation](https://github.com/cheleb/laminar-form-derivation)
+- [Lichess](https://lichess.org)
 - [Tessella](https://github.com/scala-tessella/tessella)
 
 ## Useful links

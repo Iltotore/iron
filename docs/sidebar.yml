@@ -5,6 +5,7 @@ subsection:
   - page: code-of-conduct.md
   - page: contributing.md
   - page: comparison-refined.md
+  - page: talks-and-articles.md
   - title: "Reference"
     directory: reference
     index: reference/index.md

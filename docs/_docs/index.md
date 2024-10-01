@@ -21,3 +21,4 @@ This website contains documentation and tutorial to take Iron in hand.
 
 - [[API docs|io.github.iltotore.iron]]
 - [References](reference/index.md)
+- [Talks and articles](talks-and-articles.md)

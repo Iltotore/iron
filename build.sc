@@ -286,7 +286,8 @@ object cats extends SubModule {
   def artifactName = "iron-cats"
 
   def ivyDeps = Agg(
-    ivy"org.typelevel::cats-core::2.8.0"
+    ivy"org.typelevel::cats-core::2.8.0",
+    ivy"org.typelevel::algebra::2.8.0"
   )
 
   object test extends Tests {

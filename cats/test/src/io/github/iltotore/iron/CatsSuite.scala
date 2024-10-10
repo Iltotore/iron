@@ -13,6 +13,7 @@ import _root_.cats.data.NonEmptyList
 import _root_.cats.data.Validated.{Invalid, Valid}
 
 import scala.runtime.stdLibPatches.Predef.assert
+import algebra.ring.AdditiveCommutativeSemigroup
 
 object CatsSuite extends TestSuite:
 
@@ -68,23 +69,39 @@ object CatsSuite extends TestSuite:
       Show[Person]
 
     test("alley") {
-      test("commutativeMonoid") {
+      test("commutativeSemigroup"):
         test("int"):
-          test("pos") - assert(CommutativeMonoid[Int :| Positive].combine(1, 5) == 6)
-          test("neg") - assert(CommutativeMonoid[Int :| Negative].combine(-1, -5) == -6)
+          test("pos") - assert(CommutativeSemigroup[Int :| Positive].combine(1, 5) == 6)
+          test("neg") - assert(CommutativeSemigroup[Int :| Negative].combine(-1, -5) == -6)
 
         test("long"):
-          test("pos") - assert(CommutativeMonoid[Long :| Positive].combine(1, 5) == 6)
-          test("neg") - assert(CommutativeMonoid[Long :| Negative].combine(-1, -5) == -6)
+          test("pos") - assert(CommutativeSemigroup[Long :| Positive].combine(1, 5) == 6)
+          test("neg") - assert(CommutativeSemigroup[Long :| Negative].combine(-1, -5) == -6)
 
         test("float"):
-          test("pos") - assert(CommutativeMonoid[Float :| Positive].combine(1, 5) == 6)
-          test("neg") - assert(CommutativeMonoid[Float :| Negative].combine(-1, -5) == -6)
+          test("pos") - assert(CommutativeSemigroup[Float :| Positive].combine(1, 5) == 6)
+          test("neg") - assert(CommutativeSemigroup[Float :| Negative].combine(-1, -5) == -6)
 
         test("double"):
-          test("pos") - assert(CommutativeMonoid[Double :| Positive].combine(1, 5) == 6)
-          test("neg") - assert(CommutativeMonoid[Double :| Negative].combine(-1, -5) == -6)
-      }
+          test("pos") - assert(CommutativeSemigroup[Double :| Positive].combine(1, 5) == 6)
+          test("neg") - assert(CommutativeSemigroup[Double :| Negative].combine(-1, -5) == -6)
+
+      test("additiveCommutativeSemigroup"):
+        test("int"):
+          test("pos") - assert(AdditiveCommutativeSemigroup[Int :| Positive].plus(1, 5) == 6)
+          test("neg") - assert(AdditiveCommutativeSemigroup[Int :| Negative].plus(-1, -5) == -6)
+
+        test("long"):
+          test("pos") - assert(AdditiveCommutativeSemigroup[Long :| Positive].plus(1, 5) == 6)
+          test("neg") - assert(AdditiveCommutativeSemigroup[Long :| Negative].plus(-1, -5) == -6)
+
+        test("float"):
+          test("pos") - assert(AdditiveCommutativeSemigroup[Float :| Positive].plus(1, 5) == 6)
+          test("neg") - assert(AdditiveCommutativeSemigroup[Float :| Negative].plus(-1, -5) == -6)
+
+        test("double"):
+          test("pos") - assert(AdditiveCommutativeSemigroup[Double :| Positive].plus(1, 5) == 6)
+          test("neg") - assert(AdditiveCommutativeSemigroup[Double :| Negative].plus(-1, -5) == -6)
     }
 
     test("eitherNec"):

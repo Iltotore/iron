@@ -1,10 +1,12 @@
 package io.github.iltotore.iron
 
-import _root_.cats.kernel.{CommutativeMonoid, Hash, LowerBounded, PartialOrder, UpperBounded}
+import _root_.cats.kernel.{CommutativeSemigroup, Hash, LowerBounded, PartialOrder, UpperBounded}
 import _root_.cats.{Eq, Monoid, Order, Show, Traverse}
 import io.github.iltotore.iron.constraint.numeric.*
 import scala.util.NotGiven
 import _root_.cats.Functor
+import algebra.instances.all.*
+import algebra.ring.AdditiveCommutativeSemigroup
 
 /**
  * Represent all Cats' typeclass instances for Iron.
@@ -30,35 +32,20 @@ private[iron] trait IronCatsInstances extends IronCatsLowPriority, RefinedTypeOp
   inline given [A, C, V](using inline ev: UpperBounded[A], implication: C ==> Greater[V]): UpperBounded[A :| C] =
     ev.asInstanceOf[UpperBounded[A :| C]]
 
-  private def posMonoid[A, C](using ev: CommutativeMonoid[A], shift: PosShift[A], implication: C ==> Positive): CommutativeMonoid[A :| C] =
-    new CommutativeMonoid[A :| C]:
+  private def commutativeSemigroup[A, C](using inner: CommutativeSemigroup[A], bounds: Bounds[A, C]): CommutativeSemigroup[A :| C] =
+    new CommutativeSemigroup[A :| C]:
 
-      override def empty: A :| C = ev.empty.asInstanceOf[A :| C]
+      override def combine(a: A :| C, b: A :| C): A :| C = bounds.shift(inner.combine(a, b))
 
-      override def combine(a: A :| C, b: A :| C): A :| C = shift.shift(ev.combine(a, b)).asInstanceOf[A :| C]
+  given posIntCommutativeSemigroup: CommutativeSemigroup[Int :| Positive] = commutativeSemigroup[Int, Positive]
+  given posLongCommutativeSemigroup: CommutativeSemigroup[Long :| Positive] = commutativeSemigroup[Long, Positive]
+  given posFloatCommutativeSemigroup: CommutativeSemigroup[Float :| Positive] = commutativeSemigroup[Float, Positive]
+  given posDoubleCommutativeSemigroup: CommutativeSemigroup[Double :| Positive] = commutativeSemigroup[Double, Positive]
 
-  inline given posIntCommutativeMonoid[C](using C ==> Positive): CommutativeMonoid[Int :| C] = posMonoid
-
-  inline given posLongCommutativeMonoid[C](using C ==> Positive): CommutativeMonoid[Long :| C] = posMonoid
-
-  inline given posFloatCommutativeMonoid[C](using C ==> Positive): CommutativeMonoid[Float :| C] = posMonoid
-
-  inline given posDoubleCommutativeMonoid[C](using C ==> Positive): CommutativeMonoid[Double :| C] = posMonoid
-
-  private def negMonoid[A, C](using ev: CommutativeMonoid[A], shift: NegShift[A], implication: C ==> Negative): CommutativeMonoid[A :| C] =
-    new CommutativeMonoid[A :| C]:
-
-      override def empty: A :| C = ev.empty.asInstanceOf[A :| C]
-
-      override def combine(a: A :| C, b: A :| C): A :| C = shift.shift(ev.combine(a, b)).asInstanceOf[A :| C]
-
-  inline given negIntCommutativeMonoid[C](using C ==> Negative): CommutativeMonoid[Int :| C] = negMonoid
-
-  inline given negLongCommutativeMonoid[C](using C ==> Negative): CommutativeMonoid[Long :| C] = negMonoid
-
-  inline given negFloatCommutativeMonoid[C](using C ==> Negative): CommutativeMonoid[Float :| C] = negMonoid
-
-  inline given negDoubleCommutativeMonoid[C](using C ==> Negative): CommutativeMonoid[Double :| C] = negMonoid
+  given negIntCommutativeSemigroup: CommutativeSemigroup[Int :| Negative] = commutativeSemigroup[Int, Negative]
+  given negLongCommutativeSemigroup: CommutativeSemigroup[Long :| Negative] = commutativeSemigroup[Long, Negative]
+  given negFloatCommutativeSemigroup: CommutativeSemigroup[Float :| Negative] = commutativeSemigroup[Float, Negative]
+  given negDoubleCommutativeSemigroup: CommutativeSemigroup[Double :| Negative] = commutativeSemigroup[Double, Negative]
 
 /**
  * Cats' instances for Iron that need to have a lower priority to avoid ambiguous implicits.
@@ -80,3 +67,18 @@ private trait RefinedTypeOpsCats extends RefinedTypeOpsCatsLowPriority:
 private trait RefinedTypeOpsCatsLowPriority:
 
   inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]
+
+  private def additiveCommutativeSemigroup[A, C](using inner: AdditiveCommutativeSemigroup[A], bounds: Bounds[A, C]): AdditiveCommutativeSemigroup[A :| C] = (x, y) =>
+    bounds.shift(inner.plus(x, y))
+
+  given posIntAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Int :| Positive] = additiveCommutativeSemigroup[Int, Positive]
+  given posLongAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Long :| Positive] = additiveCommutativeSemigroup[Long, Positive]
+  given posFloatAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Float :| Positive] = additiveCommutativeSemigroup[Float, Positive]
+  given posDoubleAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Double :| Positive] = additiveCommutativeSemigroup[Double, Positive]
+
+  given negIntAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Int :| Negative] = additiveCommutativeSemigroup[Int, Negative]
+  given negLongAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Long :| Negative] = additiveCommutativeSemigroup[Long, Negative]
+  given negFloatAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Float :| Negative] = additiveCommutativeSemigroup[Float, Negative]
+  given negDoubleAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Double :| Negative] = additiveCommutativeSemigroup[Double, Negative]
+
+  

@@ -1,12 +1,12 @@
 package io.github.iltotore.iron
 
-import _root_.cats.kernel.{CommutativeSemigroup, Hash, LowerBounded, PartialOrder, UpperBounded}
+import _root_.cats.kernel.{CommutativeMonoid, CommutativeSemigroup, Hash, LowerBounded, PartialOrder, UpperBounded}
 import _root_.cats.{Eq, Monoid, Order, Show, Traverse}
 import io.github.iltotore.iron.constraint.numeric.*
 import scala.util.NotGiven
 import _root_.cats.Functor
 import algebra.instances.all.*
-import algebra.ring.AdditiveCommutativeSemigroup
+import algebra.ring.{AdditiveCommutativeMonoid, AdditiveCommutativeSemigroup}
 
 /**
  * Represent all Cats' typeclass instances for Iron.
@@ -46,6 +46,23 @@ private[iron] trait IronCatsInstances extends IronCatsLowPriority, RefinedTypeOp
   given negLongCommutativeSemigroup: CommutativeSemigroup[Long :| Negative] = commutativeSemigroup[Long, Negative]
   given negFloatCommutativeSemigroup: CommutativeSemigroup[Float :| Negative] = commutativeSemigroup[Float, Negative]
   given negDoubleCommutativeSemigroup: CommutativeSemigroup[Double :| Negative] = commutativeSemigroup[Double, Negative]
+  
+  private def commutativeMonoid[A, C](using inner: CommutativeMonoid[A], bounds: Bounds[A, C]): CommutativeMonoid[A :| C] =
+    new CommutativeMonoid[A :| C]:
+
+      override def empty: A :| C = inner.empty.assume[C]
+
+      override def combine(a: A :| C, b: A :| C): A :| C = bounds.shift(inner.combine(a, b))
+
+  given posIntCommutativeMonoid: CommutativeMonoid[Int :| Positive0] = commutativeMonoid[Int, Positive0]
+  given posLongCommutativeMonoid: CommutativeMonoid[Long :| Positive0] = commutativeMonoid[Long, Positive0]
+  given posFloatCommutativeMonoid: CommutativeMonoid[Float :| Positive0] = commutativeMonoid[Float, Positive0]
+  given posDoubleCommutativeMonoid: CommutativeMonoid[Double :| Positive0] = commutativeMonoid[Double, Positive0]
+
+  given negIntCommutativeMonoid: CommutativeMonoid[Int :| Negative0] = commutativeMonoid[Int, Negative0]
+  given negLongCommutativeMonoid: CommutativeMonoid[Long :| Negative0] = commutativeMonoid[Long, Negative0]
+  given negFloatCommutativeMonoid: CommutativeMonoid[Float :| Negative0] = commutativeMonoid[Float, Negative0]
+  given negDoubleCommutativeMonoid: CommutativeMonoid[Double :| Negative0] = commutativeMonoid[Double, Negative0]
 
 /**
  * Cats' instances for Iron that need to have a lower priority to avoid ambiguous implicits.
@@ -80,5 +97,20 @@ private trait RefinedTypeOpsCatsLowPriority:
   given negLongAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Long :| Negative] = additiveCommutativeSemigroup[Long, Negative]
   given negFloatAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Float :| Negative] = additiveCommutativeSemigroup[Float, Negative]
   given negDoubleAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Double :| Negative] = additiveCommutativeSemigroup[Double, Negative]
+
+  private def additiveCommutativeMonoid[A, C](using inner: AdditiveCommutativeMonoid[A], bounds: Bounds[A, C]): AdditiveCommutativeMonoid[A :| C] = new:
+
+    override def zero: A :| C = inner.zero.assume[C]
+    override def plus(x: A :| C, y: A :| C): A :| C = bounds.shift(inner.plus(x, y))
+
+  given posIntAdditiveCommutativeMonoid: AdditiveCommutativeMonoid[Int :| Positive0] = additiveCommutativeMonoid[Int, Positive0]
+  given posLongAdditiveCommutativeMonoid: AdditiveCommutativeMonoid[Long :| Positive0] = additiveCommutativeMonoid[Long, Positive0]
+  given posFloatAdditiveCommutativeMonoid: AdditiveCommutativeMonoid[Float :| Positive0] = additiveCommutativeMonoid[Float, Positive0]
+  given posDoubleAdditiveCommutativeMonoid: AdditiveCommutativeMonoid[Double :| Positive0] = additiveCommutativeMonoid[Double, Positive0]
+
+  given negIntAdditiveCommutativeMonoid: AdditiveCommutativeMonoid[Int :| Negative0] = additiveCommutativeMonoid[Int, Negative0]
+  given negLongAdditiveCommutativeMonoid: AdditiveCommutativeMonoid[Long :| Negative0] = additiveCommutativeMonoid[Long, Negative0]
+  given negFloatAdditiveCommutativeMonoid: AdditiveCommutativeMonoid[Float :| Negative0] = additiveCommutativeMonoid[Float, Negative0]
+  given negDoubleAdditiveCommutativeMonoid: AdditiveCommutativeMonoid[Double :| Negative0] = additiveCommutativeMonoid[Double, Negative0]
 
   

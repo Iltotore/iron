@@ -13,7 +13,7 @@ import _root_.cats.data.NonEmptyList
 import _root_.cats.data.Validated.{Invalid, Valid}
 
 import scala.runtime.stdLibPatches.Predef.assert
-import algebra.ring.AdditiveCommutativeSemigroup
+import algebra.ring.{AdditiveCommutativeMonoid, AdditiveCommutativeSemigroup}
 
 object CatsSuite extends TestSuite:
 
@@ -86,6 +86,23 @@ object CatsSuite extends TestSuite:
           test("pos") - assert(CommutativeSemigroup[Double :| Positive].combine(1, 5) == 6)
           test("neg") - assert(CommutativeSemigroup[Double :| Negative].combine(-1, -5) == -6)
 
+      test("commutativeMonoid"):
+        test("int"):
+          test("pos") - assert(CommutativeMonoid[Int :| Positive0].combine(1, 5) == 6)
+          test("neg") - assert(CommutativeMonoid[Int :| Negative0].combine(-1, -5) == -6)
+
+        test("long"):
+          test("pos") - assert(CommutativeMonoid[Long :| Positive0].combine(1, 5) == 6)
+          test("neg") - assert(CommutativeMonoid[Long :| Negative0].combine(-1, -5) == -6)
+
+        test("float"):
+          test("pos") - assert(CommutativeMonoid[Float :| Positive0].combine(1, 5) == 6)
+          test("neg") - assert(CommutativeMonoid[Float :| Negative0].combine(-1, -5) == -6)
+
+        test("double"):
+          test("pos") - assert(CommutativeMonoid[Double :| Positive0].combine(1, 5) == 6)
+          test("neg") - assert(CommutativeMonoid[Double :| Negative0].combine(-1, -5) == -6)
+
       test("additiveCommutativeSemigroup"):
         test("int"):
           test("pos") - assert(AdditiveCommutativeSemigroup[Int :| Positive].plus(1, 5) == 6)
@@ -102,6 +119,23 @@ object CatsSuite extends TestSuite:
         test("double"):
           test("pos") - assert(AdditiveCommutativeSemigroup[Double :| Positive].plus(1, 5) == 6)
           test("neg") - assert(AdditiveCommutativeSemigroup[Double :| Negative].plus(-1, -5) == -6)
+
+      test("additiveCommutativeMonoid"):
+        test("int"):
+          test("pos") - assert(AdditiveCommutativeMonoid[Int :| Positive0].plus(1, 5) == 6)
+          test("neg") - assert(AdditiveCommutativeMonoid[Int :| Negative0].plus(-1, -5) == -6)
+
+        test("long"):
+          test("pos") - assert(AdditiveCommutativeMonoid[Long :| Positive0].plus(1, 5) == 6)
+          test("neg") - assert(AdditiveCommutativeMonoid[Long :| Negative0].plus(-1, -5) == -6)
+
+        test("float"):
+          test("pos") - assert(AdditiveCommutativeMonoid[Float :| Positive0].plus(1, 5) == 6)
+          test("neg") - assert(AdditiveCommutativeMonoid[Float :| Negative0].plus(-1, -5) == -6)
+
+        test("double"):
+          test("pos") - assert(AdditiveCommutativeMonoid[Double :| Positive0].plus(1, 5) == 6)
+          test("neg") - assert(AdditiveCommutativeMonoid[Double :| Negative0].plus(-1, -5) == -6)
     }
 
     test("eitherNec"):

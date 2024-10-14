@@ -6,7 +6,7 @@ import io.github.iltotore.iron.constraint.numeric.*
 import scala.util.NotGiven
 import _root_.cats.Functor
 import algebra.instances.all.*
-import algebra.ring.{AdditiveCommutativeMonoid, AdditiveCommutativeSemigroup}
+import algebra.ring.{AdditiveCommutativeMonoid, AdditiveCommutativeSemigroup, MultiplicativeGroup, MultiplicativeMonoid}
 
 /**
  * Represent all Cats' typeclass instances for Iron.
@@ -113,4 +113,8 @@ private trait RefinedTypeOpsCatsLowPriority:
   given negFloatAdditiveCommutativeMonoid: AdditiveCommutativeMonoid[Float :| Negative0] = additiveCommutativeMonoid[Float, Negative0]
   given negDoubleAdditiveCommutativeMonoid: AdditiveCommutativeMonoid[Double :| Negative0] = additiveCommutativeMonoid[Double, Negative0]
 
-  
+  given multiplicativeMonoid[A, C](using inner: MultiplicativeMonoid[A]): MultiplicativeMonoid[A :| C] =
+    inner.assumeAll[C]
+
+  given multiplicativeGroup[A, C](using inner: MultiplicativeGroup[A]): MultiplicativeGroup[A :| C] =
+    inner.assumeAll[C]

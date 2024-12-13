@@ -24,21 +24,21 @@ object collection:
   final class Length[C]
 
   /**
-   * Tests minimum length. Supports [[Iterable]] and [[String]] by default.
+   * Tests minimum length. Supports [[Iterable]], [[String]] and [[Array]] by default.
    *
    * @tparam V the minimum length of the tested input
    */
   type MinLength[V <: Int] = DescribedAs[Length[GreaterEqual[V]], "Should have a minimum length of " + V]
 
   /**
-   * Tests maximum length. Supports [[Iterable]] and [[String]] by default.
+   * Tests maximum length. Supports [[Iterable]], [[String]] and [[Array]] by default.
    *
    * @tparam V the maximum length of the tested input
    */
   type MaxLength[V <: Int] = DescribedAs[Length[LessEqual[V]], "Should have a maximum length of " + V]
 
   /**
-   * Tests exact length. Supports [[Iterable]] and [[String]] by default.
+   * Tests exact length. Supports [[Iterable]], [[String]] and [[Array]] by default.
    */
   type FixedLength[V <: Int] = DescribedAs[Length[StrictEqual[V]], "Should have an exact length of " + V]
 
@@ -49,6 +49,7 @@ object collection:
 
   /**
    * Tests if the given collection contains a specific value.
+   * Supports [[Iterable]], [[String]] and [[Array]]
    *
    * @tparam V the value the input must contain.
    */
@@ -111,6 +112,14 @@ object collection:
 
     inline given lengthString[C, Impl <: Constraint[Int, C]](using inline impl: Impl): LengthString[C, Impl] = new LengthString
 
+    class LengthArray[A, C, Impl <: Constraint[Int, C]](using Impl) extends Constraint[Array[A], Length[C]]:
+
+      override inline def test(inline value: Array[A]): Boolean = ${ checkArray('value, '{ summonInline[Impl] }) }
+
+      override inline def message: String = "Length: (" + summonInline[Impl].message + ")"
+
+    inline given lengthArray[A, C, Impl <: Constraint[Int, C]](using inline impl: Impl): LengthArray[A, C, Impl] = new LengthArray
+
     private def checkIterable[I <: Iterable[?]: Type, C, Impl <: Constraint[Int, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using
         Quotes
     ): Expr[Boolean] =
@@ -122,6 +131,14 @@ object collection:
         case _            => applyConstraint('{ $expr.size }, constraintExpr)
 
     private def checkString[C, Impl <: Constraint[Int, C]](expr: Expr[String], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.decode match
+        case Right(value) => applyConstraint(Expr(value.length), constraintExpr)
+        case _            => applyConstraint('{ $expr.length }, constraintExpr)
+
+    private def checkArray[C, Impl <: Constraint[Int, C]](expr: Expr[Array[?]], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
 
@@ -144,6 +161,12 @@ object collection:
 
       override inline def message: String = "Should contain the string " + constValue[V]
 
+    inline given [A, V <: A]: Constraint[Array[A], Contain[V]] with
+
+      override inline def test(inline value: Array[A]): Boolean = ${ checkArray('value, '{ constValue[V] }) }
+
+      override inline def message: String = "Should contain the value " + constValue[V]
+
     private def checkIterable[I <: Iterable[?]: Type, V: Type](expr: Expr[I], partExpr: Expr[V])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
@@ -153,6 +176,14 @@ object collection:
         case _                           => '{ ${ expr }.iterator.contains($partExpr) }
 
     private def checkString(expr: Expr[String], partExpr: Expr[String])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      (expr.decode, partExpr.decode) match
+        case (Right(value), Right(part)) => Expr(value.contains(part))
+        case _                           => '{ ${ expr }.contains($partExpr) }
+
+    private def checkArray[V: Type](expr: Expr[Array[V]], partExpr: Expr[V])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
 

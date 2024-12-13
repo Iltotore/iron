@@ -26,6 +26,10 @@ object CollectionSuite extends TestSuite:
         test - "1234".assertRefine[Length[Greater[3]]]
         test - "123".assertNotRefine[Length[Greater[3]]]
 
+      test("array"):
+        test - Array(1, 2, 3, 4).assertRefine[Length[Greater[3]]]
+        test - Array(1, 2, 3).assertNotRefine[Length[Greater[3]]]
+
     test("minLength"):
       test("iterable"):
         test - List(1, 2, 3, 4).assertRefine[MinLength[4]]
@@ -34,6 +38,10 @@ object CollectionSuite extends TestSuite:
       test("string"):
         test - "abc".assertNotRefine[MinLength[4]]
         test - "abcd".assertRefine[MinLength[4]]
+
+      test("array"):
+        test - Array(1, 2, 3, 4).assertRefine[MinLength[4]]
+        test - Array(1, 2, 3).assertNotRefine[MinLength[4]]
 
     test("maxLength"):
       test("iterable"):
@@ -44,6 +52,10 @@ object CollectionSuite extends TestSuite:
         test - "abc".assertRefine[MaxLength[3]]
         test - "abcd".assertNotRefine[MaxLength[3]]
 
+      test("array"):
+        test - Array(1, 2, 3).assertRefine[MaxLength[3]]
+        test - Array(1, 2, 3, 4).assertNotRefine[MaxLength[3]]
+
     test("empty"):
       test("iterable"):
         test - Nil.assertRefine[Empty]
@@ -52,6 +64,10 @@ object CollectionSuite extends TestSuite:
       test("string"):
         test - "".assertRefine[Empty]
         test - "abc".assertNotRefine[Empty]
+
+      test("array"):
+        test - Array.emptyIntArray.assertRefine[Empty]
+        test - Array(1, 2, 3).assertNotRefine[Empty]
 
     test("fixedLength"):
       test("iterable"):
@@ -64,6 +80,11 @@ object CollectionSuite extends TestSuite:
         test - "ab".assertNotRefine[FixedLength[3]]
         test - "abcd".assertNotRefine[FixedLength[3]]
 
+      test("array"):
+        test - Array(1, 2, 3).assertRefine[FixedLength[3]]
+        test - Array(1, 2).assertNotRefine[FixedLength[3]]
+        test - Array(1, 2, 3, 4).assertNotRefine[FixedLength[3]]
+
     test("contain"):
       test("iterable"):
         test - List(1, 2, 3).assertRefine[Contain[3]]
@@ -72,6 +93,10 @@ object CollectionSuite extends TestSuite:
       test("string"):
         test - "abc".assertRefine[Contain["c"]]
         test - "abd".assertNotRefine[Contain["c"]]
+
+      test("array"):
+        test - Array(1, 2, 3).assertRefine[Contain[3]]
+        test - Array(1, 2, 4).assertNotRefine[Contain[3]]
 
     test("forAll"):
       test("iterable"):

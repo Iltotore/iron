@@ -78,7 +78,7 @@ def isIronTypeImpl[T: Type, C: Type](using Quotes): Expr[Boolean] =
   val implicationType = TypeRepr.of[Implication]
   val targetConstraintType = TypeRepr.of[C]
 
-  TypeRepr.of[T] match
+  TypeRepr.of[T].dealias match
     case AppliedType(tpe, List(baseType, constraintType)) if tpe =:= ironType =>
       Implicits.search(implicationType.appliedTo(List(constraintType, targetConstraintType))) match
         case _: ImplicitSearchSuccess => Expr(true)

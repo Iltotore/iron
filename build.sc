@@ -376,7 +376,7 @@ object zioJson extends SubModule {
   def artifactName = "iron-zio-json"
 
   def ivyDeps = Agg(
-    ivy"dev.zio::zio-json::0.3.0"
+    ivy"dev.zio::zio-json::0.7.14"
   )
 
   object js extends JSCrossModule

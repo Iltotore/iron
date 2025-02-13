@@ -453,7 +453,7 @@ object skunk extends SubModule {
 
   object js extends JSCrossModule
 
-  object native extends NativeCrossModule
+  object native extends NativeCrossModule04
 
 }
 

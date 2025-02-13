@@ -400,7 +400,7 @@ object jsoniter extends SubModule {
 
   def artifactName = "iron-jsoniter"
 
-  val jsoniterVersion = "2.19.1"
+  val jsoniterVersion = "2.33.2"
 
   private val jsoniterMacros = ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:$jsoniterVersion"
 

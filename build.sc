@@ -9,7 +9,7 @@ import scalalib._, scalalib.scalafmt._, scalalib.publish._, scalajslib._, scalan
 object versions {
   val scala = "3.4.3"
   val scalaJS = "1.16.0"
-  val scalaNative = "0.4.17"
+  val scalaNative = "0.5.6"
 }
 
 trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { outer =>
@@ -68,6 +68,13 @@ trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { 
     def segment = "native"
 
     def scalaNativeVersion = versions.scalaNative
+  }
+
+  trait NativeCrossModule04 extends CrossModule with ScalaNativeModule {
+
+    def segment = "native"
+
+    def scalaNativeVersion = "0.4.17"
   }
 }
 
@@ -286,8 +293,8 @@ object cats extends SubModule {
   def artifactName = "iron-cats"
 
   def ivyDeps = Agg(
-    ivy"org.typelevel::cats-core::2.8.0",
-    ivy"org.typelevel::algebra::2.8.0"
+    ivy"org.typelevel::cats-core::2.13.0",
+    ivy"org.typelevel::algebra::2.13.0"
   )
 
   object test extends Tests {
@@ -323,7 +330,7 @@ object circe extends SubModule {
   def artifactName = "iron-circe"
 
   def ivyDeps = Agg(
-    ivy"io.circe::circe-core::0.14.3"
+    ivy"io.circe::circe-core::0.14.10"
   )
 
   object js extends JSCrossModule
@@ -348,7 +355,7 @@ object ciris extends SubModule {
 
   object js extends JSCrossModule
 
-  object native extends NativeCrossModule
+  object native extends NativeCrossModule04
 
 }
 

@@ -186,6 +186,7 @@ object main extends BaseModule {
 
   object js extends JSCrossModule
   object native extends NativeCrossModule
+  object native04 extends NativeCrossModule04
 }
 
 object examples extends Module {
@@ -281,6 +282,12 @@ trait SubModule extends BaseModule {
     def moduleDeps = Seq(main.native)
   }
 
+  trait NativeCrossModule04 extends super.NativeCrossModule04 {
+
+    def transitiveIvyDeps = T { super.transitiveIvyDeps().filter(d => !(d.dep.module.name.value == "scala3-library")) }
+
+    def moduleDeps = Seq(main.native04)
+  }
 }
 
 object sandbox extends SubModule {

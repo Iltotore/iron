@@ -486,7 +486,7 @@ object decline extends SubModule {
   def artifactName = "iron-decline"
 
   def ivyDeps = Agg(
-    ivy"com.monovore::decline::2.4.1"
+    ivy"com.monovore::decline::2.5.0"
   )
 
   object test extends Tests

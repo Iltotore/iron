@@ -33,6 +33,8 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      */
     def decode: DecodingResult[T] = ExprDecoder.decodeTerm(expr.asTerm, Map.empty).as[T]
 
+  case class FailureCause(message: String, position: Position)
+
   /**
    * A decoding failure.
    */
@@ -48,9 +50,9 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
     /**
      * A definition is not inlined.
      *
-     * @param name the name definition
+     * @param definition the name definition
      */
-    case DefinitionNotInlined(name: String)
+    case DefinitionNotInlined(definition: Definition)
 
     /**
      * The term could not be fully inlined because it has runtime bindings/depends on runtime definitions.
@@ -99,15 +101,44 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
     case StringPartsNotInlined(parts: List[DecodingResult[String]])
 
     /**
-     * The given String interpolator cannot be inlined.
-     */
-    case InterpolatorNotInlined(name: String)
-
-    /**
      * An unknown failure.
      */
     case Unknown
 
+    /**
+     * The root causes of the failure tree, aka its leaves.
+     */
+    def rootCauses(using Printer[Tree]): Set[FailureCause] = this match
+      case NotInlined(term) => Set(FailureCause(s"Term not inlined: ${term.show}", term.pos))
+      case DefinitionNotInlined(definition) =>
+        Set(FailureCause(s"Definition not inlined: ${definition.name}. Only vals and zero-arg defs can be inlined.", definition.pos))
+      case HasBindings(defFailures) => defFailures.toSet.flatMap(_._2.rootCauses)
+      case HasStatements(block) =>
+        block.statements.toSet.map(stat =>
+          FailureCause(s"Statement prevents inlining: ${stat.show}", stat.pos)
+        )
+      case ApplyNotInlined(name, parameters) =>
+        parameters
+          .collect:
+            case Left(failure) => failure
+          .toSet
+          .flatMap(_.rootCauses)
+      case VarArgsNotInlined(args) =>
+        args
+          .collect:
+              case Left(failure) => failure
+          .toSet
+          .flatMap(_.rootCauses)
+      case OrNotInlined(left, right) => left.fold(_.rootCauses, _ => Set.empty) ++ right.fold(_.rootCauses, _ => Set.empty)
+      case AndNotInlined(left, right) => left.fold(_.rootCauses, _ => Set.empty) ++ right.fold(_.rootCauses, _ => Set.empty)
+      case StringPartsNotInlined(parts) =>
+        parts
+          .collect:
+              case Left(failure) => failure
+          .toSet
+          .flatMap(_.rootCauses)
+      case Unknown => Set(FailureCause("Unknown", Position.ofMacroExpansion))
+    
     /**
      * Pretty print this failure.
      *
@@ -118,7 +149,8 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
     def prettyPrint(bodyIdent: Int = 0, firstLineIdent: Int = 0)(using Printer[Tree]): String =
       val unindented = this match
         case NotInlined(term)           => s"Term not inlined: ${term.show}"
-        case DefinitionNotInlined(name) => s"Definition not inlined: $name. Only vals and zero-arg def can be inlined."
+        case DefinitionNotInlined(definition) =>
+          s"Definition not inlined: ${definition.name}. Only vals and zero-arg defs can be inlined."
         case HasBindings(defFailures) =>
           val failures = defFailures
             .map((n, b) => s"- $n:\n${b.prettyPrint(2, 2)}")
@@ -176,8 +208,6 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
             .mkString("\n\n")
 
           s"String contatenation has non inlined arguments:\n$errors"
-
-        case InterpolatorNotInlined(name) => s"This interpolator is not supported: $name. Only `s` and `raw` are supported."
 
         case Unknown => "Unknown reason"
 
@@ -286,7 +316,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
     def decodeBinding(definition: Definition, definitions: Map[String, ?]): DecodingResult[?] = definition match
       case ValDef(name, tpeTree, Some(term))      => decodeTerm(term, definitions)
       case DefDef(name, Nil, tpeTree, Some(term)) => decodeTerm(term, definitions)
-      case _                                      => Left(DecodingFailure.DefinitionNotInlined(definition.name))
+      case _                                      => Left(DecodingFailure.DefinitionNotInlined(definition))
 
     /**
      * Decode a [[Boolean]] term using only [[Boolean]]-specific cases.

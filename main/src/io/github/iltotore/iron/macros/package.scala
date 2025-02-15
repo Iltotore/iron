@@ -5,6 +5,7 @@ import scala.Console.{MAGENTA, RESET}
 import scala.quoted.*
 import io.github.iltotore.iron.IronType
 import io.github.iltotore.iron.Implication
+import io.github.iltotore.iron.internal.IronConfig.CodeFormat
 
 /**
  * Asserts at compile time if the given condition is true.
@@ -22,9 +23,11 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
   import quotes.reflect.*
 
   given config: IronConfig = IronConfig.fromSystem
-  given Printer[Tree] =
-    if config.color then Printer.TreeAnsiCode
-    else Printer.TreeCode
+  given Printer[Tree] = config.codeFormat match
+    case CodeFormat.Full => Printer.TreeCode
+    case CodeFormat.FullColored => Printer.TreeAnsiCode
+    case CodeFormat.Short => Printer.TreeShortCode
+    case CodeFormat.Structure => Printer.TreeStructure
 
   val rflUtil = reflectUtil(using quotes)
   import rflUtil.*
@@ -37,6 +40,14 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
     if config.shortMessages then
       report.errorAndAbort("Cannot refine value at compile-time.")
     else
+      val reason =
+        if config.shortReasons then
+          failure
+            .rootCauses
+            .groupMapReduce(_.message)(failure => s"  - at ${failure.position}")(_ + "\n" + _)
+            .map((msg, pos) => s"$msg:\n" + pos)
+            .mkString("\n- ", "\n- ", "")
+        else failure.prettyPrint()
       compileTimeError(
         s"""Cannot refine value at compile-time because the predicate cannot be evaluated.
            |This is likely because the condition or the input value isn't fully inlined.
@@ -46,7 +57,7 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
            |${"Inlined input".colorized(MAGENTA)}: ${input.asTerm.show}
            |${"Inlined condition".colorized(MAGENTA)}: ${cond.asTerm.show}
            |${"Message".colorized(MAGENTA)}: $messageValue
-           |${"Reason".colorized(MAGENTA)}: ${failure.prettyPrint()}""".stripMargin
+           |${"Reason".colorized(MAGENTA)}: $reason""".stripMargin
       )
 
   val inputValue = input.decode.toOption

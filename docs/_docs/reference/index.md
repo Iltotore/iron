@@ -15,4 +15,5 @@ Find detailed documentation about the main concepts of Iron.
 ## Miscellaneous
 
 - [Refinement methods](refinement.md): compile-time and runtime ways to refine values.
-- [New types](newtypes.md): No-overhead new types from Iron constraints.
+- [New types](newtypes.md): no-overhead new types from Iron constraints.
+- [Iron messages configuration](config.md): configuration of compile-time error messages.

@@ -15,6 +15,7 @@ subsection:
       - page: reference/constraint.md
       - page: reference/implication.md
       - page: reference/newtypes.md
+      - page: reference/config.md
   - title: "Modules"
     directory: modules
     index: modules/index.md

@@ -5,6 +5,7 @@ import scala.compiletime.ops.*
 import scala.compiletime.ops.any.ToString
 import scala.quoted.*
 import scala.annotation.targetName
+import scala.reflect.ClassTag
 
 /**
  * Methods and types to ease compile-time operations.
@@ -215,3 +216,29 @@ object compileTime:
       case '{ scala.collection.immutable.List.empty[T] } => Some(Nil)
       case _ => None
     
+  extension [T : Type](expr: Expr[Array[T]])
+
+    def toExprListArr(using Quotes): Option[List[Expr[T]]] =
+      import quotes.reflect.*
+
+      expr match
+        case '{ scala.Array[T](${Varargs(elems)}*)(using $_) } => Some(elems.toList)
+        case '{ scala.Array.empty[T](using $_) } => Some(Nil)
+        case '{ scala.Array[T](${Varargs(elems)}*)(using $_) } => Some(elems.toList)
+        case '{ scala.Array.empty[T](using $_) } => Some(Nil)
+        case expr =>
+          def stripInlinedTyped(term: Term): Term = term match
+            case Inlined(_, Nil, t) => stripInlinedTyped(t)
+            case Typed(t, _)        => stripInlinedTyped(t)
+            case _ => term
+
+          stripInlinedTyped(expr.asTerm) match
+            case Apply(Select(Ident("Array"), "apply"), List(head, repeated)) =>
+              stripInlinedTyped(repeated) match
+                case Repeated(tail, _) =>
+                  val args = head :: tail
+                  Some(args.map(_.asExprOf[T]))
+                case _ => None
+            case _ => None
+                    
+          

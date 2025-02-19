@@ -210,6 +210,14 @@ object collection:
 
     inline given forAllString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): ForAllString[C, Impl] = new ForAllString
 
+    class ForAllArray[A, C, Impl <: Constraint[A, C]](using Impl) extends Constraint[Array[A], ForAll[C]]:
+
+      override inline def test(inline value: Array[A]): Boolean = ${ checkArray('value, '{ summonInline[Impl] }) }
+
+      override inline def message: String = "For each element: (" + summonInline[Impl].message + ")"
+
+    inline given forAllArray[A, C, Impl <: Constraint[A, C]](using inline impl: Impl): ForAllArray[A, C, Impl] = new ForAllArray
+
     private def checkIterable[A : Type, I <: Iterable[A] : Type, C, Impl <: Constraint[A, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
@@ -235,6 +243,21 @@ object collection:
 
         case _ => '{ $expr.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
 
+    private def checkArray[A : Type, C, Impl <: Constraint[A, C]](expr: Expr[Array[A]], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+      import quotes.reflect.*
+
+      expr.toExprListArr match
+        case Some(array) =>
+          array
+            .map(applyConstraint(_, constraintExpr))
+            .foldLeft(Expr(true))((e, t) => '{ $e && $t })
+      
+        case None =>
+          report.info(s"Cannot decode ${expr.asTerm.show(using Printer.TreeStructure)}")
+          '{ $expr.forall(c => ${ applyConstraint('c, constraintExpr) }) }
+
     given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Exists[C2]) = Implication()
     given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Last[C2]) = Implication()
     given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Init[C2]) = Implication()
@@ -258,6 +281,15 @@ object collection:
       override inline def message: String = "For each element except last: (" + summonInline[Impl].message + ")"
 
     inline given initString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): InitString[C, Impl] = new InitString
+
+    class InitArray[A, C, Impl <: Constraint[A, C]](using Impl) extends Constraint[Array[A], Init[C]]:
+
+      override inline def test(inline value: Array[A]): Boolean = ${ checkArray('value, '{ summonInline[Impl] }) }
+
+      override inline def message: String = "For each element except last: (" + summonInline[Impl].message + ")"
+
+    inline given [A, C, Impl <: Constraint[A, C]](using inline impl: Impl): InitArray[A, C, Impl] =
+      new InitArray
 
     private def checkIterable[A : Type, I <: Iterable[A] : Type, C, Impl <: Constraint[A, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
@@ -289,6 +321,22 @@ object collection:
 
         case _ => '{ $expr.init.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
 
+    private def checkArray[A : Type, C, Impl <: Constraint[A, C]](expr: Expr[Array[A]], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.toExprListArr match
+        case Some(list) =>
+          list match
+            case Nil => Expr(true)
+            case _ =>
+              list
+                .init
+                .map(applyConstraint(_, constraintExpr))
+                .foldLeft(Expr(true))((e, t) => '{ $e && $t })
+      
+        case None => '{ $expr.init.forall(c => ${ applyConstraint('c, constraintExpr) }) }
+
     given [C1, C2](using C1 ==> C2): (Init[C1] ==> Exists[C2]) = Implication()
 
     given [C1, C2](using C1 ==> C2): (Init[C1] ==> Head[C2]) = Implication()
@@ -309,6 +357,15 @@ object collection:
       override inline def test(inline value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "For each element except head: (" + summonInline[Impl].message + ")"
+
+    class TailArray[A, C, Impl <: Constraint[A, C]](using Impl) extends Constraint[Array[A], Tail[C]]:
+
+      override inline def test(inline value: Array[A]): Boolean = ${ checkArray('value, '{ summonInline[Impl] }) }
+
+      override inline def message: String = "For each element except head: (" + summonInline[Impl].message + ")"
+
+    inline given [A, C, Impl <: Constraint[A, C]](using inline impl: Impl): TailArray[A, C, Impl] =
+      new TailArray
 
     inline given tailString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): TailString[C, Impl] = new TailString
 
@@ -342,6 +399,22 @@ object collection:
 
         case _ => '{ $expr.tail.forallOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
 
+    private def checkArray[A : Type, C, Impl <: Constraint[A, C]](expr: Expr[Array[A]], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.toExprListArr match
+        case Some(list) =>
+          list match
+            case Nil => Expr(true)
+            case _ =>
+              list
+                .tail
+                .map(applyConstraint(_, constraintExpr))
+                .foldLeft(Expr(true))((e, t) => '{ $e && $t })
+      
+        case None => '{ $expr.tail.forall(c => ${ applyConstraint('c, constraintExpr) }) }
+
     given [C1, C2](using C1 ==> C2): (Tail[C1] ==> Exists[C2]) = Implication()
     given [C1, C2](using C1 ==> C2): (Tail[C1] ==> Last[C2]) = Implication()
 
@@ -361,8 +434,17 @@ object collection:
       override inline def test(inline value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "At least one element: (" + summonInline[Impl].message + ")"
-
+      
     inline given existsString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): ExistsString[C, Impl] = new ExistsString
+    
+    class ExistsArray[A, C, Impl <: Constraint[A, C]](using Impl) extends Constraint[Array[A], Exists[C]]:
+
+      override inline def test(inline value: Array[A]): Boolean = ${ checkArray('value, '{ summonInline[Impl] }) }
+
+      override inline def message: String = "At least one: (" + summonInline[Impl].message + ")"
+    
+    inline given [A, C, Impl <: Constraint[A, C]](using inline impl: Impl): ExistsArray[A, C, Impl] =
+      new ExistsArray
 
     private def checkIterable[A : Type, I <: Iterable[A] : Type, C, Impl <: Constraint[A, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
@@ -389,6 +471,18 @@ object collection:
 
         case _ => '{ $expr.existsOptimized(c => ${ applyConstraint('c, constraintExpr) }) }
 
+    private def checkArray[A : Type, C, Impl <: Constraint[A, C]](expr: Expr[Array[A]], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.toExprListArr match
+        case Some(list) =>
+          list
+            .map(applyConstraint(_, constraintExpr))
+            .foldLeft(Expr(false))((e, t) => '{ $e || $t })
+
+        case None => '{ $expr.exists(c => ${ applyConstraint('c, constraintExpr) }) }
+
   object Head:
 
     class HeadIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Head[C]]:
@@ -407,6 +501,15 @@ object collection:
       override inline def message: String = "Head: (" + summonInline[Impl].message + ")"
 
     inline given headString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): HeadString[C, Impl] = new HeadString
+
+    class HeadArray[A, C, Impl <: Constraint[A, C]](using Impl) extends Constraint[Array[A], Head[C]]:
+
+      override inline def test(inline value: Array[A]): Boolean = ${ checkArray('value, '{ summonInline[Impl] }) }
+
+      override inline def message: String = "Head: (" + summonInline[Impl].message + ")"
+
+    inline given [A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using inline impl: Impl): HeadArray[A, C, Impl] =
+      new HeadArray
 
     private def checkIterable[A : Type, I <: Iterable[A] : Type, C, Impl <: Constraint[A, C]](expr: Expr[I], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
@@ -431,6 +534,18 @@ object collection:
             case None       => Expr(false)
         case _ => '{ $expr.headOption.exists(head => ${ applyConstraint('{ head }, constraintExpr) }) }
 
+    private def checkArray[A : Type, C, Impl <: Constraint[A, C]](expr: Expr[Array[A]], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.toExprListArr match
+        case Some(list) =>
+          list.headOption match
+            case Some(head) => applyConstraint(head, constraintExpr)
+            case None       => Expr(false)
+          
+        case None => '{ $expr.headOption.exists(c => ${ applyConstraint('c, constraintExpr) }) }
+
     given [C1, C2](using C1 ==> C2): (Head[C1] ==> Exists[C2]) = Implication()
 
   object Last:
@@ -449,6 +564,15 @@ object collection:
       override inline def test(inline value: String): Boolean = ${ checkString('value, '{ summonInline[Impl] }) }
 
       override inline def message: String = "Last: (" + summonInline[Impl].message + ")"
+
+    class LastArray[A, C, Impl <: Constraint[A, C]](using Impl) extends Constraint[Array[A], Last[C]]:
+
+      override inline def test(inline value: Array[A]): Boolean = ${ checkArray('value, '{ summonInline[Impl] }) }
+
+      override inline def message: String = "Last: (" + summonInline[Impl].message + ")"
+
+    inline given [A, C, Impl <: Constraint[A, C]](using inline impl: Impl): LastArray[A, C, Impl] =
+      new LastArray
 
     inline given lastString[C, Impl <: Constraint[Char, C]](using inline impl: Impl): LastString[C, Impl] = new LastString
 
@@ -474,6 +598,18 @@ object collection:
             case Some(last) => applyConstraint(Expr(last), constraintExpr)
             case None       => Expr(false)
         case _ => '{ $expr.lastOption.exists(last => ${ applyConstraint('{ last }, constraintExpr) }) }
+
+    private def checkArray[A : Type, C, Impl <: Constraint[A, C]](expr: Expr[Array[A]], constraintExpr: Expr[Impl])(using Quotes): Expr[Boolean] =
+      val rflUtil = reflectUtil
+      import rflUtil.*
+
+      expr.toExprListArr match
+        case Some(list) =>
+          list.lastOption match
+            case Some(last) => applyConstraint(last, constraintExpr)
+            case None       => Expr(false)
+          
+        case None => '{ $expr.lastOption.exists(c => ${ applyConstraint('c, constraintExpr) }) }
 
     given [C1, C2](using C1 ==> C2): (Last[C1] ==> Exists[C2]) = Implication()
 

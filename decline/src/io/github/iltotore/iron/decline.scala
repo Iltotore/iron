@@ -38,5 +38,5 @@ object decline:
    * @param argument the argument reader of the underlying type
    * @tparam T the new type.
    */
-  inline given [T](using mirror: RefinedTypeOps.Mirror[T], argument: Argument[mirror.IronType]): Argument[T] =
+  inline given [T](using mirror: RefinedType.Mirror[T], argument: Argument[mirror.IronType]): Argument[T] =
     argument.asInstanceOf[Argument[T]]

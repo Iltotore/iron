@@ -229,7 +229,7 @@ object cats extends IronCatsInstances:
           InvalidValue(value, constraint.message)
         )
 
-  extension [A, C, T](ops: RefinedTypeOps[A, C, T])
+  extension [A, C](ops: RefinedType[A, C])
 
     /**
      * Refine the given value at runtime, resulting in an [[EitherNec]].
@@ -238,7 +238,7 @@ object cats extends IronCatsInstances:
      * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
      * @see [[either]], [[eitherNel]].
      */
-    def eitherNec(value: A): EitherNec[String, T] = ops.either(value).toEitherNec
+    def eitherNec(value: A): EitherNec[String, ops.T] = ops.either(value).toEitherNec
 
     /**
      * Refine the given value at runtime, resulting in an [[EitherNel]].
@@ -247,7 +247,7 @@ object cats extends IronCatsInstances:
      * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
      * @see [[either]], [[eitherNec]].
      */
-    def eitherNel(value: A): EitherNel[String, T] = ops.either(value).toEitherNel
+    def eitherNel(value: A): EitherNel[String, ops.T] = ops.either(value).toEitherNel
 
     /**
      * Refine the given value at runtime, resulting in a [[Validated]].
@@ -256,8 +256,8 @@ object cats extends IronCatsInstances:
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing the constraint message.
      * @see [[validatedNec]], [[validatedNel]].
      */
-    def validated(value: A): Validated[String, T] =
-      if ops.rtc.test(value) then Validated.valid(value.asInstanceOf[T]) else Validated.invalid(ops.rtc.message)
+    def validated(value: A): Validated[String, ops.T] =
+      if ops.rtc.test(value) then Validated.valid(value.asInstanceOf[ops.T]) else Validated.invalid(ops.rtc.message)
 
     /**
      * Refine the given value applicatively at runtime, resulting in a [[ValidatedNec]].
@@ -266,8 +266,8 @@ object cats extends IronCatsInstances:
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyChain]] of error messages.
      * @see [[validated]], [[validatedNel]].
      */
-    def validatedNec(value: A): ValidatedNec[String, T] =
-      if ops.rtc.test(value) then Validated.validNec(value.asInstanceOf[T]) else Validated.invalidNec(ops.rtc.message)
+    def validatedNec(value: A): ValidatedNec[String, ops.T] =
+      if ops.rtc.test(value) then Validated.validNec(value.asInstanceOf[ops.T]) else Validated.invalidNec(ops.rtc.message)
 
     /**
      * Refine the given value applicatively at runtime, resulting in a [[ValidatedNel]].
@@ -276,8 +276,8 @@ object cats extends IronCatsInstances:
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyList]] of error messages.
      * @see [[validated]], [[validatedNec]].
      */
-    def validatedNel(value: A): ValidatedNel[String, T] =
-      if ops.rtc.test(value) then Validated.validNel(value.asInstanceOf[T]) else Validated.invalidNel(ops.rtc.message)
+    def validatedNel(value: A): ValidatedNel[String, ops.T] =
+      if ops.rtc.test(value) then Validated.validNel(value.asInstanceOf[ops.T]) else Validated.invalidNel(ops.rtc.message)
 
     /**
      * Refine the given values applicatively at runtime, resulting in a [[EitherNec]].
@@ -286,7 +286,7 @@ object cats extends IronCatsInstances:
      * @return a [[Right]] containing this value as [[IronType]] or an [[Left]] containing a [[NonEmptyChain]] of error messages.
      * @see [[eitherNec]], [[eitherAllNel]].
      */
-    def eitherAllNec[F[_]](value: F[A])(using Traverse[F]): EitherNec[InvalidValue[A], F[T]] =
+    def eitherAllNec[F[_]](value: F[A])(using Traverse[F]): EitherNec[InvalidValue[A], F[ops.T]] =
       ops.validatedAllNec(value).toEither
 
     /**
@@ -296,7 +296,7 @@ object cats extends IronCatsInstances:
      * @return a [[Right]] containing this value as [[IronType]] or an [[Left]] containing a [[NonEmptyList]] of error messages.
      * @see [[eitherNel]], [[eitherAllNec]].
      */
-    def eitherAllNel[F[_]](value: F[A])(using Traverse[F]): EitherNel[InvalidValue[A], F[T]] =
+    def eitherAllNel[F[_]](value: F[A])(using Traverse[F]): EitherNel[InvalidValue[A], F[ops.T]] =
       ops.validatedAllNel(value).toEither
 
     /**
@@ -306,9 +306,9 @@ object cats extends IronCatsInstances:
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyChain]] of error messages.
      * @see [[validatedNec]], [[validatedAllNel]].
      */
-    def validatedAllNec[F[_]](wrapper: F[A])(using traverse: Traverse[F]): ValidatedNec[InvalidValue[A], F[T]] =
+    def validatedAllNec[F[_]](wrapper: F[A])(using traverse: Traverse[F]): ValidatedNec[InvalidValue[A], F[ops.T]] =
       traverse.traverse(wrapper): value =>
-        Validated.condNec[InvalidValue[A], T](ops.rtc.test(value), ops.assume(value), InvalidValue(value, ops.rtc.message))
+        Validated.condNec[InvalidValue[A], ops.T](ops.rtc.test(value), ops.assume(value), InvalidValue(value, ops.rtc.message))
 
     /**
      * Refine the given values applicatively at runtime, resulting in a [[ValidatedNel]].
@@ -317,7 +317,7 @@ object cats extends IronCatsInstances:
      * @return a [[Valid]] containing this value as [[IronType]] or an [[Invalid]] containing a [[NonEmptyList]] of error messages.
      * @see [[validatedNel]], [[validatedAllNec]].
      */
-    def validatedAllNel[F[_]](wrapper: F[A])(using traverse: Traverse[F]): ValidatedNel[InvalidValue[A], F[T]] =
+    def validatedAllNel[F[_]](wrapper: F[A])(using traverse: Traverse[F]): ValidatedNel[InvalidValue[A], F[ops.T]] =
       traverse.traverse(wrapper): value =>
-        Validated.condNel[InvalidValue[A], T](ops.rtc.test(value), ops.assume(value), InvalidValue(value, ops.rtc.message))
+        Validated.condNel[InvalidValue[A], ops.T](ops.rtc.test(value), ops.assume(value), InvalidValue(value, ops.rtc.message))
 

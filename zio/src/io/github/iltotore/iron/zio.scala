@@ -40,22 +40,22 @@ object zio extends RefinedTypeOpsZio:
           constraint.test(_)
         )
 
-  extension [A, C, T](ops: RefinedTypeOps[A, C, T])
+  extension [A, C](ops: RefinedType[A, C])
     /**
      * Refine the given value applicatively at runtime, resulting in a [[Validation]].
      *
      * @return a [[Valid]] containing this value as [[T]] or an [[Validation.Failure]] containing a [[NonEmptyChunk]] of error messages.
      */
-    def validation(value: A): Validation[String, T] =
-      Validation.fromPredicateWith(ops.rtc.message)(value)(ops.rtc.test(_)).asInstanceOf[Validation[String, T]]
+    def validation(value: A): Validation[String, ops.T] =
+      Validation.fromPredicateWith(ops.rtc.message)(value)(ops.rtc.test(_)).asInstanceOf[Validation[String, ops.T]]
 
-  extension [A, C, T](ops: RefinedTypeOps[A, C, T])
+  extension [A, C](ops: RefinedType[A, C])
     /**
      * Refine the given values applicatively at runtime, resulting in a [[Validation]].
      *
      * @return a [[Valid]] containing the values as `F[T]` or an [[Validation.Failure]] containing a [[NonEmptyChunk]] of error messages.
      */
-    def validationAll[F[+_]](wrapper: F[A])(using forEach: ForEach[F]): Validation[InvalidValue[A], F[T]] =
+    def validationAll[F[+_]](wrapper: F[A])(using forEach: ForEach[F]): Validation[InvalidValue[A], F[ops.T]] =
       forEach.forEach(wrapper): value =>
         ops.assumeAll(Validation.fromPredicateWith[InvalidValue[A], A](InvalidValue(value, ops.rtc.message))(value)(ops.rtc.test(_)))
 
@@ -65,12 +65,12 @@ object zio extends RefinedTypeOpsZio:
 
 private trait RefinedTypeOpsZio extends RefinedTypeOpsZioLowPriority:
 
-  inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: Debug[mirror.IronType]): Debug[T] = ev.asInstanceOf[Debug[T]]
+  inline given [T](using mirror: RefinedType.Mirror[T], ev: Debug[mirror.IronType]): Debug[T] = ev.asInstanceOf[Debug[T]]
 
-  inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: Equal[mirror.IronType]): Equal[T] = ev.asInstanceOf[Equal[T]]
+  inline given [T](using mirror: RefinedType.Mirror[T], ev: Equal[mirror.IronType]): Equal[T] = ev.asInstanceOf[Equal[T]]
 
-  inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: Ord[mirror.IronType]): Ord[T] = ev.asInstanceOf[Ord[T]]
+  inline given [T](using mirror: RefinedType.Mirror[T], ev: Ord[mirror.IronType]): Ord[T] = ev.asInstanceOf[Ord[T]]
 
 private trait RefinedTypeOpsZioLowPriority:
 
-  inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]
+  inline given [T](using mirror: RefinedType.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]

@@ -49,10 +49,6 @@ object CatsSuite extends TestSuite:
       Hash[Temperature]
       Order[Temperature]
       Show[Temperature]
-      Eq[Moisture]
-      Hash[Moisture]
-      Order[Moisture]
-      Show[Moisture]
 
     test("Cats instances are resolved for Int iron types"):
       Eq[Int :| AgeR]
@@ -189,8 +185,8 @@ object CatsSuite extends TestSuite:
         test - assert(Temperature.optionAll(NonEmptyList.of(1, 2, -3)).isEmpty)
         test - assert(Temperature.optionAll(NonEmptyList.of(1, 2, 3)).contains(NonEmptyList.of(Temperature(1), Temperature(2), Temperature(3))))
 
-      val valid = List(1, 2, 3)
-      val invalid = List(1, -2, -3)
+      val valid: List[Double] = List(1, 2, 3)
+      val invalid: List[Double] = List(1, -2, -3)
 
       test("simple"):
         test("eitherNec"):

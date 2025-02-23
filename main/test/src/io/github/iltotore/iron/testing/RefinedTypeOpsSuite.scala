@@ -63,21 +63,8 @@ object RefinedTypeOpsSuite extends TestSuite:
       test - assert(Temperature.optionAll(List(1, 2, -3)).isEmpty)
       test - assert(Temperature.optionAll(List(1, 2, 3)).contains(List(Temperature(1), Temperature(2), Temperature(3))))
 
-    test("nonOpaque"):
-      val moisture = Moisture(11)
-      val positive: Double :| Positive = 11
-      val greaterThan10: Double :| Greater[10] = 11
-
-      test - assert(Moisture(positive) == moisture)
-      test - assert(Moisture(greaterThan10) == moisture)
-      test - assert(Moisture(positive) == moisture)
-      test - assert(Moisture.either(-5.0) == Left("Should be strictly positive"))
-      test - assert(Moisture.either(100) == Right(Moisture(100)))
-      test - assert(Moisture.option(-5.0).isEmpty)
-      test - assert(Moisture.option(100).contains(Moisture(100)))
-
     test("mirror"):
-      val mirror = summonInline[RefinedTypeOps.Mirror[Temperature]]
+      val mirror = summonInline[RefinedType.Mirror[Temperature]]
 
       assertGiven[mirror.BaseType =:= Double]
       assertGiven[mirror.ConstraintType =:= Positive]

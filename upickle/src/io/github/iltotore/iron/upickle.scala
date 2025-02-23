@@ -2,7 +2,7 @@ package io.github.iltotore.iron
 
 import _root_.upickle.core.Abort
 import _root_.upickle.default.*
-import io.github.iltotore.iron.{:|, Constraint, RefinedTypeOps, refineEither}
+import io.github.iltotore.iron.{:|, Constraint, RefinedType, refineEither}
 
 /**
  * Implicit `Reader`s and `Writer`s for refined types using uPickle.
@@ -35,7 +35,7 @@ object upickle:
    * @param mirror the type mirror for refined types.
    * @param ev the underlying `Reader` for the iron type.
    */
-  inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: Reader[mirror.IronType]): Reader[T] =
+  inline given [T](using mirror: RefinedType.Mirror[T], ev: Reader[mirror.IronType]): Reader[T] =
     ev.asInstanceOf[Reader[T]]
 
   /**
@@ -44,5 +44,5 @@ object upickle:
    * @param mirror the type mirror for refined types.
    * @param ev the underlying `Writer` for the iron type.
    */
-  inline given [T](using mirror: RefinedTypeOps.Mirror[T], ev: Writer[mirror.IronType]): Writer[T] =
+  inline given [T](using mirror: RefinedType.Mirror[T], ev: Writer[mirror.IronType]): Writer[T] =
     ev.asInstanceOf[Writer[T]]

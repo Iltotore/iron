@@ -15,7 +15,7 @@ val a: Query[Void, Username] = sql"SELECT name FROM users".query(varchar.refined
 
 // defining a codec for a refined opaque type
 type PositiveInt = PositiveInt.T
-object PositiveInt extends RefinedTypeOps[Int, Positive]:
+object PositiveInt extends RefinedType[Int, Positive]:
   given codec: Codec[PositiveInt] = int4.refined[Positive].imap(assume)(_.value)
 
 // defining a codec for a refined case class

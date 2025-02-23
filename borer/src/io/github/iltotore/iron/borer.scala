@@ -16,8 +16,8 @@ object borer:
         case Left(msg) => r.validationFailure(msg)
         case Right(x)  => x
 
-  inline given [T](using m: RefinedTypeOps.Mirror[T], ev: Encoder[m.IronType]): Encoder[T] =
+  inline given [T](using m: RefinedType.Mirror[T], ev: Encoder[m.IronType]): Encoder[T] =
     ev.asInstanceOf[Encoder[T]]
 
-  inline given [T](using m: RefinedTypeOps.Mirror[T], ev: Decoder[m.IronType]): Decoder[T] =
+  inline given [T](using m: RefinedType.Mirror[T], ev: Decoder[m.IronType]): Decoder[T] =
     ev.asInstanceOf[Decoder[T]]

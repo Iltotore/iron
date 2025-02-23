@@ -14,8 +14,8 @@ object SkunkSuite extends TestSuite:
   given Codec[Int] = int4
 
   type PositiveInt = PositiveInt.T
-  object PositiveInt extends RefinedTypeOps[Int, Positive]:
-    given Codec[PositiveInt] = summon[Codec[Int]].imap(applyUnsafe)(_.value)
+  object PositiveInt extends RefinedType[Int, Positive]:
+    given Codec[PositiveInt] = summon[Codec[Int]].eimap(either)(_.value)
 
   val tests: Tests = Tests {
 

@@ -26,5 +26,5 @@ object pureconfig:
    * @param mirror the mirror of the [[RefinedTypeOps.Mirror]]
    * @param reader the [[ConfigReader]] of the underlying type
    */
-  inline given [A](using mirror: RefinedTypeOps.Mirror[A], reader: ConfigReader[mirror.IronType]): ConfigReader[A] =
+  inline given [A](using mirror: RefinedType.Mirror[A], reader: ConfigReader[mirror.IronType]): ConfigReader[A] =
     reader.asInstanceOf[ConfigReader[A]]

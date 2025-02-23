@@ -64,7 +64,7 @@ object RefinedTypeOpsSuite extends TestSuite:
       test - assert(Temperature.optionAll(List(1, 2, 3)).contains(List(Temperature(1), Temperature(2), Temperature(3))))
 
     test("mirror"):
-      val mirror = summonInline[RefinedTypeOps.Mirror[Temperature]]
+      val mirror = summonInline[RefinedType.Mirror[Temperature]]
 
       assertGiven[mirror.BaseType =:= Double]
       assertGiven[mirror.ConstraintType =:= Positive]

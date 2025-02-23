@@ -26,7 +26,7 @@ object doobie:
    * @param ev the value getter of the underlying type
    * @tparam T the new type
    */
-  inline given [T](using m: RefinedTypeOps.Mirror[T], ev: Get[m.IronType]): Get[T] =
+  inline given [T](using m: RefinedType.Mirror[T], ev: Get[m.IronType]): Get[T] =
     ev.asInstanceOf[Get[T]]
 
   /**
@@ -47,7 +47,7 @@ object doobie:
    * @param ev the value setter of the underlying type
    * @tparam T the new type
    */
-  inline given [T](using m: RefinedTypeOps.Mirror[T], ev: Put[m.IronType]): Put[T] =
+  inline given [T](using m: RefinedType.Mirror[T], ev: Put[m.IronType]): Put[T] =
     ev.asInstanceOf[Put[T]]
 
   /**
@@ -68,5 +68,5 @@ object doobie:
    * @param ev the value getter/setter of the underlying type
    * @tparam T the new type
    */
-  inline given [T](using m: RefinedTypeOps.Mirror[T], ev: Meta[m.IronType]): Meta[T] =
+  inline given [T](using m: RefinedType.Mirror[T], ev: Meta[m.IronType]): Meta[T] =
     ev.asInstanceOf[Meta[T]]

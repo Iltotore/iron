@@ -25,8 +25,8 @@ object ZIOSuite extends TestSuite:
         test - assert(Temperature.optionAll(NonEmptyChunk(1, 2, 3)).contains(NonEmptyChunk(Temperature(1), Temperature(2), Temperature(3))))
         test - assert(Temperature.optionAll(NonEmptyChunk(1, 2, -3)).isEmpty)
 
-      val valid = List(1, 2, 3)
-      val invalid = List(1, -2, -3)
+      val valid: List[Double] = List(1, 2, 3)
+      val invalid: List[Double] = List(1, -2, -3)
 
       test("validation"):
         test - assert(valid.refineAllValidation[Positive] == ZValidation.Success(Chunk.empty, Chunk.from(valid)))

@@ -2,5 +2,6 @@ package io.github.iltotore.iron
 
 import io.github.iltotore.iron.constraint.numeric.Positive
 
-opaque type Temperature = Int :| Positive
-object Temperature extends RefinedTypeOps[Int, Positive, Temperature]
+//Opaque types are truly opaque when used in another file than the one where they're defined. See Scala documentation.
+type Temperature = Temperature.T
+object Temperature extends RefinedTypeOps[Double, Positive]

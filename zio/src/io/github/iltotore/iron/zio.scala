@@ -40,22 +40,22 @@ object zio extends RefinedTypeOpsZio:
           constraint.test(_)
         )
 
-  extension [A, C, T](ops: RefinedTypeOps[A, C, T])
+  extension [A, C](ops: RefinedTypeOps[A, C])
     /**
      * Refine the given value applicatively at runtime, resulting in a [[Validation]].
      *
      * @return a [[Valid]] containing this value as [[T]] or an [[Validation.Failure]] containing a [[NonEmptyChunk]] of error messages.
      */
-    def validation(value: A): Validation[String, T] =
-      Validation.fromPredicateWith(ops.rtc.message)(value)(ops.rtc.test(_)).asInstanceOf[Validation[String, T]]
+    def validation(value: A): Validation[String, ops.T] =
+      Validation.fromPredicateWith(ops.rtc.message)(value)(ops.rtc.test(_)).asInstanceOf[Validation[String, ops.T]]
 
-  extension [A, C, T](ops: RefinedTypeOps[A, C, T])
+  extension [A, C](ops: RefinedTypeOps[A, C])
     /**
      * Refine the given values applicatively at runtime, resulting in a [[Validation]].
      *
      * @return a [[Valid]] containing the values as `F[T]` or an [[Validation.Failure]] containing a [[NonEmptyChunk]] of error messages.
      */
-    def validationAll[F[+_]](wrapper: F[A])(using forEach: ForEach[F]): Validation[InvalidValue[A], F[T]] =
+    def validationAll[F[+_]](wrapper: F[A])(using forEach: ForEach[F]): Validation[InvalidValue[A], F[ops.T]] =
       forEach.forEach(wrapper): value =>
         ops.assumeAll(Validation.fromPredicateWith[InvalidValue[A], A](InvalidValue(value, ops.rtc.message))(value)(ops.rtc.test(_)))
 

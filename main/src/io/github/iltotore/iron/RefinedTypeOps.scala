@@ -12,7 +12,9 @@ import scala.util.boundary.break
  * @tparam C the constraint type of the new type
  * @tparam T the new type (equivalent to `A :| C` if `T` is a transparent alias)
  */
-trait RefinedTypeOps[A, C, T](using private val _rtc: RuntimeConstraint[A, C]):
+trait RefinedTypeOps[A, C](using private val _rtc: RuntimeConstraint[A, C]):
+
+  opaque type T <: A :| C = A :| C 
 
   /**
    * The runtime constraint of the underlying [[IronType]]. Can be used in non-inline methods and to improve runtime
@@ -130,14 +132,6 @@ trait RefinedTypeOps[A, C, T](using private val _rtc: RuntimeConstraint[A, C]):
     inline def value: IronType[A, C] = wrapper.asInstanceOf[IronType[A, C]]
 
 object RefinedTypeOps:
-
-  /**
-   * Alias to reduce boilerplate for transparent type aliases.
-   *
-   * @tparam T the new type which should be a transparent alias for an [[IronType]]
-   */
-  type Transparent[T] = T match
-    case a :| c => RefinedTypeOps[a, c, T]
 
   /**
    * Typelevel access to a "new type"'s informations. It is similar to [[scala.deriving.Mirror]].

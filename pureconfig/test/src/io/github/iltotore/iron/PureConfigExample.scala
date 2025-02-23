@@ -5,8 +5,8 @@ import _root_.pureconfig.generic.derivation.default.*
 import io.github.iltotore.iron.constraint.all.*
 import io.github.iltotore.iron.pureconfig.given
 
-opaque type Username = String :| MinLength[5]
-object Username extends RefinedTypeOps[String, MinLength[5], Username]
+type Username = Username.T
+object Username extends RefinedTypeOps[String, MinLength[5]]
 
 case class IronTypeConfig(
     username: String :| MinLength[5]

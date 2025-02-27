@@ -9,6 +9,7 @@ import io.github.iltotore.iron.macros.reflectUtil
 
 import scala.compiletime.constValue
 import scala.quoted.*
+import io.github.iltotore.iron.RuntimeConstraint
 
 /**
  * [[String]]-related constraints.
@@ -129,17 +130,24 @@ object string:
         case _                             => '{ $expr.endsWith($prefixExpr) }
 
   object Match:
+    import util.matching.Regex
 
     inline given [V <: String]: Constraint[String, Match[V]] with
 
-      override inline def test(inline value: String): Boolean = ${ check('value, '{ constValue[V] }) }
+      inline def pattern = constValue[V]
+
+      override inline def test(inline value: String): Boolean = ${ check('value, '{ pattern }) }
 
       override inline def message: String = "Should match " + constValue[V]
 
-    private def check(valueExpr: Expr[String], regexExpr: Expr[String])(using Quotes): Expr[Boolean] =
+    private def check(value: Expr[String], regex: Expr[String])(using Quotes): Expr[Boolean] =
       val rflUtil = reflectUtil
       import rflUtil.*
 
-      (valueExpr.decode, regexExpr.decode) match
+      (value.decode, regex.decode) match
         case (Right(value), Right(regex)) => Expr(value.matches(regex))
-        case _                            => '{ $valueExpr.matches($regexExpr) }
+        case _                            => '{ $value.matches($regex) }
+
+    inline given [V <: String](using inline c: Constraint[String, Match[V]]): RuntimeConstraint[String, Match[V]] =
+      val regex = new Regex(constValue[V])
+      RuntimeConstraint(regex.matches, c.message)

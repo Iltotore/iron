@@ -122,6 +122,7 @@ trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]):
   inline given RefinedType.Mirror[T] with
     override type BaseType = A
     override type ConstraintType = C
+    override val ops: RefinedType[A, C] = ops
 
   inline given [R]: TypeTest[T, R] = summonInline[TypeTest[A :| C, R]].asInstanceOf[TypeTest[T, R]]
 
@@ -155,20 +156,11 @@ object RefinedType:
     type IronType = BaseType :| ConstraintType
 
     /**
-     * Alias for [[T]]. Also equivalent to [[IronType]] if the type alias of the mirrored new type is transparent.
-     *
-     * {{{
-     * type Temperature = Double :| Positive
-     * object Temperature extends RefinedTypeOps[Temperature]
-     *
-     * //FinalType =:= IronType
-     * }}}
-     *
-     * {{{
-     * opaque type Temperature = Double :| Positive
-     * object Temperature extends RefinedTypeOps[Temperature]
-     *
-     * //FinalType =/= IronType
-     * }}}
+     * Alias for [[T]].
      */
     type FinalType = T
+
+    /**
+      * [[RefinedType]] instance of [[T]].
+      */
+    def ops: RefinedType[BaseType, ConstraintType]

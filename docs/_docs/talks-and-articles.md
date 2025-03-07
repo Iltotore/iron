@@ -19,4 +19,4 @@ title: "Talks and articles"
 
 - [What makes library docs great [Library review: Iron]](https://dev.to/zelenya/what-makes-library-docs-great-library-review-iron-518a) by [@Zelenya](https://github.com/Zelenya) (written version of the video mentioned above)
 - [Type safety with Iron](https://blog.michal.pawlik.dev/posts/scala/iron/) by [@majk-p](https://github.com/majk-p)
-- 🇯🇵 [値の検証もコンパイラにやらせよう: Scala 3でRefinement TypesやるにはIronっていうライブラリが良さそう](https://blog.3qe.us/entry/2024/02/19/040745) by [@Windymelt](https://github.com/windymelt)
+- 🇯🇵 [値の検証もコンパイラにやらせよう: Scala 3でRefinement TypesやるにはIronっていうライブラリが良さそう](https://blog.3qe.us/entry/2024/02/19/040745) by [@windymelt](https://github.com/windymelt)

@@ -80,7 +80,7 @@ extension [A, C1](value: A :| C1)
    * @see [[refineUnsafe]].
    */
   @deprecated("Use refineFurtherUnsafe instead. refineFurther will be removed in 3.0")
-  inline def refineFurther[C2](using inline constraint: Constraint[A, C2]): A :| (C1 & C2) =
+  def refineFurther[C2](using RuntimeConstraint[A, C2]): A :| (C1 & C2) =
     refineFurtherUnsafe[C2]
 
   /**
@@ -91,7 +91,7 @@ extension [A, C1](value: A :| C1)
    * @throws an [[IllegalArgumentException]] if the constraint is not satisfied.
    * @see [[refineUnsafe]].
    */
-  inline def refineFurtherUnsafe[C2](using inline constraint: Constraint[A, C2]): A :| (C1 & C2) =
+  def refineFurtherUnsafe[C2](using RuntimeConstraint[A, C2]): A :| (C1 & C2) =
     (value: A).refineUnsafe[C2].assumeFurther[C1]
 
   /**
@@ -101,7 +101,7 @@ extension [A, C1](value: A :| C1)
    * @return a [[Right]] containing this value refined with `C1 & C2` or a [[Left]] containing the constraint message.
    * @see [[refineEither]].
    */
-  inline def refineFurtherEither[C2](using inline constraint: Constraint[A, C2]): Either[String, A :| (C1 & C2)] =
+  def refineFurtherEither[C2](using constraint: RuntimeConstraint[A, C2]): Either[String, A :| (C1 & C2)] =
     (value: A).refineEither[C2].map(_.assumeFurther[C1])
 
   /**
@@ -111,7 +111,7 @@ extension [A, C1](value: A :| C1)
    * @return a [[Option]] containing this value refined with `C1 & C2` or [[None]].
    * @see [[refineOption]].
    */
-  inline def refineFurtherOption[C2](using inline constraint: Constraint[A, C2]): Option[A :| (C1 & C2)] =
+  def refineFurtherOption[C2](using constraint: RuntimeConstraint[A, C2]): Option[A :| (C1 & C2)] =
     (value: A).refineOption[C2].map(_.assumeFurther[C1])
 
 extension [F[_], A, C1](wrapper: F[A :| C1])
@@ -122,7 +122,7 @@ extension [F[_], A, C1](wrapper: F[A :| C1])
    * @return the constrained values, without performing constraint checks.
    * @see [[assume]], [[assumeFurther]].
    */
-  inline def assumeAllFurther[C2]: F[A :| (C1 & C2)] = wrapper.asInstanceOf[F[A :| (C1 & C2)]]
+  def assumeAllFurther[C2]: F[A :| (C1 & C2)] = wrapper.asInstanceOf[F[A :| (C1 & C2)]]
 
   /**
    * Refine the given value(s) again at runtime.
@@ -132,7 +132,7 @@ extension [F[_], A, C1](wrapper: F[A :| C1])
    * @throws IllegalArgumentException if the constraint is not satisfied.
    * @see [[refineUnsafe]], [[refineFurtherUnsafe]].
    */
-  inline def refineAllFurtherUnsafe[C2](using mapLogic: MapLogic[F], inline constraint: Constraint[A, C2]): F[A :| (C1 & C2)] =
+  def refineAllFurtherUnsafe[C2](using mapLogic: MapLogic[F], constraint: RuntimeConstraint[A, C2]): F[A :| (C1 & C2)] =
     mapLogic.map(wrapper, _.refineFurtherUnsafe[C2])
 
   /**
@@ -142,7 +142,7 @@ extension [F[_], A, C1](wrapper: F[A :| C1])
    * @return a [[Right]] containing the given values refined with `C1 & C2` or a [[Left]] containing the constraint message.
    * @see [[refineEither]], [[refineAllFurtherEither]].
    */
-  inline def refineAllFurtherEither[C2](using mapLogic: MapLogic[F], inline constraint: Constraint[A, C2]): Either[String, F[A :| (C1 & C2)]] =
+  def refineAllFurtherEither[C2](using mapLogic: MapLogic[F], constraint: RuntimeConstraint[A, C2]): Either[String, F[A :| (C1 & C2)]] =
     boundary:
       Right(mapLogic.map(
         wrapper,
@@ -158,7 +158,7 @@ extension [F[_], A, C1](wrapper: F[A :| C1])
    * @return a [[Option]] containing the given values refined with `C1 & C2` or [[None]].
    * @see [[refineOption]], [[refineFurtherOption]].
    */
-  inline def refineAllFurtherOption[C2](using mapLogic: MapLogic[F], inline constraint: Constraint[A, C2]): Option[F[A :| (C1 & C2)]] =
+  def refineAllFurtherOption[C2](using mapLogic: MapLogic[F], constraint: RuntimeConstraint[A, C2]): Option[F[A :| (C1 & C2)]] =
     boundary:
       Some(mapLogic.map(
         wrapper,

@@ -76,7 +76,7 @@ extension [A](value: A)
    * @throws an [[IllegalArgumentException]] if the constraint is not satisfied.
    * @see [[autoRefine]], [[refineEither]], [[refineOption]].
    */
-  inline def refineUnsafe[B](using inline constraint: Constraint[A, B]): A :| B =
+  def refineUnsafe[B](using constraint: RuntimeConstraint[A, B]): A :| B =
     if constraint.test(value) then value
     else throw IllegalArgumentException(constraint.message)
 
@@ -87,7 +87,7 @@ extension [A](value: A)
    * @return a [[Right]] containing this value as [[IronType]] or a [[Left]] containing the constraint message.
    * @see [[autoRefine]], [[refineUnsafe]], [[refineOption]].
    */
-  inline def refineEither[B](using inline constraint: Constraint[A, B]): Either[String, A :| B] =
+  def refineEither[B](using constraint: RuntimeConstraint[A, B]): Either[String, A :| B] =
     Either.cond(constraint.test(value), value, constraint.message)
 
   /**
@@ -97,7 +97,7 @@ extension [A](value: A)
    * @return an Option containing this value as [[IronType]] or [[None]].
    * @see [[autoRefine]], [[refineUnsafe]], [[refineEither]].
    */
-  inline def refineOption[B](using inline constraint: Constraint[A, B]): Option[A :| B] =
+  def refineOption[B](using constraint: RuntimeConstraint[A, B]): Option[A :| B] =
     Option.when(constraint.test(value))(value)
 
 extension [F[_], A](wrapper: F[A])
@@ -118,7 +118,7 @@ extension [F[_], A](wrapper: F[A])
    * @throws an [[IllegalArgumentException]] if the constraint is not satisfied.
    * @see [[refineUnsafe]].
    */
-  inline def refineAllUnsafe[B](using mapLogic: MapLogic[F], inline constraint: Constraint[A, B]): F[A :| B] =
+  def refineAllUnsafe[B](using mapLogic: MapLogic[F], rtc: RuntimeConstraint[A, B]): F[A :| B] =
     mapLogic.map(wrapper, _.refineUnsafe[B])
 
   /**
@@ -128,14 +128,16 @@ extension [F[_], A](wrapper: F[A])
    * @return a [[Right]] containing the given values as [[IronType]] or a [[Left]] containing the constraint message.
    * @see [[refineEither]].
    */
-  inline def refineAllEither[B](using mapLogic: MapLogic[F], inline constraint: Constraint[A, B]): Either[String, F[A :| B]] =
+  def refineAllEither[B](using mapLogic: MapLogic[F], rtc: RuntimeConstraint[A, B]): Either[String, F[A :| B]] =
     boundary:
-      Right(mapLogic.map(
-        wrapper,
-        _.refineEither[B] match
-          case Right(value) => value
-          case Left(error)  => break(Left(error))
-      ))
+      Right(
+        mapLogic.map(
+          wrapper,
+          _.refineEither[B] match
+            case Right(value) => value
+            case Left(error)  => break(Left(error))
+        )
+      )
 
   /**
    * Refine the given value(s) at runtime, resulting in an [[Option]].
@@ -144,7 +146,7 @@ extension [F[_], A](wrapper: F[A])
    * @return a [[Some]] containing the given values as [[IronType]] or [[None]].
    * @see [[refineOption]].
    */
-  inline def refineAllOption[B](using mapLogic: MapLogic[F], inline constraint: Constraint[A, B]): Option[F[A :| B]] =
+  def refineAllOption[B](using mapLogic: MapLogic[F], rtc: RuntimeConstraint[A, B]): Option[F[A :| B]] =
     boundary:
       Some(mapLogic.map(
         wrapper,

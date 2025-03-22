@@ -441,7 +441,7 @@ object skunk extends SubModule {
   def artifactName = "iron-skunk"
 
   def ivyDeps = Agg(
-    ivy"org.tpolecat::skunk-core::0.6.1"
+    ivy"org.tpolecat::skunk-core::1.0.0-M10"
   )
 
   object test extends Tests {

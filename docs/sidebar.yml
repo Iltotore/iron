@@ -6,6 +6,7 @@ subsection:
   - page: contributing.md
   - page: comparison-refined.md
   - page: talks-and-articles.md
+  - page: migration3-0.md
   - title: "Reference"
     directory: reference
     index: reference/index.md

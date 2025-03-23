@@ -230,9 +230,9 @@ object examples extends Module {
     def moduleDeps = Seq(main, zioJson)
 
     def ivyDeps = Agg(
-      ivy"dev.zio::zio-test:2.0.4",
-      ivy"dev.zio::zio-json:0.3.0",
-      ivy"dev.zio::zio-http:0.0.3"
+      ivy"dev.zio::zio-test:2.1.6",
+      ivy"dev.zio::zio-json:0.7.38",
+      ivy"dev.zio::zio-http:3.1.0"
     )
 
   }

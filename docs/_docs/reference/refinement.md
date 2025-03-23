@@ -65,7 +65,7 @@ typeclass [FromExpr](https://scala-lang.org/api/3.2.0/scala/quoted/FromExpr.html
 By default, all fully inlined literals (including AnyVals, String, Option and Either) are evaluable at compile-time.
 Note that the constraint condition also needs to be fully inlined.
 
-```scala 
+```scala
 //{
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.*
@@ -99,12 +99,12 @@ val runtimeString: String = ???
 val username: String :| Alphanumeric = runtimeString.refineUnsafe //or more explicitly, refineUnsafe[LowerCase].
 ```
 
-The `refine` extension method tests the constraint at runtime, throwing an `IllegalArgumentException` if the value
-does not pass the assertion.
+The `refineUnsafe` extension method tests the constraint at runtime,
+throwing an `IllegalArgumentException` if the value does not pass the assertion.
 
 ### Functional
 
-Iron also provides methods similar to `refine` but returning an `Option` (`refineOption`) or
+Iron also provides methods similar to `refineUnsafe` but returning an `Option` (`refineOption`) or
 an `Either` (`refineEither`), useful for data validation:
 
 ```scala
@@ -120,8 +120,8 @@ def createUser(name: String, age: Int): Either[String, User] =
   yield User(n, a)
 
 createUser("Il_totore", 18) //Left("Should be alphanumeric")
-createUser("Iltotore", 0) //Left("Should be greater than 0")
-createUser("Iltotore", 18) //Right(User("Iltotore", 18))
+createUser("Iltotore", 0)   //Left("Should be greater than 0")
+createUser("Iltotore", 18)  //Right(User("Iltotore", 18))
 ```
 
 ### Accumulative error
@@ -149,8 +149,8 @@ def createUser(name: String, age: Int): Validation[String, User] =
     age.refineValidation[Age]
   )(User.apply)
 
-createUser("Iltotore", 18) //Success(Chunk(),User(Iltotore,18))
-createUser("Il_totore", 18) //Failure(Chunk(),NonEmptyChunk(Username should be alphanumeric))
+createUser("Iltotore", 18)   //Success(Chunk(),User(Iltotore,18))
+createUser("Il_totore", 18)  //Failure(Chunk(),NonEmptyChunk(Username should be alphanumeric))
 createUser("Il_totore", -18) //Failure(Chunk(),NonEmptyChunk(Username should be alphanumeric, Age should be positive))
 ```
 
@@ -183,7 +183,7 @@ def createUser(name: String, password: String): Either[String, User] =
     User(validName, validPassword)
 
 createUser("Iltotore", "abc123") //Right(User("Iltotore", "abc123"))
-createUser("Iltotore", "abc") //Left("Password should have at least 5 characters, be alphanumeric and contain at least one letter and one digit")
+createUser("Iltotore", "abc")    //Left("Password should have at least 5 characters, be alphanumeric and contain at least one letter and one digit")
 ```
 
 At the last line, we get a `Left` saying that our password is invalid.
@@ -210,9 +210,9 @@ def createUser(name: String, password: String): Either[String, User] =
   yield
     User(validName, validPassword)
 
-createUser("Iltotore", "abc123") //Right(User("Iltotore", "abc123"))
-createUser("Iltotore", "abc1") //Left("Should have a minimum length of 5")
-createUser("Iltotore", "abcde") //Left("At least one element: (Should be a digit)")
+createUser("Iltotore", "abc123")   //Right(User("Iltotore", "abc123"))
+createUser("Iltotore", "abc1")     //Left("Should have a minimum length of 5")
+createUser("Iltotore", "abcde")    //Left("At least one element: (Should be a digit)")
 createUser("Iltotore", "abc123  ") //Left("Should be alphanumeric")
 ```
 
@@ -237,9 +237,9 @@ def createUser(name: String, password: String): Either[String, User] =
   yield
     User(validName, validPassword)
 
-createUser("Iltotore", "abc123") //Right(User("Iltotore", "abc123"))
-createUser("Iltotore", "abc1") //Left("Your password should have a minimum length of 5")
-createUser("Iltotore", "abcde") //Left("Your password should contain at least a digit")
+createUser("Iltotore", "abc123")   //Right(User("Iltotore", "abc123"))
+createUser("Iltotore", "abc1")     //Left("Your password should have a minimum length of 5")
+createUser("Iltotore", "abcde")    //Left("Your password should contain at least a digit")
 createUser("Iltotore", "abc123  ") //Left("Your password should be alphanumeric")
 ```
 
@@ -250,11 +250,11 @@ Note: Accumulative versions exist for [Cats](../modules/cats.md) and [ZIO](../mo
 Iron provides utility methods to easily refine first order types (e.g container types like `List`, `Future`, `IO`...).
 
 ```scala
-List(1, 2, 3).refineAllUnsafe[Positive] //List(1, 2, 3): List[Int :| Positive]
+List(1, 2, 3).refineAllUnsafe[Positive]  //List(1, 2, 3): List[Int :| Positive]
 List(1, 2, -3).refineAllUnsafe[Positive] //IllegalArgumentException
 ```
 
-Variants exist for `Option/Either`, `assume`, `...Further` as well as `RefinedTypeOps` constructors.
+Variants exist for `Option/Either`, `assume`, `...Further` as well as `RefinedType` constructors.
 
 ## Assuming constraints
 
@@ -266,7 +266,7 @@ val x: Int :| Positive = random
 ```
 
 This code will not compile (see [Runtime refinement](#runtime-refinement)).
-We could use `refine` but we don't actually need to apply the constraint to `random`.
+We could use `refineUnsafe` but we don't actually need to apply the constraint to `random` in this case.
 Instead, we can can use `assume[C]`. It simply acts like a safer cast.
 
 ```scala

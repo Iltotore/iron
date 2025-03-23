@@ -49,7 +49,7 @@ trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]):
    * @throws an [[IllegalArgumentException]] if the constraint is not satisfied.
    * @see [[either]], [[option]].
    */
-  inline def applyUnsafe(value: A): T =
+  def applyUnsafe(value: A): T =
     if rtc.test(value) then value.asInstanceOf[T] else throw new IllegalArgumentException(rtc.message)
 
   /**

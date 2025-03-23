@@ -6,9 +6,9 @@ title: "Creating New Types"
 
 You can create no-overhead new types like [scala-newtype](https://github.com/estatico/scala-newtype) in Scala 2 with Iron.
 
-## RefinedTypeOps
+## RefinedType
 
-Iron provides a convenient trait called `RefinedTypeOps` to easily add smart constructors to your type:
+Iron provides a convenient trait called `RefinedType` to easily add smart constructors to your type:
 
 ```scala
 //{
@@ -16,8 +16,8 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 //}
-type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
+type Temperature = Temperature.T
+object Temperature extends RefinedType[Double, Positive]
 ```
 
 ```scala
@@ -25,8 +25,8 @@ object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
-type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
+type Temperature = Temperature.T
+object Temperature extends RefinedType[Double, Positive]
 
 //}
 val temperature = Temperature(15) //Compiles
@@ -36,29 +36,18 @@ val positive: Double :| Positive = 15
 val tempFromIron = Temperature(positive) //Compiles too
 ```
 
-For transparent type aliases, it is possible to use the `RefinedTypeOps.Transparent` alias to avoid boilerplate.
-
-```scala
-//{
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.constraint.numeric.Positive
-
-//}
-type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps.Transparent[Temperature]
-```
 
 ### Runtime refinement
 
-`RefinedTypeOps` supports [all refinement methods](refinement.md) provided by Iron:
+`RefinedType` supports [all refinement methods](refinement.md) provided by Iron:
 
 ```scala
 //{
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
-type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps.Transparent[Temperature]
+type Temperature = Temperature.T
+object Temperature extends RefinedType[Double, Positive]
 
 //}
 val unsafeRuntime: Temperature = Temperature.applyUnsafe(15)
@@ -76,22 +65,23 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 import io.github.iltotore.iron.zio.*
 
-type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps.Transparent[Temperature]
+type Temperature = Temperature.T
+object Temperature extends RefinedType[Double, Positive]
 
 //}
 val zioValidation: Validation[String, Temperature] = Temperature.validation(15)
 ```
 
-Note: all these constructors are inline. They don't bring any overhead:
+Note: just like [IronType|io.github.iltotore.iron.IronType], [RefinedType|io.github.iltotore.iron.RefinedType]
+compiles to its base type.
 
 ```scala
 //{
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
-type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps.Transparent[Temperature]
+type Temperature = Temperature.T
+object Temperature extends RefinedType[Double, Positive]
 
 //}
 val temperature: Temperature = Temperature(15)
@@ -106,9 +96,7 @@ compiles to
 val temperature: Double = 15
 
 val runtimeValue: Double = ???
-val unsafeRuntime: Double =
-  if runtimeValue > 0 then runtimeValue
-  else throw new IllegalArgumentException("...")
+val unsafeRuntime: Double = Temperature.applyUnsafe(runtimeValue)
 ```
 
 ## New type with no constraint
@@ -123,24 +111,25 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.any.Pure
 
 //}
-type FirstName = String :| Pure
-object FirstName extends RefinedTypeOps.Transparent[FirstName]
+type FirstName = FirstName.T
+object FirstName extends RefinedType[String, Pure]
 ```
 ```scala
 //{
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.any.Pure
 
-type FirstName = String :| Pure
-object FirstName extends RefinedTypeOps.Transparent[FirstName]
+type FirstName = FirstName.T
+object FirstName extends RefinedType[String, Pure]
 
 //}
 val firstName = FirstName("whatever")
 ```
 
-## Opaque new types
+## Opacity
 
-The aliased type of an [opaque type](https://docs.scala-lang.org/scala3/book/types-opaque-types.html) is only known in its definition file. It is not considered like a type alias outside of it:
+A newtype is [opaque](https://docs.scala-lang.org/scala3/book/types-opaque-types.html).
+Therefore, it is only known in its definition file. It is not considered to be a type alias outside of it:
 
 ```scala
 //{
@@ -148,8 +137,8 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 //}
-opaque type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
+type Temperature = Temperature.T
+object Temperature extends RefinedType[Double, Positive]
 ```
 
 ```scala 
@@ -157,8 +146,8 @@ object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
-opaque type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
+type Temperature = Temperature.T
+object Temperature extends RefinedType[Double, Positive]
 
 //}
 val x: Double :| Positive = 5
@@ -173,11 +162,11 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 //}
-opaque type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
+type Temperature = Temperature.T
+object Temperature extends RefinedType[Double, Positive]
 
-opaque type Moisture = Double :| Positive
-object Moisture extends RefinedTypeOps[Double, Positive, Moisture]
+type Moisture = Moisture.T
+object Moisture extends RefinedType[Double, Positive]
 ```
 
 ```scala
@@ -185,11 +174,11 @@ object Moisture extends RefinedTypeOps[Double, Positive, Moisture]
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
-opaque type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
+type Temperature = Temperature.T
+object Temperature extends RefinedType[Double, Positive]
 
-opaque type Moisture = Double :| Positive
-object Temperature extends RefinedTypeOps[Double, Positive, Moisture]
+type Moisture = Moisture.T
+object Moisture extends RefinedType[Double, Positive]
 
 //}
 case class Info(temperature: Temperature, moisture: Moisture)
@@ -201,7 +190,7 @@ Info(moisture, temperature) //Compile-time error
 ```
 
 Therefore, it also forces the user to convert the value explicitly, for example using a smart constructor from
-`RefinedTypeOps`:
+`RefinedType`:
 
 ```scala
 //{
@@ -209,8 +198,8 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 //}
-opaque type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
+type Temperature = Temperature.T
+object Temperature extends RefinedType[Double, Positive]
 ```
 
 ```scala
@@ -218,8 +207,8 @@ object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
-opaque type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
+type Temperature = Temperature.T
+object Temperature extends RefinedType[Double, Positive]
 
 //}
 val value: Double :| Positive = ???
@@ -236,52 +225,8 @@ Assuming the following new type:
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 
-opaque type FirstName = String :| ForAll[Letter]
-object FirstName extends RefinedTypeOps[String, ForAll[Letter], FirstName]
-```
-
-We cannot use `java.lang.String`'s methods neither pass `FirstName` as a String without using the `value`
-extension method. In Scala 3, opaque types can be a subtype of their underlying type:
-
-```scala
-opaque type Foo <: String = String
-object Foo:
-  def apply(value: String): Foo = value
-```
-```scala
-//{
-opaque type Foo <: String = String
-object Foo:
-  def apply(value: String): Foo = value
-
-//}
-val x = Foo("abcd")
-x.toUpperCase //"ABCD"
-```
-
-Therefore, you can combine it with `RefinedTypeOps`:
-
-```scala
-//{
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.constraint.all.*
-
-//}
-opaque type FirstName <: String :| ForAll[Letter] = String :| ForAll[Letter]
-object FirstName extends RefinedTypeOps[String, ForAll[Letter], FirstName]
-```
-
-```scala 
-//{
-import io.github.iltotore.iron.*
-import io.github.iltotore.iron.constraint.all.*
-
-opaque type FirstName <: String :| ForAll[Letter] = String :| ForAll[Letter]
-object FirstName extends RefinedTypeOps[String, ForAll[Letter], FirstName]
-
-//}
-val x = FirstName("Raphael")
-x.toUpperCase //"RAPHAEL"
+type FirstName = FirstNamle
+object FirstName extends RefinedType[String, ForAll[Letter]]
 ```
 
 ## Typeclass derivation
@@ -295,12 +240,12 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 //}
-opaque type Temperature = Double :| Positive
-object Temperature extends RefinedTypeOps[Double, Positive, Temperature]
+type Temperature = Temperature.T
+object Temperature extends RefinedType[Double, Positive]
 ```
 
-To support such type, you can use the [[RefinedTypeOps.Mirror|io.github.iltotore.iron.RefinedTypeOps.Mirror]] provided by
-each `RefinedTypeOps`. It works the same as
+To support such type, you can use the [[RefinedType.Mirror|io.github.iltotore.iron.RefinedType.Mirror]] provided by
+each `RefinedType`. It works the same as
 [Scala 3's Mirror](https://docs.scala-lang.org/scala3/reference/contextual/derivation.html#mirror). Here is an example
 from the [ZIO JSON module](https://iltotore.github.io/iron/docs/modules/zio-json.html):
 
@@ -310,14 +255,14 @@ import zio.json.*
 import io.github.iltotore.iron.*
 
 //}
-inline given[T](using mirror: RefinedTypeOps.Mirror[T], ev: JsonDecoder[mirror.IronType]): JsonDecoder[T] =
+inline given[T](using mirror: RefinedType.Mirror[T], ev: JsonDecoder[mirror.IronType]): JsonDecoder[T] =
   ev.asInstanceOf[JsonDecoder[T]]
 ```
 
-In this example, given a new type `T` (like `Temperature` defined above), an implicit instance of `JsonEncoder` for its
-underlying `IronType` (e.g `Double :| Positive`) is got and returned.
+In this example, given a new type `T` (like `Temperature` defined above), an implicit instance of `JsonEncoder`
+for its underlying `IronType` (e.g `Double :| Positive`) is got and returned.
 
-The types provided by [[RefinedTypeOps.Mirror|io.github.iltotore.iron.RefinedTypeOps.Mirror]] are:
+The types provided by [[RefinedType.Mirror|io.github.iltotore.iron.RefinedType.Mirror]] are:
 - `BaseType`: the base (unrefined) type of the mirrored type.
 - `ConstraintType`: the constraint type of the mirrored new type.
 - `IronType`: an alias for `BaseType :| ConstraintType`

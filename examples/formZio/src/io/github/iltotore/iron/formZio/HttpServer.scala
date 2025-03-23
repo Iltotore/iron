@@ -1,8 +1,8 @@
 import zio.http.*
-import zio.http.model.{Method, Status}
 import zio.json.*
 
 import Account.given
+import zio.ZIO
 
 object HttpServer:
 
@@ -15,15 +15,18 @@ object HttpServer:
   def badApiRequest(message: String): Response =
     Response
       .json(Map("message" -> message).toJson)
-      .setStatus(Status.BadRequest)
+      .status(Status.BadRequest)
 
   /**
    * The main logic of our mini web server.
    * Register the given user passed as a `POST` [[Request]] to `/register` then return it as a `Response`
    */
-  val app: HttpApp[Any, Throwable] =
-    Http.collectZIO[Request]:
-      case req @ Method.POST -> !! / "register" =>
-        req.body.asString
-          .map(_.fromJson[Account])
-          .map(_.fold(badApiRequest, account => Response.json(account.toJson)))
+  val routes: Routes[Any, Response] =
+    Routes(
+      Method.POST / "register" -> handler: (req: Request) =>
+        req
+          .body
+          .asString.mapError(_ => badApiRequest("Body is not a String"))
+          .flatMap(json => ZIO.fromEither(json.fromJson[Account]).mapError(badApiRequest))
+          .map(account => Response.json(account.toJson))
+    )

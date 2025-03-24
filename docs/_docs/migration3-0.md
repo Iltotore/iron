@@ -7,6 +7,15 @@ title: "Iron 3.x migration"
 Some major API changes have been introduced in Iron 3.0.0 compared to Iron 2.x.
 Most of them involved minor changes from a Iron 2.x codebase to 3.x.
 
+## Scala 3.6.3 or more is required
+
+Due to a bug in the compiler (which was completely blocking for Iron 3.0.0) that has been fixed in 3.6.3,
+you need this version or higher for 3.x.
+
+Iron's Scala version policy is to try to stick to the LTS as much as possible so one can expect Iron to
+reach the next Scala LTS when it releases and jump from LTSs while avoiding intermediate Scala Next
+versions in the future.
+
 ## Custom Constraint instances
 
 The parameter `value` of method [[test|io.github.iltotore.iron.Constraint.test]] in

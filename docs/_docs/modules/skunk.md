@@ -25,13 +25,13 @@ ivy"io.github.iltotore::iron-skunk:version"
 SBT:
 
 ```scala 
-libraryDependencies += "org.tpolecat" %% "skunk-core" % "0.6.1"
+libraryDependencies += "org.tpolecat" %% "skunk-core" % "1.0.0-M10"
 ```
 
 Mill:
 
 ```scala 
-ivy"org.tpolecat::skunk-core::0.6.1"
+ivy"org.tpolecat::skunk-core::1.0.0-M10"
 ```
 
 ## Codec instances

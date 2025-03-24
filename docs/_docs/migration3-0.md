@@ -9,8 +9,8 @@ Most of them involved minor changes from a Iron 2.x codebase to 3.x.
 
 ## Custom Constraint instances
 
-The parameter `value` of method [test|io.github.iltotore.Constraint.test] in
-[Constraint|io.github.iltotore.Constraint] is now `inline`.
+The parameter `value` of method [[test|io.github.iltotore.iron.Constraint.test]] in
+[[Constraint|io.github.iltotore.iron.Constraint]] is now `inline`.
 If you made a custom `Constraint` instance such, for example:
 
 ```scala

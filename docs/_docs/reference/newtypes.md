@@ -72,7 +72,7 @@ object Temperature extends RefinedType[Double, Positive]
 val zioValidation: Validation[String, Temperature] = Temperature.validation(15)
 ```
 
-Note: just like [IronType|io.github.iltotore.iron.IronType], [RefinedType|io.github.iltotore.iron.RefinedType]
+Note: just like [[IronType|io.github.iltotore.iron.IronType]], [[RefinedType|io.github.iltotore.iron.RefinedType]
 compiles to its base type.
 
 ```scala

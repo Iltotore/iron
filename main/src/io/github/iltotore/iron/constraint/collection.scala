@@ -313,8 +313,11 @@ object collection:
 
       expr.decode match
         case Right(value) =>
-          value
-            .init
+          val init =
+            if value == "" then ""
+            else value.init
+          
+          init
             .map(Expr.apply)
             .map(applyConstraint(_, constraintExpr))
             .foldLeft(Expr(true))((e, t) => '{ $e && $t })
@@ -391,8 +394,11 @@ object collection:
 
       expr.decode match
         case Right(value) =>
-          value
-            .tail
+          val tail =
+            if value == "" then ""
+            else value.tail
+
+          tail
             .map(Expr.apply)
             .map(applyConstraint(_, constraintExpr))
             .foldLeft(Expr(true))((e, t) => '{ $e && $t })

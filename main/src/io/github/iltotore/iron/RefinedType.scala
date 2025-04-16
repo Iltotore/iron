@@ -14,7 +14,7 @@ import scala.util.boundary.break
  */
 trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]):
 
-  opaque type T <: A :| C = A :| C 
+  opaque type T <: A :| C = A :| C
 
   /**
    * The runtime constraint of the underlying [[IronType]]. Can be used in non-inline methods and to improve runtime
@@ -133,6 +133,14 @@ trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]):
     inline def value: IronType[A, C] = wrapper.asInstanceOf[IronType[A, C]]
 
 object RefinedType:
+  private[iron] object Compat:
+    /**
+     * A [[F]] for new types. Decodes to the underlying type then checks the constraint.
+     *
+     * @param f the [[F]] of the underlying type.
+     * @param mirror  the mirror of the [[RefinedType.Mirror]]
+     */
+    inline given compat[T, F[_], I](using inline mirror: RefinedType.Mirror[T] { type IronType = I }, f: F[I]): F[T] = f.asInstanceOf[F[T]]
 
   /**
    * Typelevel access to a "new type"'s informations. It is similar to [[scala.deriving.Mirror]].
@@ -161,6 +169,6 @@ object RefinedType:
     type FinalType = T
 
     /**
-      * [[RefinedType]] instance of [[T]].
-      */
+     * [[RefinedType]] instance of [[T]].
+     */
     def ops: RefinedType[BaseType, ConstraintType]

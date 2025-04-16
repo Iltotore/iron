@@ -11,7 +11,9 @@ import algebra.ring.{AdditiveCommutativeMonoid, AdditiveCommutativeSemigroup, Mu
 /**
  * Represent all Cats' typeclass instances for Iron.
  */
-private[iron] trait IronCatsInstances extends IronCatsLowPriority, RefinedTypeOpsCats:
+private[iron] trait IronCatsInstances extends IronCatsPriority2:
+  export RefinedType.Compat.given
+private trait IronCatsPriority2 extends IronCatsPriority3, RefinedTypeOpsCats:
 
   given [F[_]](using functor: Functor[F]): MapLogic[F] with
 
@@ -46,7 +48,7 @@ private[iron] trait IronCatsInstances extends IronCatsLowPriority, RefinedTypeOp
   given negLongCommutativeSemigroup: CommutativeSemigroup[Long :| Negative] = commutativeSemigroup[Long, Negative]
   given negFloatCommutativeSemigroup: CommutativeSemigroup[Float :| Negative] = commutativeSemigroup[Float, Negative]
   given negDoubleCommutativeSemigroup: CommutativeSemigroup[Double :| Negative] = commutativeSemigroup[Double, Negative]
-  
+
   private def commutativeMonoid[A, C](using inner: CommutativeMonoid[A], bounds: Bounds[A, C]): CommutativeMonoid[A :| C] =
     new CommutativeMonoid[A :| C]:
 
@@ -67,25 +69,16 @@ private[iron] trait IronCatsInstances extends IronCatsLowPriority, RefinedTypeOp
 /**
  * Cats' instances for Iron that need to have a lower priority to avoid ambiguous implicits.
  */
-private trait IronCatsLowPriority:
+private trait IronCatsPriority3:
 
   inline given [A, C](using inline ev: Hash[A]): Hash[A :| C] = ev.asInstanceOf[Hash[A :| C]]
 
-private trait RefinedTypeOpsCats extends RefinedTypeOpsCatsLowPriority:
+private trait RefinedTypeOpsCats:
 
-  inline given [T](using mirror: RefinedType.Mirror[T], ev: Eq[mirror.IronType]): Eq[T] = ev.asInstanceOf[Eq[T]]
-
-  inline given [T](using mirror: RefinedType.Mirror[T], ev: Order[mirror.IronType]): Order[T] = ev.asInstanceOf[Order[T]]
-
-  inline given [T](using mirror: RefinedType.Mirror[T], ev: Show[mirror.IronType]): Show[T] = ev.asInstanceOf[Show[T]]
-
-  inline given [T](using mirror: RefinedType.Mirror[T], ev: PartialOrder[mirror.IronType]): PartialOrder[T] = ev.asInstanceOf[PartialOrder[T]]
-
-private trait RefinedTypeOpsCatsLowPriority:
-
-  inline given [T](using mirror: RefinedType.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]
-
-  private def additiveCommutativeSemigroup[A, C](using inner: AdditiveCommutativeSemigroup[A], bounds: Bounds[A, C]): AdditiveCommutativeSemigroup[A :| C] = (x, y) =>
+  private def additiveCommutativeSemigroup[A, C](using
+      inner: AdditiveCommutativeSemigroup[A],
+      bounds: Bounds[A, C]
+  ): AdditiveCommutativeSemigroup[A :| C] = (x, y) =>
     bounds.shift(inner.plus(x, y))
 
   given posIntAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Int :| Positive] = additiveCommutativeSemigroup[Int, Positive]
@@ -98,10 +91,11 @@ private trait RefinedTypeOpsCatsLowPriority:
   given negFloatAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Float :| Negative] = additiveCommutativeSemigroup[Float, Negative]
   given negDoubleAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Double :| Negative] = additiveCommutativeSemigroup[Double, Negative]
 
-  private def additiveCommutativeMonoid[A, C](using inner: AdditiveCommutativeMonoid[A], bounds: Bounds[A, C]): AdditiveCommutativeMonoid[A :| C] = new:
+  private def additiveCommutativeMonoid[A, C](using inner: AdditiveCommutativeMonoid[A], bounds: Bounds[A, C]): AdditiveCommutativeMonoid[A :| C] =
+    new:
 
-    override def zero: A :| C = inner.zero.assume[C]
-    override def plus(x: A :| C, y: A :| C): A :| C = bounds.shift(inner.plus(x, y))
+      override def zero: A :| C = inner.zero.assume[C]
+      override def plus(x: A :| C, y: A :| C): A :| C = bounds.shift(inner.plus(x, y))
 
   given posIntAdditiveCommutativeMonoid: AdditiveCommutativeMonoid[Int :| Positive0] = additiveCommutativeMonoid[Int, Positive0]
   given posLongAdditiveCommutativeMonoid: AdditiveCommutativeMonoid[Long :| Positive0] = additiveCommutativeMonoid[Long, Positive0]

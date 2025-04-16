@@ -14,7 +14,7 @@ object ShiftSuite extends TestSuite:
       test("inBounds") - assertShift[Int, Interval.Closed[0, 10]](5, 5)
       test("upper") - assertShift[Int, Interval.Closed[0, 10]](11, 0)
       test("lower") - assertShift[Int, Interval.Closed[0, 10]](-1, 10)
-    
+
     test("positive"):
       test("inBounds") - assertShift[Int, Positive](5, 5)
       test("int") - assertShift[Int, Positive](0, Int.MaxValue)

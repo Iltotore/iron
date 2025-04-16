@@ -38,3 +38,7 @@ object JsoniterSuite extends TestSuite:
     test("decoding - invalid predicate"):
       test - "1".assertDecodingFailure[Zero]
       test - """{"zero":1}""".assertDecodingFailure[Number]
+
+    test("RefinedType givens get resolved"):
+      summon[JsonValueCodec[Temperature.T]]
+      summon[JsonValueCodec[EmptySeqDouble.T]]

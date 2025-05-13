@@ -13,6 +13,7 @@ import scala.util.boundary.break
  * @tparam T the new type (equivalent to `A :| C` if `T` is a transparent alias)
  */
 trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]):
+  self =>
 
   opaque type T <: A :| C = A :| C 
 
@@ -122,7 +123,7 @@ trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]):
   inline given RefinedType.Mirror[T] with
     override type BaseType = A
     override type ConstraintType = C
-    override val ops: RefinedType[A, C] = ops
+    override val ops: RefinedType[A, C] = self
 
   inline given [R]: TypeTest[T, R] = summonInline[TypeTest[A :| C, R]].asInstanceOf[TypeTest[T, R]]
 

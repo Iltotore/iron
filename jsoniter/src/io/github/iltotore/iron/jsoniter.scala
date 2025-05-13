@@ -3,7 +3,9 @@ package io.github.iltotore.iron
 import com.github.plokhotnyuk.jsoniter_scala.core.*
 import com.github.plokhotnyuk.jsoniter_scala.macros.*
 
-object jsoniter:
+object jsoniter extends JsoniterLowPrio:
+  export RefinedType.Compat.compat
+private trait JsoniterLowPrio:
 
   /**
    * Creates a [[JsonValueCodec]] for refined types

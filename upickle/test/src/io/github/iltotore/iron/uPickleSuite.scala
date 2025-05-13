@@ -20,10 +20,16 @@ object uPickleSuite extends TestSuite:
       test("ironType"):
         test("success") - assert(Try(read[Int :| Positive]("10")).isSuccess)
         test("failure") - assert(Try(read[Int :| Positive]("-10")).isFailure)
+      test("refinedOps"):
+        test("success") - assert(Try(read[Temperature]("10")).isSuccess)
+        test("failure") - assert(Try(read[Temperature]("-10")).isFailure)
 
     test("writer"):
       test("ironType"):
         val p: Int :| Positive = 10
+        test("success") - assert(write(p) == "10")
+      test("refinedOps"):
+        val p: Temperature = Temperature(10.0)
         test("success") - assert(write(p) == "10")
 
 end uPickleSuite

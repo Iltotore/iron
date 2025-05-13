@@ -49,6 +49,10 @@ object CatsSuite extends TestSuite:
       Hash[Temperature]
       Order[Temperature]
       Show[Temperature]
+      Eq[EmptySeqDouble]
+      Hash[EmptySeqDouble]
+      Order[EmptySeqDouble]
+      Show[EmptySeqDouble]
 
     test("Cats instances are resolved for Int iron types"):
       Eq[Int :| AgeR]

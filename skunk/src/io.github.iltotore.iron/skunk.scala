@@ -2,7 +2,9 @@ package io.github.iltotore.iron
 
 import _root_.skunk.*
 
-object skunk:
+object skunk extends SkunkLowPrio:
+  export RefinedType.Compat.compat
+private trait SkunkLowPrio:
 
   /**
    * Explicit conversion for refining a [[Codec]]. Decodes to the underlying type then checks the constraint.

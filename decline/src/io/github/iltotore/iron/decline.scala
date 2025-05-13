@@ -10,7 +10,9 @@ import cats.data.ValidatedNel // Add this import
 /**
  * Implicit [[Argument]] instances for refined types.
  */
-object decline:
+object decline extends DeclineLowPrio:
+  export RefinedType.Compat.given
+private trait DeclineLowPrio:
 
   /**
    * An argument reader for refined types. Reads using the underlying type's [[Argument]] then check the constraint.
@@ -30,13 +32,3 @@ object decline:
           case Invalid(e) => Validated.invalid(e)
 
       def defaultMetavar: String = argument.defaultMetavar
-
-  /**
-   * An argument reader for new types. Reads using the underlying refined type's [[Argument]].
-   *
-   * @param mirror the meta information of the refined new type
-   * @param argument the argument reader of the underlying type
-   * @tparam T the new type.
-   */
-  inline given [T](using mirror: RefinedType.Mirror[T], argument: Argument[mirror.IronType]): Argument[T] =
-    argument.asInstanceOf[Argument[T]]

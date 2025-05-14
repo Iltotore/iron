@@ -15,6 +15,10 @@ object AnySuite extends TestSuite:
       test - Dummy.assertRefine[DescribedAs[True, "test"]]
       test - Dummy.assertNotRefine[DescribedAs[False, "test"]]
 
+    test("describedAs implications"):
+      val isTrue: Boolean :| DescribedAs[True, "test"] = true
+      val notFalse: Boolean :| DescribedAs[Not[False], "test"] = isTrue
+
     test("not"):
       test - Dummy.assertRefine[Not[False]]
       test - Dummy.assertNotRefine[Not[True]]

@@ -10,8 +10,8 @@ object jsoniter:
    *
    * @param constraint the [[Constraint]] implementation to test the decoded value.
    */
-  inline given makeCodec[A, B](using inline constraint: Constraint[A, B]): JsonValueCodec[A :| B] = new:
-    private val codec = JsonCodecMaker.make[A]
+  inline given makeCodec[A, B](using inline constraint: Constraint[A, B], inline config: CodecMakerConfig = CodecMakerConfig): JsonValueCodec[A :| B] = new:
+    private val codec = JsonCodecMaker.make[A](config)
     def decodeValue(in: JsonReader, default: A :| B): A :| B =
       val decoded = codec.decodeValue(in, default)
       if constraint.test(decoded) then decoded.asInstanceOf[A :| B]

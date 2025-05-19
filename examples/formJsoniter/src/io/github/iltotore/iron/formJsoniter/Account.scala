@@ -30,12 +30,6 @@ type Age = DescribedAs[Greater[0], "Age should be strictly positive"]
 case class Account(name: String :| Username, password: String :| Password, age: Int :| Age)
 
 object Account:
-  // Create codecs for the underlying types since the automatic derivation doesn't work when the types are within case classes.
-  // These need to be named (see: https://github.com/plokhotnyuk/jsoniter-scala#known-issues)
-  given usrCodec: JsonValueCodec[String :| Username] = makeCodec
-  given passCodec: JsonValueCodec[String :| Password] = makeCodec
-  given ageCodec: JsonValueCodec[Int :| Age] = makeCodec
-
   given JsonValueCodec[Account] = JsonCodecMaker.make
 
   private val readerConfig = ReaderConfig.withAppendHexDumpToParseException(false)

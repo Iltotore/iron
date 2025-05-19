@@ -19,6 +19,13 @@ object JsoniterSuite extends TestSuite:
   given JsonValueCodec[Zero] = JsonCodecMaker.make
   given JsonValueCodec[Number] = JsonCodecMaker.make
 
+  case class StatusData(userName: String)
+  case class Status(statusList: List[StatusData] :| FixedLength[1])
+  
+  inline given codecMakerConfig: CodecMakerConfig = CodecMakerConfig.withFieldNameMapper(JsonCodecMaker.enforce_snake_case2)
+  
+  given JsonValueCodec[Status] = JsonCodecMaker.make(codecMakerConfig)
+
   extension [A](value: A)(using JsonValueCodec[A])
     def assertEncoding(expected: String): Unit = assert(writeToString(value) == expected)
 
@@ -30,6 +37,7 @@ object JsoniterSuite extends TestSuite:
     test("encoding"):
       test - zero.assertEncoding("0")
       test - Number(0).assertEncoding("""{"zero":0}""")
+      test - Status(List(StatusData("John"))).assertEncoding("""{"status_list":[{"user_name":"John"}]}""")
 
     test("decoding - valid predicate"):
       test - "0".assertDecodingSuccess[Int :| Zero](zero)

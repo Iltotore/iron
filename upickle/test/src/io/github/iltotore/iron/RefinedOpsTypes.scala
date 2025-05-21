@@ -1,6 +1,5 @@
 package io.github.iltotore.iron
 
-import io.github.iltotore.iron.RefinedType
 import io.github.iltotore.iron.constraint.numeric.Positive
 
 //Opaque types are truly opaque when used in another file than the one where they're defined. See Scala documentation.

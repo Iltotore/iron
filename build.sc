@@ -7,7 +7,7 @@ import mill._, define._, api.Result
 import scalalib._, scalalib.scalafmt._, scalalib.publish._, scalajslib._, scalanativelib._
 
 object versions {
-  val scala = "3.6.4"
+  val scala = "3.3.6"
   val scalaJS = "1.16.0"
   val scalaNative = "0.5.7"
 }
@@ -340,6 +340,13 @@ object circe extends SubModule {
     ivy"io.circe::circe-core::0.14.10"
   )
 
+  object test extends Tests {
+    override def ivyDeps = Agg(
+      ivy"com.lihaoyi::utest:0.8.1",
+      ivy"io.circe::circe-core::0.14.10"
+    )
+  }
+
   object js extends JSCrossModule
 
   object native extends NativeCrossModule
@@ -392,6 +399,13 @@ object zioJson extends SubModule {
   def ivyDeps = Agg(
     ivy"dev.zio::zio-json::0.7.14"
   )
+
+  object test extends Tests {
+    def ivyDeps = Agg(
+      ivy"com.lihaoyi::utest:0.8.1",
+      ivy"dev.zio::zio-json::0.7.14"
+    )
+  }
 
   object js extends JSCrossModule
 }
@@ -478,7 +492,13 @@ object doobie extends SubModule {
     ivy"org.tpolecat::doobie-core::1.0.0-RC9"
   )
 
-  object test extends Tests
+  object test extends Tests{
+    def ivyDeps = Agg(
+      ivy"com.lihaoyi::utest:0.8.1",
+      ivy"org.tpolecat::doobie-core::1.0.0-RC9",
+
+    )
+  }
 }
 
 object decline extends SubModule {

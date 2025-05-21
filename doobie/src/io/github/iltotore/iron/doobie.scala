@@ -1,7 +1,8 @@
 package io.github.iltotore.iron
 
 import cats.Show
-import _root_.doobie.{Put, Get, Meta}
+import _root_.doobie.{Get, Meta, Put}
+import io.github.iltotore.iron.internal.NotNothing
 
 /**
  * Implicit [[Meta]]s, [[Put]]s  and [[Get]]s for refined types.
@@ -16,7 +17,7 @@ object doobie:
    * @tparam A the base type
    * @tparam C the constraint type
    */
-  inline given [A, C](using inline get: Get[A])(using Constraint[A, C], Show[A]): Get[A :| C] =
+  inline given [A, C](using inline get: Get[A], inline notNothing: NotNothing[A])(using Constraint[A, C], Show[A]): Get[A :| C] =
     get.temap[A :| C](_.refineEither)
 
   /**
@@ -37,7 +38,7 @@ object doobie:
    * @tparam A the base type
    * @tparam C the constraint type
    */
-  inline given [A, C](using inline put: Put[A])(using Constraint[A, C], Show[A]): Put[A :| C] =
+  inline given [A, C](using inline put: Put[A], inline notNothing: NotNothing[A])(using Constraint[A, C], Show[A]): Put[A :| C] =
     put.tcontramap(identity)
 
   /**
@@ -58,7 +59,7 @@ object doobie:
    * @tparam A the base type
    * @tparam C the constraint type
    */
-  inline given [A, C](using inline meta: Meta[A])(using Constraint[A, C], Show[A]): Meta[A :| C] =
+  inline given [A, C](using inline meta: Meta[A], inline notNothing: NotNothing[A])(using Constraint[A, C], Show[A]): Meta[A :| C] =
     meta.tiemap[A :| C](_.refineEither)(identity)
 
   /**

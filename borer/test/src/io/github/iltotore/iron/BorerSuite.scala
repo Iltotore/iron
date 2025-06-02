@@ -6,7 +6,7 @@ import utest.*
 
 object BorerSuite extends TestSuite:
 
-  val tests: Tests = Tests {
+  val tests: Tests = Tests:
 
     test("encoding"):
       Json.encode(Temperature(15.0)).toUtf8String ==> "15.0"
@@ -15,4 +15,3 @@ object BorerSuite extends TestSuite:
       Json.decode("15.0".getBytes).to[Temperature].valueEither ==> Right(Temperature(15.0))
       Json.decode("-15.0".getBytes).to[Temperature].valueEither.left.map(_.getMessage) ==>
         Left("Should be strictly positive (input position 0)")
-  }

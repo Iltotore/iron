@@ -7,18 +7,18 @@ import io.bullet.borer.{Decoder, Encoder}
  */
 object borer extends BorerLowPriority:
 
-  inline given [T](using m: RefinedType.Mirror[T], ev: Encoder[m.IronType]): Encoder[T] =
+  given [T](using m: RefinedType.Mirror[T], ev: Encoder[m.IronType]): Encoder[T] =
     ev.asInstanceOf[Encoder[T]]
 
-  inline given [T](using m: RefinedType.Mirror[T], ev: Decoder[m.IronType]): Decoder[T] =
+  given [T](using m: RefinedType.Mirror[T], ev: Decoder[m.IronType]): Decoder[T] =
     ev.asInstanceOf[Decoder[T]]
 
 private trait BorerLowPriority:
-  inline given [A, B](using inline encoder: Encoder[A]): Encoder[A :| B] =
+  given [A, B](using encoder: Encoder[A]): Encoder[A :| B] =
     encoder.asInstanceOf[Encoder[A :| B]]
 
-  inline given [A, B](using inline decoder: Decoder[A], inline constraint: Constraint[A, B]): Decoder[A :| B] =
-    Decoder: r =>
+  given [A, B](using decoder: Decoder[A], constraint: RuntimeConstraint[A, B]): Decoder[A :| B] =
+    r =>
       decoder.read(r).refineEither match
         case Left(msg) => r.validationFailure(msg)
         case Right(x) => x

@@ -8,9 +8,9 @@ object ciris:
    * A [[ConfigDecoder]] for refined types. Decodes to the underlying type then checks the constraint.
    *
    * @param decoder    the [[ConfigDecoder]] of the underlying type
-   * @param constraint the [[Constraint]] implementation to test the decoded value
+   * @param constraint the [[RuntimeConstraint]] implementation to test the decoded value
    */
-  inline given [In, A, C](using inline decoder: ConfigDecoder[In, A], inline constraint: Constraint[A, C]): ConfigDecoder[In, A :| C] =
+  given [In, A, C](using decoder: ConfigDecoder[In, A], constraint: RuntimeConstraint[A, C]): ConfigDecoder[In, A :| C] =
     decoder.mapEither((_, value) => value.refineEither[C].left.map(ConfigError(_)))
 
   /**
@@ -19,5 +19,5 @@ object ciris:
    * @param decoder    the [[ConfigDecoder]] of the underlying type.
    * @param mirror     the mirror of the [[RefinedTypeOps.Mirror]]
    */
-  inline given [In, T](using mirror: RefinedType.Mirror[T], decoder: ConfigDecoder[In, mirror.IronType]): ConfigDecoder[In, T] =
+  given [In, T](using mirror: RefinedType.Mirror[T], decoder: ConfigDecoder[In, mirror.IronType]): ConfigDecoder[In, T] =
     decoder.asInstanceOf[ConfigDecoder[In, T]]

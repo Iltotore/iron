@@ -10,9 +10,9 @@ object pureconfig:
    * A [[ConfigReader]] for refined types. Decodes to the underlying type then checks the constraint.
    *
    * @param reader     the [[ConfigReader]] of the underlying type
-   * @param constraint the [[Constraint]] implementation to test the decoded value
+   * @param constraint the [[RuntimeConstraint]] implementation to test the decoded value
    */
-  inline given [A, C](using inline reader: ConfigReader[A], inline constraint: Constraint[A, C]): ConfigReader[A :| C] =
+  given [A, C](using reader: ConfigReader[A], constraint: RuntimeConstraint[A, C]): ConfigReader[A :| C] =
     reader
       .emap: value =>
         value
@@ -26,5 +26,5 @@ object pureconfig:
    * @param mirror the mirror of the [[RefinedTypeOps.Mirror]]
    * @param reader the [[ConfigReader]] of the underlying type
    */
-  inline given [A](using mirror: RefinedType.Mirror[A], reader: ConfigReader[mirror.IronType]): ConfigReader[A] =
+  given [A](using mirror: RefinedType.Mirror[A], reader: ConfigReader[mirror.IronType]): ConfigReader[A] =
     reader.asInstanceOf[ConfigReader[A]]

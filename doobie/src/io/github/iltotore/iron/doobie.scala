@@ -16,7 +16,7 @@ object doobie extends DoobieLowPriority:
    * @param ev the value getter of the underlying type
    * @tparam T the new type
    */
-  inline given [T](using m: RefinedType.Mirror[T], ev: Get[m.IronType]): Get[T] =
+  given [T](using m: RefinedType.Mirror[T], ev: Get[m.IronType]): Get[T] =
     ev.asInstanceOf[Get[T]]
 
 
@@ -27,7 +27,7 @@ object doobie extends DoobieLowPriority:
    * @param ev the value setter of the underlying type
    * @tparam T the new type
    */
-  inline given [T](using m: RefinedType.Mirror[T], ev: Put[m.IronType]): Put[T] =
+  given [T](using m: RefinedType.Mirror[T], ev: Put[m.IronType]): Put[T] =
     ev.asInstanceOf[Put[T]]
 
   /**
@@ -37,7 +37,7 @@ object doobie extends DoobieLowPriority:
    * @param ev the value getter/setter of the underlying type
    * @tparam T the new type
    */
-  inline given [T](using m: RefinedType.Mirror[T], ev: Meta[m.IronType]): Meta[T] =
+  given [T](using m: RefinedType.Mirror[T], ev: Meta[m.IronType]): Meta[T] =
     ev.asInstanceOf[Meta[T]]
 
 private trait DoobieLowPriority:
@@ -50,7 +50,7 @@ private trait DoobieLowPriority:
    * @tparam A the base type
    * @tparam C the constraint type
    */
-  inline given [A, C](using inline get: Get[A])(using Constraint[A, C], Show[A]): Get[A :| C] =
+  given [A, C](using get: Get[A])(using RuntimeConstraint[A, C], Show[A]): Get[A :| C] =
     get.temap[A :| C](_.refineEither)
 
 
@@ -62,7 +62,7 @@ private trait DoobieLowPriority:
    * @tparam A the base type
    * @tparam C the constraint type
    */
-  inline given [A, C](using inline put: Put[A])(using Constraint[A, C], Show[A]): Put[A :| C] =
+  given [A, C](using put: Put[A])(using RuntimeConstraint[A, C], Show[A]): Put[A :| C] =
     put.tcontramap(identity)
 
 
@@ -74,5 +74,5 @@ private trait DoobieLowPriority:
    * @tparam A the base type
    * @tparam C the constraint type
    */
-  inline given [A, C](using inline meta: Meta[A])(using Constraint[A, C], Show[A]): Meta[A :| C] =
+  given [A, C](using meta: Meta[A])(using RuntimeConstraint[A, C], Show[A]): Meta[A :| C] =
     meta.tiemap[A :| C](_.refineEither)(identity)

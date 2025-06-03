@@ -15,7 +15,7 @@ object upickle extends UPickleLowPriority:
    * @param mirror the type mirror for refined types.
    * @param ev     the underlying `Reader` for the iron type.
    */
-  inline given [T](using mirror: RefinedType.Mirror[T], ev: Reader[mirror.IronType]): Reader[T] =
+  given [T](using mirror: RefinedType.Mirror[T], ev: Reader[mirror.IronType]): Reader[T] =
     ev.asInstanceOf[Reader[T]]
 
   /**
@@ -24,7 +24,7 @@ object upickle extends UPickleLowPriority:
    * @param mirror the type mirror for refined types.
    * @param ev     the underlying `Writer` for the iron type.
    */
-  inline given [T](using mirror: RefinedType.Mirror[T], ev: Writer[mirror.IronType]): Writer[T] =
+  given [T](using mirror: RefinedType.Mirror[T], ev: Writer[mirror.IronType]): Writer[T] =
     ev.asInstanceOf[Writer[T]]
 
 private trait UPickleLowPriority:
@@ -33,9 +33,9 @@ private trait UPickleLowPriority:
    * A `Reader` for refined types using uPickle. Decodes to the underlying type then checks the constraint.
    *
    * @param reader     the `Reader` of the underlying type.
-   * @param constraint the `Constraint` implementation to test the decoded value.
+   * @param constraint the `RuntimeConstraint` implementation to test the decoded value.
    */
-  inline given [A, B](using inline reader: Reader[A], inline constraint: Constraint[A, B]): Reader[A :| B] =
+  given [A, B](using reader: Reader[A], constraint: RuntimeConstraint[A, B]): Reader[A :| B] =
     reader.map(value =>
       value.refineEither match
         case Right(refinedValue) => refinedValue
@@ -47,4 +47,4 @@ private trait UPickleLowPriority:
    *
    * @param writer the `Writer` of the underlying type.
    */
-  inline given [A, B](using inline writer: Writer[A]): Writer[A :| B] = writer.asInstanceOf[Writer[A :| B]]
+  given [A, B](using writer: Writer[A]): Writer[A :| B] = writer.asInstanceOf[Writer[A :| B]]

@@ -16,12 +16,12 @@ object decline:
    * An argument reader for refined types. Reads using the underlying type's [[Argument]] then check the constraint.
    *
    * @param argument the argument reader of the underlying type
-   * @param constraint the [[Constraint]] implementation to test the decoded value
+   * @param constraint the [[RuntimeConstraint]] implementation to test the decoded value
    * @tparam A the underlying/raw type
    * @tparam B the constraint type
    */
-  inline given [A, B](using inline argument: Argument[A], inline constraint: Constraint[A, B]): Argument[A :| B] =
-    new Argument[A :| B]:
+  given [A, B](using argument: Argument[A], constraint: RuntimeConstraint[A, B]): Argument[A :| B] =
+    new:
       def read(string: String): ValidatedNel[String, A :| B] =
         argument.read(string) match
           case Valid(a) => a.refineEither[B] match
@@ -38,5 +38,5 @@ object decline:
    * @param argument the argument reader of the underlying type
    * @tparam T the new type.
    */
-  inline given [T](using mirror: RefinedType.Mirror[T], argument: Argument[mirror.IronType]): Argument[T] =
+  given [T](using mirror: RefinedType.Mirror[T], argument: Argument[mirror.IronType]): Argument[T] =
     argument.asInstanceOf[Argument[T]]

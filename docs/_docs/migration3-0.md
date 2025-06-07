@@ -7,7 +7,7 @@ title: "Iron 3.x migration"
 Some major API changes have been introduced in Iron 3.0.0 compared to Iron 2.x.
 Most of them involved minor changes from a Iron 2.x codebase to 3.x.
 
-## Scala 3.6.3 or more is required
+## Scala 3.6.3 or more is required (Only for Iron <3.0.2)
 
 Due to a bug in the compiler (which was completely blocking for Iron 3.0.0) that has been fixed in 3.6.3,
 you need this version or higher for 3.x.

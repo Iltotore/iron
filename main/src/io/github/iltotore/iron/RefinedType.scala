@@ -118,7 +118,7 @@ trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]):
           case None        => break(None)
       ))
 
-  def unapply(value: T): Option[A :| C] = Some(value.asInstanceOf[A :| C])
+  def unapply(value: A): Option[T] = option(value)
 
   inline given RefinedType.Mirror[T] with
     override type BaseType = A

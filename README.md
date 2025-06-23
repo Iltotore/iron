@@ -121,6 +121,7 @@ company to the list.
 - [Marss](https://github.com/marss)
 - [Association familiale Mulliez](https://fr.wikipedia.org/wiki/Association_familiale_Mulliez)
 - [AshFall Studio](https://ashfallstudio.com)
+- [Sergic](https://www.sergic.com/)
 
 ### Other projects
 

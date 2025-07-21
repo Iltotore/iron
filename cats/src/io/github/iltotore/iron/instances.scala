@@ -15,18 +15,18 @@ import scala.util.NotGiven
 private[iron] trait IronCatsInstances extends RefinedTypeInstancesCats
 
 private trait RefinedTypeInstancesCats extends RefinedTypeInstancesCatsLowPriority:
-  inline given [T](using mirror: RefinedType.Mirror[T], ev: Eq[mirror.IronType]): Eq[T] = ev.asInstanceOf[Eq[T]]
+  given [T](using mirror: RefinedType.Mirror[T], ev: Eq[mirror.IronType]): Eq[T] = ev.asInstanceOf[Eq[T]]
 
-  inline given [T](using mirror: RefinedType.Mirror[T], ev: Order[mirror.IronType]): Order[T] = ev.asInstanceOf[Order[T]]
+  given [T](using mirror: RefinedType.Mirror[T], ev: Order[mirror.IronType]): Order[T] = ev.asInstanceOf[Order[T]]
 
-  inline given [T](using mirror: RefinedType.Mirror[T], ev: Show[mirror.IronType]): Show[T] = ev.asInstanceOf[Show[T]]
+  given [T](using mirror: RefinedType.Mirror[T], ev: Show[mirror.IronType]): Show[T] = ev.asInstanceOf[Show[T]]
 
-  inline given [T](using mirror: RefinedType.Mirror[T], ev: PartialOrder[mirror.IronType]): PartialOrder[T] = ev.asInstanceOf[PartialOrder[T]]
+  given [T](using mirror: RefinedType.Mirror[T], ev: PartialOrder[mirror.IronType]): PartialOrder[T] = ev.asInstanceOf[PartialOrder[T]]
 
 
 private trait RefinedTypeInstancesCatsLowPriority extends IronInstances:
 
-  inline given [T](using mirror: RefinedType.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]
+  given [T](using mirror: RefinedType.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]
 
 
 private trait IronInstances extends IronInstancesLowPriority:
@@ -36,20 +36,20 @@ private trait IronInstances extends IronInstancesLowPriority:
     override def map[A, B](wrapper: F[A], f: A => B): F[B] = functor.map(wrapper)(f)
 
   // The `NotGiven` implicit parameter is mandatory to avoid ambiguous implicit error when both Eq[A] and Hash[A]/PartialOrder[A] exist
-  inline given [A, C](using inline ev: Eq[A], notHashOrOrder: NotGiven[Hash[A] | PartialOrder[A]]): Eq[A :| C] =
+  given [A, C](using ev: Eq[A], notHashOrOrder: NotGiven[Hash[A] | PartialOrder[A]]): Eq[A :| C] =
     ev.asInstanceOf[Eq[A :| C]]
 
-  inline given [A, C](using inline ev: PartialOrder[A], notOrder: NotGiven[Order[A]]): PartialOrder[A :| C] =
+  given [A, C](using ev: PartialOrder[A], notOrder: NotGiven[Order[A]]): PartialOrder[A :| C] =
     ev.asInstanceOf[PartialOrder[A :| C]]
 
-  inline given [A, C](using inline ev: Order[A]): Order[A :| C] = ev.asInstanceOf[Order[A :| C]]
+  given [A, C](using ev: Order[A]): Order[A :| C] = ev.asInstanceOf[Order[A :| C]]
 
-  inline given [A, C](using inline ev: Show[A]): Show[A :| C] = ev.asInstanceOf[Show[A :| C]]
+  given [A, C](using ev: Show[A]): Show[A :| C] = ev.asInstanceOf[Show[A :| C]]
 
-  inline given [A, C, V](using inline ev: LowerBounded[A], implication: C ==> Greater[V]): LowerBounded[A :| C] =
+  given [A, C, V](using ev: LowerBounded[A], implication: C ==> Greater[V]): LowerBounded[A :| C] =
     ev.asInstanceOf[LowerBounded[A :| C]]
 
-  inline given [A, C, V](using inline ev: UpperBounded[A], implication: C ==> Greater[V]): UpperBounded[A :| C] =
+  given [A, C, V](using ev: UpperBounded[A], implication: C ==> Greater[V]): UpperBounded[A :| C] =
     ev.asInstanceOf[UpperBounded[A :| C]]
 
   private def commutativeSemigroup[A, C](using inner: CommutativeSemigroup[A], bounds: Bounds[A, C]): CommutativeSemigroup[A :| C] =
@@ -100,7 +100,7 @@ private trait IronInstances extends IronInstancesLowPriority:
  * Cats' instances for Iron that need to have a lower priority to avoid ambiguous implicits.
  */
 private trait IronInstancesLowPriority:
-  inline given [A, C](using inline ev: Hash[A]): Hash[A :| C] = ev.asInstanceOf[Hash[A :| C]]
+  given [A, C](using ev: Hash[A]): Hash[A :| C] = ev.asInstanceOf[Hash[A :| C]]
 
   private def additiveCommutativeSemigroup[A, C](using
                                                  inner: AdditiveCommutativeSemigroup[A],

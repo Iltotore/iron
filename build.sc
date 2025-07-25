@@ -352,6 +352,24 @@ object circe extends SubModule {
   object native extends NativeCrossModule
 }
 
+object playJson extends SubModule {
+
+  def artifactName = "iron-play-json"
+
+  def ivyDeps = Agg(
+    ivy"org.playframework::play-json::3.0.5"
+  )
+
+  object test extends Tests {
+    override def ivyDeps = Agg(
+      ivy"com.lihaoyi::utest:0.8.1",
+      ivy"org.playframework::play-json::3.0.5"
+    )
+  }
+
+  object js extends JSCrossModule
+}
+
 object ciris extends SubModule {
 
   def artifactName = "iron-ciris"

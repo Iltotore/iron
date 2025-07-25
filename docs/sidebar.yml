@@ -28,6 +28,7 @@ subsection:
       - page: modules/decline.md
       - page: modules/doobie.md
       - page: modules/jsoniter.md
+      - page: modules/play-json.md
       - page: modules/pureconfig.md
       - page: modules/skunk.md
       - page: modules/scalacheck.md

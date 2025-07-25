@@ -16,6 +16,7 @@ These modules are mostly "support"/"interoperability" modules to provide out of 
 - [Decline](decline.md): Typeclass instances for refinement types.
 - [Doobie](doobie.md): Typeclass instances for refinement types.
 - [Jsoniter](jsoniter.md): Typeclass instances for refinement types.
+- [play JSON](play-json.md): Typeclass instances for refinement types.
 - [ScalaCheck](scalacheck.md): Typeclass instances for refinement types.
 - [uPickle](upickle.md): Typeclass instances for refinement types.
 - [ZIO](zio.md): Accumulative refinement method.

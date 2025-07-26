@@ -106,6 +106,7 @@ ivy"io.github.iltotore::iron:version"
 | iron-upickle    | ✔️  | ✔️ | ✔️     |
 | iron-zio        | ✔️  | ✔️ | ❌     |
 | iron-zio-json   | ✔️  | ✔️ | ❌     |
+| iron-play-json  | ✔️  | ✔️ | ❌     |
 
 ## Adopters
 

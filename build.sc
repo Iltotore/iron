@@ -1,7 +1,5 @@
-import $ivy.`io.chris-kipp::mill-ci-release::0.1.9`
-import io.kipp.mill.ci.release.CiReleaseModule
+import $ivy.`de.tototec::de.tobiasroeser.mill.vcs.version::0.4.1`
 import de.tobiasroeser.mill.vcs.version.VcsVersion
-
 
 import mill._, define._, api.Result
 import scalalib._, scalalib.scalafmt._, scalalib.publish._, scalajslib._, scalanativelib._
@@ -12,7 +10,7 @@ object versions {
   val scalaNative = "0.5.7"
 }
 
-trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { outer =>
+trait BaseModule extends ScalaModule with ScalafmtModule with SonatypeCentralPublishModule { outer =>
 
   def scalaVersion = versions.scala
 
@@ -28,6 +26,10 @@ trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { 
       )
     )
 
+  def publishVersion: T[String] = T {
+    VcsVersion.vcsState().format(untaggedSuffix = "-SNAPSHOT")
+  }
+
   trait Tests extends ScalaTests with ScalafmtModule {
 
     def testFramework = "utest.runner.Framework"
@@ -37,7 +39,7 @@ trait BaseModule extends ScalaModule with ScalafmtModule with CiReleaseModule { 
     )
   }
 
-  trait CrossModule extends ScalaModule with ScalafmtModule with CiReleaseModule  {
+  trait CrossModule extends ScalaModule with ScalafmtModule with SonatypeCentralPublishModule  {
 
     def segment: String
 

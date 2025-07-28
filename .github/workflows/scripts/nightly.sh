@@ -15,7 +15,7 @@ new_commits=$(git log --since "$yesterday")
 if [ "$new_commits" ]
 then
   echo "New changes!"
-  ./millw mill.javalib.SonatypeCentralPublishModule/
+  ./millw mill.scalalib.SonatypeCentralPublishModule/
 else
   echo "No changes"
 fi

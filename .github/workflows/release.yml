@@ -13,7 +13,7 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '17'
-      - run: ./millw mill.javalib.SonatypeCentralPublishModule/
+      - run: ./millw mill.scalalib.SonatypeCentralPublishModule/
         env:
           MILL_PGP_PASSPHRASE: ${{ secrets.MILL_PGP_PASSPHRASE }}
           MILL_PGP_SECRET_BASE64: ${{ secrets.MILL_PGP_SECRET_BASE64 }}

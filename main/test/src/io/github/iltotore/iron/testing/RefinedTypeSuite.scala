@@ -7,7 +7,7 @@ import utest.*
 import scala.compiletime.summonInline
 import scala.util.{Failure, Success, Try}
 
-object RefinedTypeOpsSuite extends TestSuite:
+object RefinedTypeSuite extends TestSuite:
   val tests: Tests = Tests {
     test("compile-time apply"):
       val temperature = Temperature(100)
@@ -73,4 +73,10 @@ object RefinedTypeOpsSuite extends TestSuite:
     test("value"):
       val temperature = Temperature(10)
       assert(temperature.value == 10)
+
+    test("extensions"):
+      val temperature = Temperature(10)
+      assert(temperature + Temperature(10) == Temperature(20))
+      assert(temperature + 10 == Temperature(20))
+      compileError("temperature - 10")
   }

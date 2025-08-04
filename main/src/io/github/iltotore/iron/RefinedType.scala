@@ -15,7 +15,7 @@ import scala.util.boundary.break
 trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]):
   self =>
 
-  opaque type T <: A :| C = A :| C 
+  opaque type T = A :| C 
 
   /**
    * The runtime constraint of the underlying [[IronType]]. Can be used in non-inline methods and to improve runtime

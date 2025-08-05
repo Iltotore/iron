@@ -87,7 +87,7 @@ object docs extends BaseModule {
   def artifactName = "iron-docs"
 
   val modules: Seq[ScalaModule] =
-    Seq(main, cats, circe, decline, doobie, upickle, ciris, jsoniter, pureconfig, scalacheck, skunk, upickle, zio, zioJson)
+    Seq(main, cats, circe, decline, doobie, upickle, ciris, jsoniter, pureconfig, scalacheck, scodec, skunk, upickle, zio, zioJson)
 
   def docSources = T.sources {
     T.traverse(modules)(_.docSources)().flatten
@@ -150,6 +150,7 @@ object docs extends BaseModule {
     ".*pureconfig.*" -> ("scaladoc3", "https://www.javadoc.io/doc/com.github.pureconfig/pureconfig-core_3/latest/index.html"),
     ".*io.bullet.borer.*" -> ("scaladoc3", "https://javadoc.io/doc/io.bullet/borer-core_3/latest/"),
     ".*org.scalacheck.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scalacheck/scalacheck_3/latest/"),
+    ".*org.scodec.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scodec/scodec-core_3/latest/"),
     ".*skunk.*" -> ("scaladoc3", "https://javadoc.io/doc/org.tpolecat/skunk-docs_3/latest/"),
     ".*upickle.core.*" -> ("scaladoc3", "https://javadoc.io/doc/com.lihaoyi/upickle-core_3/latest/"),
     ".*upickle[^\\.core].*" -> ("scaladoc3", "https://javadoc.io/doc/com.lihaoyi/upickle_3/latest/"),
@@ -545,4 +546,19 @@ object pureconfig extends SubModule {
   )
 
   object test extends Tests
+}
+
+object scodec extends SubModule {
+
+  def artifactName = "iron-scodec"
+
+  def ivyDeps = Agg(
+    ivy"org.scodec::scodec-core::2.3.3"
+  )
+
+  object test extends Tests
+
+  object js extends JSCrossModule
+
+  object native extends NativeCrossModule
 }

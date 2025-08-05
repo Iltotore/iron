@@ -5,9 +5,9 @@ import mill._, define._, api.Result
 import scalalib._, scalalib.scalafmt._, scalalib.publish._, scalajslib._, scalanativelib._
 
 object versions {
-  val scala = "3.3.6"
-  val scalaJS = "1.16.0"
-  val scalaNative = "0.5.7"
+  val scala = "3.7.2"
+  val scalaJS = "1.19.0"
+  val scalaNative = "0.5.8"
 }
 
 trait BaseModule extends ScalaModule with ScalafmtModule with SonatypeCentralPublishModule { outer =>

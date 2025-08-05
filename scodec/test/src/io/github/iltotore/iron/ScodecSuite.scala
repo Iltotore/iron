@@ -12,15 +12,13 @@ object ScodecSuite extends TestSuite:
   val tests: Tests = Tests:
     test("Scodec instances are resolved for Int iron types"):
       val codec = Codec[Int :| Positive]
-      assert(codec != null)
 
     test("Scodec instances are resolved for new types"):
       val codec = Codec[Temperature]
-      assert(codec != null)
 
     test("Encoding and decoding positive integers"):
       val codec = Codec[Int :| Positive]
-      val value = 42.refine[Positive]
+      val value: Int :| Positive = 42
       
       val encoded = codec.encode(value)
       assert(encoded.isSuccessful)
@@ -50,7 +48,7 @@ object ScodecSuite extends TestSuite:
     test("Derives syntax works with refined types"):
       case class Person(name: String, age: Int :| Positive) derives Codec
       
-      val person = Person("Alice", 25.refine[Positive])
+      val person = Person("Alice", 25)
       val codec = Codec[Person]
       
       val encoded = codec.encode(person)

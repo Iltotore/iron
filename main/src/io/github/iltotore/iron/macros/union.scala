@@ -30,7 +30,7 @@ object union:
         case o: OrType => ('{ isUnionSingleton.asInstanceOf[IsUnion[A]] }).asExprOf[IsUnion[A]]
         case other     => report.errorAndAbort(s"${tpe.show} is not a Union")
 
-  transparent inline def unionCond[A, C](value: A): Boolean = ${ unionCondImpl[A, C]('value) }
+  transparent inline def unionCond[A, C](inline value: A): Boolean = ${ unionCondImpl[A, C]('value) }
 
   private def unionCondImpl[A, C](value: Expr[A])(using Quotes, Type[A], Type[C]): Expr[Boolean] =
 

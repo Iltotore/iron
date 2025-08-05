@@ -85,7 +85,7 @@ type Name = String :| MinLength[1]
 case class Person(name: Name, age: Age) derives Codec
 
 // The derived codec handles validation automatically
-val person = Person("Alice".refine, 25.refine)
+val person = Person("Alice", 25)
 val encoded = Codec[Person].encode(person)
 val decoded = encoded.flatMap(Codec[Person].decode)
 ```

@@ -26,18 +26,15 @@ import scodec.*
 import scodec.bits.*
 import scodec.codecs.*
 
-// Define a refined type
-type PositiveInt = Int :| Positive
-
 // Use scodec codecs with refined types
-val positiveIntCodec: Codec[PositiveInt] = Codec[PositiveInt]
+val positiveIntCodec: Codec[Int :| Positive] = Codec[Int :| Positive]
 
 // Encoding
-val value: PositiveInt = 42.refine[Positive]
+val value: Int :| Positive = 42.refine[Positive]
 val encoded: Attempt[BitVector] = positiveIntCodec.encode(value)
 
 // Decoding
-val decoded: Attempt[DecodeResult[PositiveInt]] = 
+val decoded: Attempt[DecodeResult[Int :| Positive]] =
   encoded.flatMap(positiveIntCodec.decode)
 
 // Decoding invalid values will fail

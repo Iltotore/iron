@@ -30,7 +30,7 @@ object intersection:
         case i: AndType => ('{ isIntersectionSingleton.asInstanceOf[IsIntersection[A]] }).asExprOf[IsIntersection[A]]
         case other      => report.errorAndAbort(s"${tpe.show} is not a Intersection")
 
-  transparent inline def intersectionCond[A, C](value: A): Boolean = ${ intersectionCondImpl[A, C]('value) }
+  transparent inline def intersectionCond[A, C](inline value: A): Boolean = ${ intersectionCondImpl[A, C]('value) }
 
   private def intersectionCondImpl[A, C](value: Expr[A])(using Quotes, Type[A], Type[C]): Expr[Boolean] =
 

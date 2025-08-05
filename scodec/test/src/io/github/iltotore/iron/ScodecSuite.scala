@@ -70,3 +70,6 @@ object ScodecSuite extends TestSuite:
       val decoded = encoded.flatMap(codec.decode)
       assert(decoded.isSuccessful)
       assert(decoded.require.value == data)
+      assert(decoded.require.value.location == data.location)
+      assert(decoded.require.value.temperature == data.temperature)
+

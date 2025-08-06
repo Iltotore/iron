@@ -102,6 +102,7 @@ ivy"io.github.iltotore::iron:version"
 | iron-jsoniter   | ✔️  | ✔️ | ✔️     |
 | iron-pureconfig | ✔️  | ❌️ | ❌️     |
 | iron-scalacheck | ✔️  | ✔️ | ❌     |
+| iron-scodec     | ✔️  | ✔️ | ✔️     |
 | iron-skunk      | ✔️  | ✔️ | ✔️     |
 | iron-upickle    | ✔️  | ✔️ | ✔️     |
 | iron-zio        | ✔️  | ✔️ | ❌     |

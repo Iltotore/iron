@@ -85,6 +85,14 @@ object string:
     Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"],
     "Should be an UUID"
   ]
+  
+  /**
+   * Tests if the input is a valid email address.
+   */
+  type ValidEmail = DescribedAs[
+    Match["^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$"],
+    "Should be an email"
+  ]
 
   /**
    * Tests if the input is a valid semantic version as defined in [semver site](https://semver.org/#is-there-a-suggested-regular-expression-regex-to-check-a-semver-string).

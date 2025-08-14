@@ -40,7 +40,7 @@ object zio extends RefinedTypeOpsZio:
           constraint.test(_)
         )
 
-  extension [A, C](ops: RefinedType[A, C])
+  extension [A, C](ops: Refined[A, C])
     /**
      * Refine the given value applicatively at runtime, resulting in a [[Validation]].
      *
@@ -49,7 +49,6 @@ object zio extends RefinedTypeOpsZio:
     def validation(value: A): Validation[String, ops.T] =
       Validation.fromPredicateWith(ops.rtc.message)(value)(ops.rtc.test(_)).asInstanceOf[Validation[String, ops.T]]
 
-  extension [A, C](ops: RefinedType[A, C])
     /**
      * Refine the given values applicatively at runtime, resulting in a [[Validation]].
      *
@@ -71,6 +70,14 @@ private trait RefinedTypeOpsZio extends RefinedTypeOpsZioLowPriority:
 
   inline given [T](using mirror: RefinedType.Mirror[T], ev: Ord[mirror.IronType]): Ord[T] = ev.asInstanceOf[Ord[T]]
 
+  inline given [T](using mirror: RefinedSubtype.Mirror[T], ev: Debug[mirror.IronType]): Debug[T] = ev.asInstanceOf[Debug[T]]
+
+  inline given [T](using mirror: RefinedSubtype.Mirror[T], ev: Equal[mirror.IronType]): Equal[T] = ev.asInstanceOf[Equal[T]]
+
+  inline given [T](using mirror: RefinedSubtype.Mirror[T], ev: Ord[mirror.IronType]): Ord[T] = ev.asInstanceOf[Ord[T]]
+
 private trait RefinedTypeOpsZioLowPriority:
 
   inline given [T](using mirror: RefinedType.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]
+
+  inline given [T](using mirror: RefinedSubtype.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]

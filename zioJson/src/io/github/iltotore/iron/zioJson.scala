@@ -9,6 +9,12 @@ object zioJson extends ZioJsonLowPriority:
   given [T](using mirror: RefinedType.Mirror[T], ev: JsonEncoder[mirror.IronType]): JsonEncoder[T] =
     ev.asInstanceOf[JsonEncoder[T]]
 
+  given [T](using mirror: RefinedSubtype.Mirror[T], ev: JsonDecoder[mirror.IronType]): JsonDecoder[T] =
+    ev.asInstanceOf[JsonDecoder[T]]
+
+  given [T](using mirror: RefinedSubtype.Mirror[T], ev: JsonEncoder[mirror.IronType]): JsonEncoder[T] =
+    ev.asInstanceOf[JsonEncoder[T]]
+
 private trait ZioJsonLowPriority:
   given [A, C](using decoder: JsonDecoder[A], constraint: RuntimeConstraint[A, C]): JsonDecoder[A :| C] =
     decoder.mapOrFail(_.refineEither)

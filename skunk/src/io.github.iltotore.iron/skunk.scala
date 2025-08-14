@@ -21,3 +21,15 @@ object skunk:
    */
   given [A, C](using codec: Codec[A], constraint: RuntimeConstraint[A, C]): Codec[A :| C] =
     codec.refined
+
+  /**
+   * A [[Codec]] for new types.
+   */
+  inline given [T](using mirror: RefinedType.Mirror[T], ev: Codec[mirror.IronType]): Codec[T] =
+    ev.asInstanceOf[Codec[T]]
+
+  /**
+   * A [[Codec]] for new subtypes.
+   */
+  inline given [T](using mirror: RefinedSubtype.Mirror[T], ev: Codec[mirror.IronType]): Codec[T] =
+    ev.asInstanceOf[Codec[T]]

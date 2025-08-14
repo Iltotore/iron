@@ -49,6 +49,10 @@ object CatsSuite extends TestSuite:
       Hash[Temperature]
       Order[Temperature]
       Show[Temperature]
+      Eq[Altitude]
+      Hash[Altitude]
+      Order[Altitude]
+      Show[Altitude]
 
     test("Cats instances are resolved for Int iron types"):
       Eq[Int :| AgeR]
@@ -142,6 +146,14 @@ object CatsSuite extends TestSuite:
       val eitherNecWithSucceedingPredicate = Temperature.eitherNec(100)
       assert(eitherNecWithSucceedingPredicate == Right(Temperature(100)), "right should contain result of 'apply'")
 
+      val eitherNecWithFailingPredicateSubtype = Altitude.eitherNec(-5)
+      assert(
+        eitherNecWithFailingPredicateSubtype == Left(NonEmptyChain.one("Should be strictly positive")),
+        "'eitherNec' returns left if predicate fails"
+      )
+      val eitherNecWithSucceedingPredicateSubtype = Altitude.eitherNec(100)
+      assert(eitherNecWithSucceedingPredicateSubtype == Right(Altitude(100)), "right should contain result of 'apply'")
+
     test("eitherNel"):
       import io.github.iltotore.iron.cats.*
 
@@ -150,6 +162,14 @@ object CatsSuite extends TestSuite:
       val eitherNelWithSucceedingPredicate = Temperature.eitherNel(100)
       assert(eitherNelWithSucceedingPredicate == Right(Temperature(100)), "right should contain result of 'apply'")
 
+      val eitherNelWithFailingPredicateSubtype = Altitude.eitherNel(-5)
+      assert(
+        eitherNelWithFailingPredicateSubtype == Left(NonEmptyList.one("Should be strictly positive")),
+        "'eitherNel' returns left if predicate fails"
+      )
+      val eitherNelWithSucceedingPredicateSubtype = Altitude.eitherNel(100)
+      assert(eitherNelWithSucceedingPredicateSubtype == Right(Altitude(100)), "right should contain result of 'apply'")
+
     test("validated"):
       import io.github.iltotore.iron.cats.*
 
@@ -157,6 +177,11 @@ object CatsSuite extends TestSuite:
       assert(validatedWithFailingPredicate == Invalid("Should be strictly positive"), "'eitherNec' returns left if predicate fails")
       val validatedWithSucceedingPredicate = Temperature.validated(100)
       assert(validatedWithSucceedingPredicate == Valid(Temperature(100)), "right should contain result of 'apply'")
+
+      val validatedWithFailingPredicateSubtype = Altitude.validated(-5)
+      assert(validatedWithFailingPredicateSubtype == Invalid("Should be strictly positive"), "'eitherNec' returns left if predicate fails")
+      val validatedWithSucceedingPredicateSubtype = Altitude.validated(100)
+      assert(validatedWithSucceedingPredicateSubtype == Valid(Altitude(100)), "right should contain result of 'apply'")
 
     test("validatedNec"):
       import io.github.iltotore.iron.cats.*
@@ -169,6 +194,14 @@ object CatsSuite extends TestSuite:
       val validatedNecWithSucceedingPredicate = Temperature.validatedNec(100)
       assert(validatedNecWithSucceedingPredicate == Valid(Temperature(100)), "valid should contain result of 'apply'")
 
+      val validatedNecWithFailingPredicateSubtype = Altitude.validatedNec(-5)
+      assert(
+        validatedNecWithFailingPredicateSubtype == Invalid(NonEmptyChain.one("Should be strictly positive")),
+        "'validatedNec' returns left if predicate fails"
+      )
+      val validatedNecWithSucceedingPredicateSubtype = Altitude.validatedNec(100)
+      assert(validatedNecWithSucceedingPredicateSubtype == Valid(Altitude(100)), "valid should contain result of 'apply'")
+
     test("validatedNel"):
       import io.github.iltotore.iron.cats.*
 
@@ -180,10 +213,21 @@ object CatsSuite extends TestSuite:
       val validatedNelWithSucceedingPredicate = Temperature.validatedNel(100)
       assert(validatedNelWithSucceedingPredicate == Valid(Temperature(100)), "valid should contain result of 'apply'")
 
+      val validatedNelWithFailingPredicateSubtype = Altitude.validatedNel(-5)
+      assert(
+        validatedNelWithFailingPredicateSubtype == Invalid(NonEmptyList.one("Should be strictly positive")),
+        "'validatedNel' returns left if predicate fails"
+      )
+      val validatedNelWithSucceedingPredicateSubtype = Altitude.validatedNel(100)
+      assert(validatedNelWithSucceedingPredicateSubtype == Valid(Altitude(100)), "valid should contain result of 'apply'")
+
     test("all"):
       test("functoToMapLogic"):
         test - assert(Temperature.optionAll(NonEmptyList.of(1, 2, -3)).isEmpty)
         test - assert(Temperature.optionAll(NonEmptyList.of(1, 2, 3)).contains(NonEmptyList.of(Temperature(1), Temperature(2), Temperature(3))))
+
+        test - assert(Altitude.optionAll(NonEmptyList.of(1, 2, -3)).isEmpty)
+        test - assert(Altitude.optionAll(NonEmptyList.of(1, 2, 3)).contains(NonEmptyList.of(Altitude(1), Altitude(2), Altitude(3))))
 
       val valid: List[Double] = List(1, 2, 3)
       val invalid: List[Double] = List(1, -2, -3)
@@ -258,9 +302,21 @@ object CatsSuite extends TestSuite:
             InvalidValue(-3, "Should be strictly positive")
           )))
 
+          test - assert(Altitude.eitherAllNec(valid) == Right(Altitude.assumeAll(valid)))
+          test - assert(Altitude.eitherAllNec(invalid) == Left(NonEmptyChain.of(
+            InvalidValue(-2, "Should be strictly positive"),
+            InvalidValue(-3, "Should be strictly positive")
+          )))
+
         test("eitherNel"):
           test - assert(Temperature.eitherAllNel(valid) == Right(Temperature.assumeAll(valid)))
           test - assert(Temperature.eitherAllNel(invalid) == Left(NonEmptyList.of(
+            InvalidValue(-2, "Should be strictly positive"),
+            InvalidValue(-3, "Should be strictly positive")
+          )))
+
+          test - assert(Altitude.eitherAllNel(valid) == Right(Altitude.assumeAll(valid)))
+          test - assert(Altitude.eitherAllNel(invalid) == Left(NonEmptyList.of(
             InvalidValue(-2, "Should be strictly positive"),
             InvalidValue(-3, "Should be strictly positive")
           )))
@@ -272,9 +328,21 @@ object CatsSuite extends TestSuite:
             InvalidValue(-3, "Should be strictly positive")
           )))
 
+          test - assert(Altitude.validatedAllNec(valid) == Valid(Altitude.assumeAll(valid)))
+          test - assert(Altitude.validatedAllNec(invalid) == Invalid(NonEmptyChain.of(
+            InvalidValue(-2, "Should be strictly positive"),
+            InvalidValue(-3, "Should be strictly positive")
+          )))
+
         test("validatedNel"):
           test - assert(Temperature.validatedAllNel(valid) == Valid(Temperature.assumeAll(valid)))
           test - assert(Temperature.validatedAllNel(invalid) == Invalid(NonEmptyList.of(
+            InvalidValue(-2, "Should be strictly positive"),
+            InvalidValue(-3, "Should be strictly positive")
+          )))
+
+          test - assert(Altitude.validatedAllNel(valid) == Valid(Altitude.assumeAll(valid)))
+          test - assert(Altitude.validatedAllNel(invalid) == Invalid(NonEmptyList.of(
             InvalidValue(-2, "Should be strictly positive"),
             InvalidValue(-3, "Should be strictly positive")
           )))

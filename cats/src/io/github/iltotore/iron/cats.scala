@@ -229,7 +229,7 @@ object cats extends IronCatsInstances:
           InvalidValue(value, constraint.message)
         )
 
-  extension [A, C](ops: RefinedType[A, C])
+  extension [A, C](ops: Refined[A, C])
 
     /**
      * Refine the given value at runtime, resulting in an [[EitherNec]].

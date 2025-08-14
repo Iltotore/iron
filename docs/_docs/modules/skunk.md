@@ -38,7 +38,7 @@ ivy"org.tpolecat::skunk-core::1.0.0-M10"
 
 Iron provides `Codec` instances for refined types:
 
-```scala 
+```scala 3
 import skunk.*
 import skunk.implicits.*
 import skunk.codec.all.*
@@ -53,11 +53,11 @@ type Username = String :| Not[Blank]
 val a: Query[Void, Username] = sql"SELECT name FROM users".query(varchar.refined)
 
 // defining a codec for a refined opaque type
-opaque type PositiveInt = Int :| Positive
-object PositiveInt extends RefinedTypeOps[Int, Positive, PositiveInt]:
-  given codec: Codec[PositiveInt] = int4.refined[Positive]
+type PositiveInt = PositiveInt.T
+object PositiveInt extends RefinedType[Int, Positive]:
+  given codec: Codec[PositiveInt] = int4.refined[Positive].imap(assume)(_.value)
 
 // defining a codec for a refined case class
-final case class User(name: Username, age: Int :| Positive)
+final case class User(name: Username, age: PositiveInt)
 given Codec[User] = (varchar.refined[Not[Blank]] *: PositiveInt.codec).to[User]
 ```

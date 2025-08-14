@@ -40,3 +40,13 @@ object decline:
    */
   given [T](using mirror: RefinedType.Mirror[T], argument: Argument[mirror.IronType]): Argument[T] =
     argument.asInstanceOf[Argument[T]]
+
+  /**
+   * An argument reader for new subtypes. Reads using the underlying refined type's [[Argument]].
+   *
+   * @param mirror   the meta information of the refined new type
+   * @param argument the argument reader of the underlying type
+   * @tparam T the new type.
+   */
+  given [T](using mirror: RefinedSubtype.Mirror[T], argument: Argument[mirror.IronType]): Argument[T] =
+    argument.asInstanceOf[Argument[T]]

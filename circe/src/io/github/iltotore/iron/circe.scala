@@ -13,11 +13,22 @@ object circe extends CirceLowPriority:
   given [T](using mirror: RefinedType.Mirror[T], ev: Encoder[mirror.IronType]): Encoder[T] =
     ev.asInstanceOf[Encoder[T]]
 
-
   given [T](using mirror: RefinedType.Mirror[T], ev: KeyDecoder[mirror.IronType]): KeyDecoder[T] =
     ev.asInstanceOf[KeyDecoder[T]]
 
   given [T](using mirror: RefinedType.Mirror[T], ev: KeyEncoder[mirror.IronType]): KeyEncoder[T] =
+    ev.asInstanceOf[KeyEncoder[T]]
+
+  given [T](using mirror: RefinedSubtype.Mirror[T], ev: Decoder[mirror.IronType]): Decoder[T] =
+    ev.asInstanceOf[Decoder[T]]
+
+  given [T](using mirror: RefinedSubtype.Mirror[T], ev: Encoder[mirror.IronType]): Encoder[T] =
+    ev.asInstanceOf[Encoder[T]]
+
+  given [T](using mirror: RefinedSubtype.Mirror[T], ev: KeyDecoder[mirror.IronType]): KeyDecoder[T] =
+    ev.asInstanceOf[KeyDecoder[T]]
+
+  given [T](using mirror: RefinedSubtype.Mirror[T], ev: KeyEncoder[mirror.IronType]): KeyEncoder[T] =
     ev.asInstanceOf[KeyEncoder[T]]
 
 private trait CirceLowPriority:
@@ -29,7 +40,6 @@ private trait CirceLowPriority:
    */
   given [A, B](using decoder: Decoder[A], constraint: RuntimeConstraint[A, B]): Decoder[A :| B] =
     decoder.emap(_.refineEither)
-
 
   /**
    * An [[Encoder]] instance for refined types. Basically the underlying type [[Encoder]].
@@ -47,7 +57,6 @@ private trait CirceLowPriority:
   given [A, B](using decoder: KeyDecoder[A], constraint: RuntimeConstraint[A, B]): KeyDecoder[A :| B] =
     KeyDecoder.instance: input =>
       decoder.apply(input).flatMap[A :| B](_.refineOption)
-
 
   /**
    * An [[KeyEncoder]] instance for refined types. Basically the underlying type [[KeyEncoder]].

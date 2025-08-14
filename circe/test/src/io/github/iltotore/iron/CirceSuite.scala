@@ -15,3 +15,7 @@ object CirceSuite extends TestSuite:
     test("Circe instances are resolved for new types"):
       Encoder[Temperature]
       Decoder[Temperature]
+
+    test("Circe instances are resolved for new subtypes"):
+      Encoder[Altitude]
+      Decoder[Altitude]

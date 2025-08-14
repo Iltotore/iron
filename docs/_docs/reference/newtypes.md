@@ -225,8 +225,8 @@ Assuming the following new type:
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 
-type FirstName = FirstNamle
-object FirstName extends RefinedType[String, ForAll[Letter]]
+type FirstName = FirstName.T
+object FirstName extends RefinedSubtype[String, ForAll[Letter]]
 ```
 
 ## Typeclass derivation

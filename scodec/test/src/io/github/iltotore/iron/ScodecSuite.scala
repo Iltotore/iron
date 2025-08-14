@@ -16,13 +16,16 @@ object ScodecSuite extends TestSuite:
     test("Scodec instances are resolved for new types"):
       val codec = Codec[Temperature]
 
+    test("Scodec instances are resolved for new subtypes"):
+      val codec = Codec[Altitude]
+
     test("Encoding and decoding positive integers"):
       val codec = Codec[Int :| Positive]
       val value: Int :| Positive = 42
-      
+
       val encoded = codec.encode(value)
       assert(encoded.isSuccessful)
-      
+
       val decoded = encoded.flatMap(codec.decode)
       assert(decoded.isSuccessful)
       assert(decoded.require.value == value)
@@ -30,46 +33,71 @@ object ScodecSuite extends TestSuite:
     test("Decoding fails for invalid values"):
       val codec = Codec[Int :| Positive]
       val negativeBits = int32.encode(-5).require
-      
+
       val decoded = codec.decode(negativeBits)
       assert(decoded.isFailure)
 
     test("Encoding and decoding with Temperature newtype"):
       val codec = Codec[Temperature]
       val temp = Temperature(25.5)
-      
+
       val encoded = codec.encode(temp)
       assert(encoded.isSuccessful)
-      
+
       val decoded = encoded.flatMap(codec.decode)
       assert(decoded.isSuccessful)
       assert(decoded.require.value == temp)
 
     test("Derives syntax works with refined types"):
       case class Person(name: String, age: Int :| Positive) derives Codec
-      
+
       val person = Person("Alice", 25)
       val codec = Codec[Person]
-      
+
       val encoded = codec.encode(person)
       assert(encoded.isSuccessful)
-      
+
       val decoded = encoded.flatMap(codec.decode)
       assert(decoded.isSuccessful)
       assert(decoded.require.value == person)
 
     test("Derives syntax works with newtypes"):
       case class WeatherData(location: String, temperature: Temperature) derives Codec
-      
+
       val data = WeatherData("New York", Temperature(20.5))
       val codec = Codec[WeatherData]
-      
+
       val encoded = codec.encode(data)
       assert(encoded.isSuccessful)
-      
+
       val decoded = encoded.flatMap(codec.decode)
       assert(decoded.isSuccessful)
       assert(decoded.require.value == data)
       assert(decoded.require.value.location == data.location)
       assert(decoded.require.value.temperature == data.temperature)
 
+    test("Encoding and decoding with Altitude new subtype"):
+      val codec = Codec[Altitude]
+      val temp = Altitude(25.5)
+
+      val encoded = codec.encode(temp)
+      assert(encoded.isSuccessful)
+
+      val decoded = encoded.flatMap(codec.decode)
+      assert(decoded.isSuccessful)
+      assert(decoded.require.value == temp)
+
+    test("Derives syntax works with new subtypes"):
+      case class CityData(location: String, altitude: Altitude) derives Codec
+
+      val data = CityData("New York", Altitude(20.5))
+      val codec = Codec[CityData]
+
+      val encoded = codec.encode(data)
+      assert(encoded.isSuccessful)
+
+      val decoded = encoded.flatMap(codec.decode)
+      assert(decoded.isSuccessful)
+      assert(decoded.require.value == data)
+      assert(decoded.require.value.location == data.location)
+      assert(decoded.require.value.altitude == data.altitude)

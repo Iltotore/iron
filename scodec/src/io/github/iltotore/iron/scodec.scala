@@ -15,6 +15,13 @@ object scodec extends ScodecLowPriority:
   given [T](using mirror: RefinedType.Mirror[T], ev: Codec[mirror.IronType]): Codec[T] =
     ev.asInstanceOf[Codec[T]]
 
+  /**
+   * Given instance for refined subtypes.
+   * This enables refind subtypes to work with scodec's derives syntax.
+   */
+  given [T](using mirror: RefinedSubtype.Mirror[T], ev: Codec[mirror.IronType]): Codec[T] =
+    ev.asInstanceOf[Codec[T]]
+
 private trait ScodecLowPriority:
   /**
    * A [[Codec]] for refined types. Encodes from the underlying type and decodes to the underlying type then checks the constraint.
@@ -26,7 +33,7 @@ private trait ScodecLowPriority:
     codec.exmap[A :| B](
       _.refineEither match
         case Right(value) => Attempt.successful(value)
-        case Left(error) => Attempt.failure(Err(error))
+        case Left(error)  => Attempt.failure(Err(error))
       ,
       value => Attempt.successful(value.asInstanceOf[A])
     )

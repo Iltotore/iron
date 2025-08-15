@@ -21,6 +21,4 @@ private trait BorerLowPriority:
     r =>
       decoder.read(r).refineEither match
         case Left(msg) => r.validationFailure(msg)
-        case Right(x) => x
-
-
+        case Right(x)  => x

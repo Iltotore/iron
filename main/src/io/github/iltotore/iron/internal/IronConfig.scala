@@ -15,25 +15,25 @@ case class IronConfig(codeFormat: CodeFormat, shortMessages: Boolean, shortReaso
 object IronConfig:
 
   /**
-    * The format used to print code.
-    */
+   * The format used to print code.
+   */
   enum CodeFormat:
-    case Full, FullColored, Short, Structure 
+    case Full, FullColored, Short, Structure
 
   object CodeFormat:
 
     /**
-      * Get the format associated with the given key.
-      *
-      * @param value the key associated to a format
-      * @return the associated code format
-      */
+     * Get the format associated with the given key.
+     *
+     * @param value the key associated to a format
+     * @return the associated code format
+     */
     def fromString(value: String): Option[CodeFormat] = value.toLowerCase match
-      case "full" => Some(CodeFormat.Full)
+      case "full"         => Some(CodeFormat.Full)
       case "full_colored" => Some(CodeFormat.FullColored)
-      case "short" => Some(CodeFormat.Short)
-      case "structure" => Some(CodeFormat.Structure)
-      case _ => None
+      case "short"        => Some(CodeFormat.Short)
+      case "structure"    => Some(CodeFormat.Structure)
+      case _              => None
 
   /**
    * The config as defined by the properties/environment.

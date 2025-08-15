@@ -19,3 +19,8 @@ object DoobieSuite extends TestSuite:
       Get[Temperature]
       Put[Temperature]
       Meta[Temperature]
+
+    test("newSubType Doobie givens are resolved"):
+      Get[Altitude]
+      Put[Altitude]
+      Meta[Altitude]

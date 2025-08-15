@@ -40,7 +40,7 @@ object zio extends RefinedTypeOpsZio:
           constraint.test(_)
         )
 
-  extension [A, C](ops: RefinedType[A, C])
+  extension [A, C](ops: Refined[A, C])
     /**
      * Refine the given value applicatively at runtime, resulting in a [[Validation]].
      *
@@ -49,7 +49,6 @@ object zio extends RefinedTypeOpsZio:
     def validation(value: A): Validation[String, ops.T] =
       Validation.fromPredicateWith(ops.rtc.message)(value)(ops.rtc.test(_)).asInstanceOf[Validation[String, ops.T]]
 
-  extension [A, C](ops: RefinedType[A, C])
     /**
      * Refine the given values applicatively at runtime, resulting in a [[Validation]].
      *

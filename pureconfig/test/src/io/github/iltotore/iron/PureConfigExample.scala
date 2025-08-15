@@ -8,10 +8,14 @@ import io.github.iltotore.iron.pureconfig.given
 type Username = Username.T
 object Username extends RefinedType[String, MinLength[5]]
 
+type Password = Password.T
+object Password extends RefinedSubtype[String, MinLength[5]]
+
 case class IronTypeConfig(
     username: String :| MinLength[5]
 ) derives ConfigReader
 
 case class NewTypeConfig(
-    username: Username
+    username: Username,
+    password: Password
 ) derives ConfigReader

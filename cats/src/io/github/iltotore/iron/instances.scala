@@ -23,11 +23,9 @@ private trait RefinedTypeInstancesCats extends RefinedTypeInstancesCatsLowPriori
 
   given [T](using mirror: RefinedType.Mirror[T], ev: PartialOrder[mirror.IronType]): PartialOrder[T] = ev.asInstanceOf[PartialOrder[T]]
 
-
 private trait RefinedTypeInstancesCatsLowPriority extends IronInstances:
 
   given [T](using mirror: RefinedType.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]
-
 
 private trait IronInstances extends IronInstancesLowPriority:
 
@@ -103,9 +101,9 @@ private trait IronInstancesLowPriority:
   given [A, C](using ev: Hash[A]): Hash[A :| C] = ev.asInstanceOf[Hash[A :| C]]
 
   private def additiveCommutativeSemigroup[A, C](using
-                                                 inner: AdditiveCommutativeSemigroup[A],
-                                                 bounds: Bounds[A, C]
-                                                ): AdditiveCommutativeSemigroup[A :| C] = (x, y) =>
+      inner: AdditiveCommutativeSemigroup[A],
+      bounds: Bounds[A, C]
+  ): AdditiveCommutativeSemigroup[A :| C] = (x, y) =>
     bounds.shift(inner.plus(x, y))
 
   given posIntAdditiveCommutativeSemigroup: AdditiveCommutativeSemigroup[Int :| Positive] = additiveCommutativeSemigroup[Int, Positive]
@@ -152,5 +150,3 @@ private trait IronInstancesLowPriority:
 
   given multiplicativeGroup[A, C](using inner: MultiplicativeGroup[A]): MultiplicativeGroup[A :| C] =
     inner.assumeAll[C]
-
-

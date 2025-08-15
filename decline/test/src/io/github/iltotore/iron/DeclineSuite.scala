@@ -17,3 +17,7 @@ object DeclineSuite extends TestSuite:
       test("newType"):
         test("success") - assert(summon[Argument[Temperature]].read("5") == Valid(5))
         test("failure") - assert(summon[Argument[Temperature]].read("-5").isInvalid)
+
+      test("newSubType"):
+        test("success") - assert(summon[Argument[Altitude]].read("5") == Valid(5))
+        test("failure") - assert(summon[Argument[Altitude]].read("-5").isInvalid)

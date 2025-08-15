@@ -20,10 +20,19 @@ object ZIOSuite extends TestSuite:
           ZValidation.Failure[String, String](Chunk.empty, NonEmptyChunk.single("Should be strictly positive"))
       )
 
+      assert(Altitude.validation(2) == ZValidation.Success[String, Altitude](Chunk.empty, Altitude(2)))
+
+      assert(
+        Altitude.validation(0) ==
+          ZValidation.Failure[String, String](Chunk.empty, NonEmptyChunk.single("Should be strictly positive"))
+      )
+
     test("all"):
       test("mapLogicToCovariant"):
         test - assert(Temperature.optionAll(NonEmptyChunk(1, 2, 3)).contains(NonEmptyChunk(Temperature(1), Temperature(2), Temperature(3))))
         test - assert(Temperature.optionAll(NonEmptyChunk(1, 2, -3)).isEmpty)
+        test - assert(Altitude.optionAll(NonEmptyChunk(1, 2, 3)).contains(NonEmptyChunk(Altitude(1), Altitude(2), Altitude(3))))
+        test - assert(Altitude.optionAll(NonEmptyChunk(1, 2, -3)).isEmpty)
 
       val valid: List[Double] = List(1, 2, 3)
       val invalid: List[Double] = List(1, -2, -3)
@@ -41,6 +50,16 @@ object ZIOSuite extends TestSuite:
       test("newtype"):
         test - assert(Temperature.validationAll(valid) == ZValidation.Success(Chunk.empty, Chunk.from(valid)))
         test - assert(Temperature.validationAll(invalid) == ZValidation.Failure(
+          Chunk.empty,
+          NonEmptyChunk(
+            InvalidValue(-2, "Should be strictly positive"),
+            InvalidValue(-3, "Should be strictly positive")
+          )
+        ))
+
+      test("subtype"):
+        test - assert(Altitude.validationAll(valid) == ZValidation.Success(Chunk.empty, Chunk.from(valid)))
+        test - assert(Altitude.validationAll(invalid) == ZValidation.Failure(
           Chunk.empty,
           NonEmptyChunk(
             InvalidValue(-2, "Should be strictly positive"),

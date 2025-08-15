@@ -12,10 +12,10 @@ import scala.util.boundary.break
  * @tparam C the constraint type of the new type
  * @tparam T the new type (equivalent to `A :| C` if `T` is a transparent alias)
  */
-trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]):
+private[iron] sealed trait Refined[A, C](using private val _rtc: RuntimeConstraint[A, C]):
   self =>
 
-  opaque type T = A :| C 
+  type T
 
   /**
    * The runtime constraint of the underlying [[IronType]]. Can be used in non-inline methods and to improve runtime
@@ -86,7 +86,7 @@ trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]):
    * @see [[applyUnsafe]].
    */
   inline def applyAllUnsafe[F[_]](wrapper: F[A])(using mapLogic: MapLogic[F]): F[T] =
-    mapLogic.map(wrapper, applyUnsafe(_))
+    mapLogic.map(wrapper, applyUnsafe)
 
   /**
    * Refine the given value(s) at runtime, resulting in an [[Either]].
@@ -120,11 +120,6 @@ trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]):
 
   def unapply(value: A): Option[T] = option(value)
 
-  inline given RefinedType.Mirror[T] with
-    override type BaseType = A
-    override type ConstraintType = C
-    override val ops: RefinedType[A, C] = self
-
   inline given [R]: TypeTest[T, R] = summonInline[TypeTest[A :| C, R]].asInstanceOf[TypeTest[T, R]]
 
   given [L](using test: TypeTest[L, A]): TypeTest[L, T] with
@@ -132,6 +127,15 @@ trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]):
 
   extension (wrapper: T)
     inline def value: IronType[A, C] = wrapper.asInstanceOf[IronType[A, C]]
+
+  inline given RefinedType.Mirror[T] with
+    override type BaseType = A
+    override type ConstraintType = C
+    override val ops: Refined[A, C] = self
+end Refined
+
+trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]) extends Refined[A, C]:
+  override opaque type T = A :| C
 
 object RefinedType:
 
@@ -162,6 +166,9 @@ object RefinedType:
     type FinalType = T
 
     /**
-      * [[RefinedType]] instance of [[T]].
-      */
-    def ops: RefinedType[BaseType, ConstraintType]
+     * [[Refined]] instance of [[T]].
+     */
+    def ops: Refined[BaseType, ConstraintType]
+
+trait RefinedSubtype[A, C](using private val _rtc: RuntimeConstraint[A, C]) extends Refined[A, C]:
+  override opaque type T <: A :| C = A :| C

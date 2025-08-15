@@ -19,7 +19,7 @@ object upickle extends UPickleLowPriority:
     ev.asInstanceOf[Reader[T]]
 
   /**
-   * A uPickle `Writer` based on refined type mirrors.
+   * A uPickle `Writer` based on refined subtype mirrors.
    *
    * @param mirror the type mirror for refined types.
    * @param ev     the underlying `Writer` for the iron type.
@@ -39,7 +39,7 @@ private trait UPickleLowPriority:
     reader.map(value =>
       value.refineEither match
         case Right(refinedValue) => refinedValue
-        case Left(errorMessage) => throw Abort(errorMessage)
+        case Left(errorMessage)  => throw Abort(errorMessage)
     )
 
   /**

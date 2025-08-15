@@ -16,3 +16,7 @@ object CirisSuite extends TestSuite:
       test("newType"):
         test("success") - assert(summon[ConfigDecoder[String, Temperature]].decode(None, "5") == Right(Temperature(5)))
         test("failure") - assert(summon[ConfigDecoder[String, Temperature]].decode(None, "-5").isLeft)
+
+      test("newSubType"):
+        test("success") - assert(summon[ConfigDecoder[String, Altitude]].decode(None, "5") == Right(Altitude(5)))
+        test("failure") - assert(summon[ConfigDecoder[String, Altitude]].decode(None, "-5").isLeft)

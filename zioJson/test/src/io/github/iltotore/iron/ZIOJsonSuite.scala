@@ -15,3 +15,7 @@ object ZIOJsonSuite extends TestSuite:
     test("newType givens are properly resolved"):
       summon[JsonDecoder[Temperature]]
       summon[JsonEncoder[Temperature]]
+
+    test("subType givens are properly resolved"):
+      summon[JsonDecoder[Altitude]]
+      summon[JsonEncoder[Altitude]]

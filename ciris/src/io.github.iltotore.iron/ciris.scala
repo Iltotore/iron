@@ -21,12 +21,3 @@ object ciris:
    */
   given [In, T](using mirror: RefinedType.Mirror[T], decoder: ConfigDecoder[In, mirror.IronType]): ConfigDecoder[In, T] =
     decoder.asInstanceOf[ConfigDecoder[In, T]]
-
-  /**
-   * A [[ConfigDecoder]] for new subtypes. Decodes to the underlying type then checks the constraint.
-   *
-   * @param decoder    the [[ConfigDecoder]] of the underlying type.
-   * @param mirror     the mirror of the [[RefinedTypeOps.Mirror]]
-   */
-  given [In, T](using mirror: RefinedSubtype.Mirror[T], decoder: ConfigDecoder[In, mirror.IronType]): ConfigDecoder[In, T] =
-    decoder.asInstanceOf[ConfigDecoder[In, T]]

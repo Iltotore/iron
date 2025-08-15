@@ -13,12 +13,6 @@ object borer extends BorerLowPriority:
   given [T](using m: RefinedType.Mirror[T], ev: Decoder[m.IronType]): Decoder[T] =
     ev.asInstanceOf[Decoder[T]]
 
-  given [T](using m: RefinedSubtype.Mirror[T], ev: Encoder[m.IronType]): Encoder[T] =
-    ev.asInstanceOf[Encoder[T]]
-
-  given [T](using m: RefinedSubtype.Mirror[T], ev: Decoder[m.IronType]): Decoder[T] =
-    ev.asInstanceOf[Decoder[T]]
-
 private trait BorerLowPriority:
   given [A, B](using encoder: Encoder[A]): Encoder[A :| B] =
     encoder.asInstanceOf[Encoder[A :| B]]

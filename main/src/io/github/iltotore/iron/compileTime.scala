@@ -202,35 +202,33 @@ object compileTime:
 
     Apply(Select.unique(constraintExpr.asTerm, "test"), List(expr.asTerm)).asExprOf[Boolean]
 
-  extension [T : Type](expr: Expr[Iterable[T]])
-
+  extension [T: Type](expr: Expr[Iterable[T]])
     def toExprList(using Quotes): Option[List[Expr[T]]] = expr match
-      case '{ scala.List[T](${Varargs(elems)}*) } => Some(elems.toList)
-      case '{ scala.List.empty[T] } => Some(Nil)
-      case '{ Nil } => Some(Nil)
-      case '{ scala.collection.immutable.List[T](${Varargs(elems)}*) } => Some(elems.toList)
-      case '{ scala.collection.immutable.List.empty[T] } => Some(Nil)
-      case '{ Set[T](${Varargs(elems)}*) } => Some(elems.toList)
-      case '{ Set.empty[T] } => Some(Nil)
-      case '{ scala.collection.immutable.List[T](${Varargs(elems)}*) } => Some(elems.toList)
-      case '{ scala.collection.immutable.List.empty[T] } => Some(Nil)
-      case _ => None
-    
-  extension [T : Type](expr: Expr[Array[T]])
+      case '{ scala.List[T](${ Varargs(elems) }*) }                      => Some(elems.toList)
+      case '{ scala.List.empty[T] }                                      => Some(Nil)
+      case '{ Nil }                                                      => Some(Nil)
+      case '{ scala.collection.immutable.List[T](${ Varargs(elems) }*) } => Some(elems.toList)
+      case '{ scala.collection.immutable.List.empty[T] }                 => Some(Nil)
+      case '{ Set[T](${ Varargs(elems) }*) }                             => Some(elems.toList)
+      case '{ Set.empty[T] }                                             => Some(Nil)
+      case '{ scala.collection.immutable.List[T](${ Varargs(elems) }*) } => Some(elems.toList)
+      case '{ scala.collection.immutable.List.empty[T] }                 => Some(Nil)
+      case _                                                             => None
 
+  extension [T: Type](expr: Expr[Array[T]])
     def toExprListArr(using Quotes): Option[List[Expr[T]]] =
       import quotes.reflect.*
 
       expr match
-        case '{ scala.Array[T](${Varargs(elems)}*)(using $_) } => Some(elems.toList)
-        case '{ scala.Array.empty[T](using $_) } => Some(Nil)
-        case '{ scala.Array[T](${Varargs(elems)}*)(using $_) } => Some(elems.toList)
-        case '{ scala.Array.empty[T](using $_) } => Some(Nil)
+        case '{ scala.Array[T](${ Varargs(elems) }*)(using $_) } => Some(elems.toList)
+        case '{ scala.Array.empty[T](using $_) }                 => Some(Nil)
+        case '{ scala.Array[T](${ Varargs(elems) }*)(using $_) } => Some(elems.toList)
+        case '{ scala.Array.empty[T](using $_) }                 => Some(Nil)
         case expr =>
           def stripInlinedTyped(term: Term): Term = term match
             case Inlined(_, Nil, t) => stripInlinedTyped(t)
             case Typed(t, _)        => stripInlinedTyped(t)
-            case _ => term
+            case _                  => term
 
           stripInlinedTyped(expr.asTerm) match
             case Apply(Select(Ident("Array"), "apply"), List(head, repeated)) =>
@@ -240,5 +238,3 @@ object compileTime:
                   Some(args.map(_.asExprOf[T]))
                 case _ => None
             case _ => None
-                    
-          

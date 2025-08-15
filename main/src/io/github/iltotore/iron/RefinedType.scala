@@ -13,6 +13,7 @@ import scala.util.boundary.break
  * @tparam T the new type (equivalent to `A :| C` if `T` is a transparent alias)
  */
 private[iron] sealed trait Refined[A, C](using private val _rtc: RuntimeConstraint[A, C]):
+  self =>
 
   type T
 
@@ -127,18 +128,14 @@ private[iron] sealed trait Refined[A, C](using private val _rtc: RuntimeConstrai
   extension (wrapper: T)
     inline def value: IronType[A, C] = wrapper.asInstanceOf[IronType[A, C]]
 
-end Refined
-
-trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]) extends Refined[A, C]:
-  self =>
-  override opaque type T = A :| C
-
   inline given RefinedType.Mirror[T] with
     override type BaseType = A
     override type ConstraintType = C
-    override val ops: RefinedType[A, C] = self
+    override val ops: Refined[A, C] = self
+end Refined
 
-end RefinedType
+trait RefinedType[A, C](using private val _rtc: RuntimeConstraint[A, C]) extends Refined[A, C]:
+  override opaque type T = A :| C
 
 object RefinedType:
 
@@ -169,50 +166,9 @@ object RefinedType:
     type FinalType = T
 
     /**
-     * [[RefinedType]] instance of [[T]].
+     * [[Refined]] instance of [[T]].
      */
-    def ops: RefinedType[BaseType, ConstraintType]
+    def ops: Refined[BaseType, ConstraintType]
 
 trait RefinedSubtype[A, C](using private val _rtc: RuntimeConstraint[A, C]) extends Refined[A, C]:
-  self =>
   override opaque type T <: A :| C = A :| C
-
-  inline given RefinedSubtype.Mirror[T] with
-    override type BaseType = A
-    override type ConstraintType = C
-    override val ops: RefinedSubtype[A, C] = self
-
-end RefinedSubtype
-
-object RefinedSubtype:
-
-  /**
-   * Typelevel access to a "new type"'s informations. It is similar to [[scala.deriving.Mirror]].
-   * @tparam T the new type (usually a type alias).
-   */
-  trait Mirror[T]:
-
-    /**
-     * The base type of the mirrored type without any constraint.
-     */
-    type BaseType
-
-    /**
-     * The constraint of the mirrored type.
-     */
-    type ConstraintType
-
-    /**
-     * Alias for `BaseType :| ConstraintType`
-     */
-    type IronType = BaseType :| ConstraintType
-
-    /**
-     * Alias for [[T]].
-     */
-    type FinalType = T
-
-    /**
-     * [[RefinedSubtype]] instance of [[T]].
-     */
-    def ops: RefinedSubtype[BaseType, ConstraintType]

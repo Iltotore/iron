@@ -27,24 +27,6 @@ object upickle extends UPickleLowPriority:
   given [T](using mirror: RefinedType.Mirror[T], ev: Writer[mirror.IronType]): Writer[T] =
     ev.asInstanceOf[Writer[T]]
 
-  /**
-   * A uPickle `Reader` based on refined type mirrors.
-   *
-   * @param mirror the type mirror for refined types.
-   * @param ev     the underlying `Reader` for the iron type.
-   */
-  given [T](using mirror: RefinedSubtype.Mirror[T], ev: Reader[mirror.IronType]): Reader[T] =
-    ev.asInstanceOf[Reader[T]]
-
-  /**
-   * A uPickle `Writer` based on refined subtype mirrors.
-   *
-   * @param mirror the type mirror for refined types.
-   * @param ev     the underlying `Writer` for the iron type.
-   */
-  given [T](using mirror: RefinedSubtype.Mirror[T], ev: Writer[mirror.IronType]): Writer[T] =
-    ev.asInstanceOf[Writer[T]]
-
 private trait UPickleLowPriority:
 
   /**

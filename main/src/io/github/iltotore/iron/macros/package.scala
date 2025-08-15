@@ -24,10 +24,10 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
 
   given config: IronConfig = IronConfig.fromSystem
   given Printer[Tree] = config.codeFormat match
-    case CodeFormat.Full => Printer.TreeCode
+    case CodeFormat.Full        => Printer.TreeCode
     case CodeFormat.FullColored => Printer.TreeAnsiCode
-    case CodeFormat.Short => Printer.TreeShortCode
-    case CodeFormat.Structure => Printer.TreeStructure
+    case CodeFormat.Short       => Printer.TreeShortCode
+    case CodeFormat.Structure   => Printer.TreeStructure
 
   val rflUtil = reflectUtil(using quotes)
   import rflUtil.*

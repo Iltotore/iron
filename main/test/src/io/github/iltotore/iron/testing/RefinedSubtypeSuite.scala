@@ -64,7 +64,7 @@ object RefinedSubtypeSuite extends TestSuite:
       test - assert(Altitude.optionAll(List(1, 2, 3)).contains(List(Altitude(1), Altitude(2), Altitude(3))))
 
     test("mirror"):
-      val mirror = summonInline[RefinedSubtype.Mirror[Altitude]]
+      val mirror = summonInline[RefinedType.Mirror[Altitude]]
 
       assertGiven[mirror.BaseType =:= Double]
       assertGiven[mirror.ConstraintType =:= Positive]

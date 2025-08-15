@@ -19,16 +19,6 @@ object doobie extends DoobieLowPriority:
     ev.asInstanceOf[Get[T]]
 
   /**
-   * A [[Get]] instance for new subtypes.
-   *
-   * @param m  the meta information of the refined new subtype
-   * @param ev the value getter of the underlying type
-   * @tparam T the new subtype
-   */
-  given [T](using m: RefinedSubtype.Mirror[T], ev: Get[m.IronType]): Get[T] =
-    ev.asInstanceOf[Get[T]]
-
-  /**
    * A [[Put]] instance for new types.
    *
    * @param m  the meta information of the refined new type
@@ -39,16 +29,6 @@ object doobie extends DoobieLowPriority:
     ev.asInstanceOf[Put[T]]
 
   /**
-   * A [[Put]] instance for new subtypes.
-   *
-   * @param m  the meta information of the refined new subtype
-   * @param ev the value setter of the underlying type
-   * @tparam T the new subtype
-   */
-  given [T](using m: RefinedSubtype.Mirror[T], ev: Put[m.IronType]): Put[T] =
-    ev.asInstanceOf[Put[T]]
-
-  /**
    * A [[Meta]] instance for new types.
    *
    * @param m  the meta information of the refined new type
@@ -56,16 +36,6 @@ object doobie extends DoobieLowPriority:
    * @tparam T the new type
    */
   given [T](using m: RefinedType.Mirror[T], ev: Meta[m.IronType]): Meta[T] =
-    ev.asInstanceOf[Meta[T]]
-
-  /**
-   * A [[Meta]] instance for new subtypes.
-   *
-   * @param m  the meta information of the refined new subtype
-   * @param ev the value getter/setter of the underlying type
-   * @tparam T the new subtype
-   */
-  given [T](using m: RefinedSubtype.Mirror[T], ev: Meta[m.IronType]): Meta[T] =
     ev.asInstanceOf[Meta[T]]
 
 private trait DoobieLowPriority:

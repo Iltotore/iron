@@ -70,14 +70,6 @@ private trait RefinedTypeOpsZio extends RefinedTypeOpsZioLowPriority:
 
   inline given [T](using mirror: RefinedType.Mirror[T], ev: Ord[mirror.IronType]): Ord[T] = ev.asInstanceOf[Ord[T]]
 
-  inline given [T](using mirror: RefinedSubtype.Mirror[T], ev: Debug[mirror.IronType]): Debug[T] = ev.asInstanceOf[Debug[T]]
-
-  inline given [T](using mirror: RefinedSubtype.Mirror[T], ev: Equal[mirror.IronType]): Equal[T] = ev.asInstanceOf[Equal[T]]
-
-  inline given [T](using mirror: RefinedSubtype.Mirror[T], ev: Ord[mirror.IronType]): Ord[T] = ev.asInstanceOf[Ord[T]]
-
 private trait RefinedTypeOpsZioLowPriority:
 
   inline given [T](using mirror: RefinedType.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]
-
-  inline given [T](using mirror: RefinedSubtype.Mirror[T], ev: Hash[mirror.IronType]): Hash[T] = ev.asInstanceOf[Hash[T]]

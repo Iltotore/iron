@@ -27,9 +27,3 @@ object jsoniter:
    */
   inline given refinedTypeCodec[T](using mirror: RefinedType.Mirror[T], ev: JsonValueCodec[mirror.IronType]): JsonValueCodec[T] =
     ev.asInstanceOf[JsonValueCodec[T]]
-
-  /**
-   * Creates a [[JsonValueCodec]] for new subtypes
-   */
-  inline given refinedSubtypeCodec[T](using mirror: RefinedSubtype.Mirror[T], ev: JsonValueCodec[mirror.IronType]): JsonValueCodec[T] =
-    ev.asInstanceOf[JsonValueCodec[T]]

@@ -27,9 +27,3 @@ object skunk:
    */
   inline given [T](using mirror: RefinedType.Mirror[T], ev: Codec[mirror.IronType]): Codec[T] =
     ev.asInstanceOf[Codec[T]]
-
-  /**
-   * A [[Codec]] for new subtypes.
-   */
-  inline given [T](using mirror: RefinedSubtype.Mirror[T], ev: Codec[mirror.IronType]): Codec[T] =
-    ev.asInstanceOf[Codec[T]]

@@ -19,18 +19,6 @@ object circe extends CirceLowPriority:
   given [T](using mirror: RefinedType.Mirror[T], ev: KeyEncoder[mirror.IronType]): KeyEncoder[T] =
     ev.asInstanceOf[KeyEncoder[T]]
 
-  given [T](using mirror: RefinedSubtype.Mirror[T], ev: Decoder[mirror.IronType]): Decoder[T] =
-    ev.asInstanceOf[Decoder[T]]
-
-  given [T](using mirror: RefinedSubtype.Mirror[T], ev: Encoder[mirror.IronType]): Encoder[T] =
-    ev.asInstanceOf[Encoder[T]]
-
-  given [T](using mirror: RefinedSubtype.Mirror[T], ev: KeyDecoder[mirror.IronType]): KeyDecoder[T] =
-    ev.asInstanceOf[KeyDecoder[T]]
-
-  given [T](using mirror: RefinedSubtype.Mirror[T], ev: KeyEncoder[mirror.IronType]): KeyEncoder[T] =
-    ev.asInstanceOf[KeyEncoder[T]]
-
 private trait CirceLowPriority:
   /**
    * A [[Decoder]] for refined types. Decodes to the underlying type then checks the constraint.

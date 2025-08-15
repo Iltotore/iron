@@ -28,12 +28,3 @@ object pureconfig:
    */
   given [A](using mirror: RefinedType.Mirror[A], reader: ConfigReader[mirror.IronType]): ConfigReader[A] =
     reader.asInstanceOf[ConfigReader[A]]
-
-  /**
-   * A [[ConfigReader]] for new subtypes. Decodes to the underlying type then checks the constraint
-   *
-   * @param mirror the mirror of the [[RefinedSubtypeOps.Mirror]]
-   * @param reader the [[ConfigReader]] of the underlying type
-   */
-  given [A](using mirror: RefinedSubtype.Mirror[A], reader: ConfigReader[mirror.IronType]): ConfigReader[A] =
-    reader.asInstanceOf[ConfigReader[A]]

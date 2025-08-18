@@ -26,7 +26,7 @@ private trait ScodecLowPriority:
     codec.exmap[A :| B](
       _.refineEither match
         case Right(value) => Attempt.successful(value)
-        case Left(error) => Attempt.failure(Err(error))
+        case Left(error)  => Attempt.failure(Err(error))
       ,
       value => Attempt.successful(value.asInstanceOf[A])
     )

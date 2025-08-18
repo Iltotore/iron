@@ -15,3 +15,7 @@ object PlayJsonSuite extends TestSuite:
     test("PlayJson instances are resolved for new types"):
       summon[Reads[Temperature]]
       summon[Writes[Temperature]]
+
+    test("PlayJson instances are resolved for new subtypes"):
+      summon[Reads[Altitude]]
+      summon[Writes[Altitude]]

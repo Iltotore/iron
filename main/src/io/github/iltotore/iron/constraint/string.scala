@@ -85,7 +85,7 @@ object string:
     Match["^([0-9a-fA-F]{8}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{4}\\-[0-9a-fA-F]{12})"],
     "Should be an UUID"
   ]
-  
+
   /**
    * Tests if the input is a valid email address.
    */

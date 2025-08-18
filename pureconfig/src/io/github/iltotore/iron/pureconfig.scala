@@ -22,7 +22,7 @@ object pureconfig:
 
   /**
    * A [[ConfigReader]] for new types. Decodes to the underlying type then checks the constraint
-
+   *
    * @param mirror the mirror of the [[RefinedTypeOps.Mirror]]
    * @param reader the [[ConfigReader]] of the underlying type
    */

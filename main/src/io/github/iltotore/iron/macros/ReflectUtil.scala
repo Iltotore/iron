@@ -126,19 +126,19 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
       case VarArgsNotInlined(args) =>
         args
           .collect:
-              case Left(failure) => failure
+            case Left(failure) => failure
           .toSet
           .flatMap(_.rootCauses)
-      case OrNotInlined(left, right) => left.fold(_.rootCauses, _ => Set.empty) ++ right.fold(_.rootCauses, _ => Set.empty)
+      case OrNotInlined(left, right)  => left.fold(_.rootCauses, _ => Set.empty) ++ right.fold(_.rootCauses, _ => Set.empty)
       case AndNotInlined(left, right) => left.fold(_.rootCauses, _ => Set.empty) ++ right.fold(_.rootCauses, _ => Set.empty)
       case StringPartsNotInlined(parts) =>
         parts
           .collect:
-              case Left(failure) => failure
+            case Left(failure) => failure
           .toSet
           .flatMap(_.rootCauses)
       case Unknown => Set(FailureCause("Unknown", Position.ofMacroExpansion))
-    
+
     /**
      * Pretty print this failure.
      *
@@ -148,7 +148,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
      */
     def prettyPrint(bodyIdent: Int = 0, firstLineIdent: Int = 0)(using Printer[Tree]): String =
       val unindented = this match
-        case NotInlined(term)           => s"Term not inlined: ${term.show}"
+        case NotInlined(term) => s"Term not inlined: ${term.show}"
         case DefinitionNotInlined(definition) =>
           s"Definition not inlined: ${definition.name}. Only vals and zero-arg defs can be inlined."
         case HasBindings(defFailures) =>

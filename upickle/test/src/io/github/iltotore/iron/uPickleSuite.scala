@@ -19,13 +19,19 @@ object uPickleSuite extends TestSuite:
         test("success") - assert(Try(read[Int :| Positive]("10")).isSuccess)
         test("failure") - assert(Try(read[Int :| Positive]("-10")).isFailure)
       test("newType"):
-        summon[Reader[Temperature]]
+        test("success") - assert(read[Temperature]("36.6") == Temperature(36.6))
+        test("failure") - assert(Try(read[Temperature]("-36.6")).isFailure)
+      test("subType"):
+        test("success") - assert(read[Altitude]("10") == Altitude(10))
+        test("failure") - assert(Try(read[Altitude]("-10")).isFailure)
 
     test("writer"):
       test("ironType"):
         val p: Int :| Positive = 10
         test("success") - assert(write(p) == "10")
       test("newType"):
-        summon[Writer[Temperature]]
+        test("success") - assert(write(Temperature(36.6)) == "36.6")
+      test("subType"):
+        test("success") - assert(write(Altitude(10)) == "10")
 
 end uPickleSuite

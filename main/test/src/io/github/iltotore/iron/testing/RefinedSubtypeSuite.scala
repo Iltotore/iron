@@ -5,7 +5,8 @@ import io.github.iltotore.iron.constraint.numeric.*
 import utest.*
 
 import scala.compiletime.summonInline
-import scala.util.{Failure, Success, Try}
+import scala.compiletime.testing.typeChecks
+import scala.util.{Failure, Try}
 
 object RefinedSubtypeSuite extends TestSuite:
   val tests: Tests = Tests {
@@ -76,7 +77,7 @@ object RefinedSubtypeSuite extends TestSuite:
 
     test("subtyping"):
       val altitude = Altitude(20)
-      assert(altitude == 20)
+      assert(typeChecks("altitude: Double"))
 
     test("extensions"):
       val altitude = Altitude(10)

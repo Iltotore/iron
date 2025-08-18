@@ -20,7 +20,7 @@ type Username = DescribedAs[
 
 type Password = DescribedAs[
   Match["[A-Za-z].*[0-9]|[0-9].*[A-Za-z]"] & MinLength[6] & MaxLength[20],
-  "Password must contain atleast a letter, a digit and have a length between 6 and 20"
+  "Password must contain at least a letter, a digit and have a length between 6 and 20"
 ]
 
 type Age = DescribedAs[Greater[0], "Age should be strictly positive"]

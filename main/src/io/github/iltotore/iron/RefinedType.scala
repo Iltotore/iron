@@ -118,7 +118,7 @@ private[iron] sealed trait Refined[A, C](using private val _rtc: RuntimeConstrai
           case None        => break(None)
       ))
 
-  def unapply(value: A): Option[T] = option(value)
+  def unapply(value: A): Option[A] = Some(value)
 
   inline given [R]: TypeTest[T, R] = summonInline[TypeTest[A :| C, R]].asInstanceOf[TypeTest[T, R]]
 

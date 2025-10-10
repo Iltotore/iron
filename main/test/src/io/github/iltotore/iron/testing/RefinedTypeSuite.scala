@@ -79,4 +79,10 @@ object RefinedTypeSuite extends TestSuite:
       assert(temperature + Temperature(10) == Temperature(20))
       assert(temperature + 10 == Temperature(20))
       compileError("temperature - 10")
+
+    test("unapply"):
+      val temperature = Temperature(10)
+
+      temperature match
+        case Temperature(raw) => (raw: Double)
   }

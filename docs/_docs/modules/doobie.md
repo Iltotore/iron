@@ -25,13 +25,13 @@ ivy"io.github.iltotore::iron-doobie:version"
 SBT:
 
 ```scala 
-libraryDependencies += "org.tpolecat" %% "doobie-core" % "1.0.0-RC4"
+libraryDependencies += "org.tpolecat" %% "doobie-core" % "1.0.0-RC10"
 ```
 
 Mill:
 
 ```scala 
-ivy"org.tpolecat::doobie-core::1.0.0-RC4"
+ivy"org.tpolecat::doobie-core::1.0.0-RC10"
 ```
 
 ## Get/Put/Meta instances
@@ -44,14 +44,14 @@ import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*
 import io.github.iltotore.iron.doobie.given
 
-opaque type CountryCode = Int :| Positive
-object CountryCode extends RefinedTypeOps[Int, Positive, CountryCode]
+type CountryCode = CountryCode.T
+object CountryCode extends RefinedType[Int, Positive]
 
-opaque type CountryName = String :| Not[Blank]
-object CountryName extends RefinedTypeOps[String, Not[Blank], CountryName]
+type CountryName = CountryName.T
+object CountryName extends RefinedType[String, Not[Blank]]
 
-opaque type Population = Int :| Positive
-object Population extends RefinedTypeOps[Int, Positive, Population]
+type Population = Population.T
+object Population extends RefinedType[Int, Positive]
 
 //Refined columns of a table
 case class Country(code: CountryCode, name: CountryName, pop: Population)
@@ -59,10 +59,10 @@ case class Country(code: CountryCode, name: CountryName, pop: Population)
 //Interpolation with refined values
 def biggerThan(minPop: Population) =
   sql"""
-    select code, name, population, indepyear
+    select code, name, population
     from country
     where population > $minPop
-  """.query[Country] 
+  """.query[Country]
 ```
 
 Example inspired by

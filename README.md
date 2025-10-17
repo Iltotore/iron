@@ -118,12 +118,13 @@ company to the list.
 
 ### Companies
 
+- [AshFall Studio](https://ashfallstudio.com)
+- [Association familiale Mulliez](https://fr.wikipedia.org/wiki/Association_familiale_Mulliez)
 - [Clever Cloud](https://www.clever-cloud.com)
 - [Ledger](https://github.com/LedgerHQ)
 - [Marss](https://github.com/marss)
-- [Association familiale Mulliez](https://fr.wikipedia.org/wiki/Association_familiale_Mulliez)
-- [AshFall Studio](https://ashfallstudio.com)
-- [Sergic](https://www.sergic.com/)
+- [NuMind](https://numind.ai)
+- [Sergic](https://www.sergic.com)
 
 ### Other projects
 

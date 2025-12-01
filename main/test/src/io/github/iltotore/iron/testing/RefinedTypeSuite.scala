@@ -85,4 +85,15 @@ object RefinedTypeSuite extends TestSuite:
 
       temperature match
         case Temperature(raw) => (raw: Double)
+
+      assert:
+        -1000 match
+          case Temperature(raw) => false // i.e. should not match here
+          case _                => true
+
+      assert:
+        temperature match
+          case Temperature(raw) => temperature == Temperature(raw) // .unapply is a kind of "reverse" of .apply
+          case _                => false
+
   }

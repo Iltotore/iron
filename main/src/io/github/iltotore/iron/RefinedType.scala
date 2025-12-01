@@ -118,7 +118,7 @@ private[iron] sealed trait Refined[A, C](using private val _rtc: RuntimeConstrai
           case None        => break(None)
       ))
 
-  def unapply(value: A): Option[A] = Some(value)
+  def unapply(value: A): Option[A :| C] = option(value).map(_.value)
 
   inline given [R]: TypeTest[T, R] = summonInline[TypeTest[A :| C, R]].asInstanceOf[TypeTest[T, R]]
 
@@ -172,3 +172,4 @@ object RefinedType:
 
 trait RefinedSubtype[A, C](using private val _rtc: RuntimeConstraint[A, C]) extends Refined[A, C]:
   override opaque type T <: A :| C = A :| C
+  override def unapply(value: A): Option[T] = option(value)

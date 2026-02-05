@@ -16,6 +16,7 @@ These modules are mostly "support"/"interoperability" modules to provide out of 
 - [Ciris](ciris.md): Typeclass instances for refinement types.
 - [Decline](decline.md): Typeclass instances for refinement types.
 - [Doobie](doobie.md): Typeclass instances for refinement types.
+- [Dynosaur](dynosaur.md): Typeclass instances for refinement types. 
 - [Jsoniter](jsoniter.md): Typeclass instances for refinement types.
 - [play JSON](play-json.md): Typeclass instances for refinement types.
 - [PureConfig](pureconfig.md): Typeclass instances for refinement types.

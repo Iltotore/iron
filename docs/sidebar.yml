@@ -28,6 +28,7 @@ subsection:
       - page: modules/ciris.md
       - page: modules/decline.md
       - page: modules/doobie.md
+      - page: modules/dynosaur.md
       - page: modules/jsoniter.md
       - page: modules/play-json.md
       - page: modules/pureconfig.md

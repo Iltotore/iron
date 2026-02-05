@@ -100,6 +100,7 @@ ivy"io.github.iltotore::iron:version"
 | iron-chimney    | ✔️  | ✔️ | ✔️     |
 | iron-decline    | ✔️  | ✔️ | ✔️     |
 | iron-doobie     | ✔️  | ❌  | ❌    |
+| iron-dynosaur   | ✔️  | ✔️  | ❌    |
 | iron-jsoniter   | ✔️  | ✔️ | ✔️     |
 | iron-pureconfig | ✔️  | ❌️ | ❌️     |
 | iron-scalacheck | ✔️  | ✔️ | ❌     |

@@ -235,7 +235,7 @@ object examples extends Module {
 
     def ivyDeps = Agg(
       ivy"dev.zio::zio-test:2.1.6",
-      ivy"dev.zio::zio-json:0.7.39",
+      ivy"dev.zio::zio-json:0.9.0",
       ivy"dev.zio::zio-http:3.1.0"
     )
 
@@ -419,13 +419,13 @@ object zioJson extends SubModule {
   def artifactName = "iron-zio-json"
 
   def ivyDeps = Agg(
-    ivy"dev.zio::zio-json::0.7.14"
+    ivy"dev.zio::zio-json::0.9.0"
   )
 
   object test extends Tests {
     def ivyDeps = Agg(
       ivy"com.lihaoyi::utest:0.8.1",
-      ivy"dev.zio::zio-json::0.7.14"
+      ivy"dev.zio::zio-json::0.9.0"
     )
   }
 

@@ -219,6 +219,7 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
       TypeRepr.of[Boolean] -> decodeBoolean,
       TypeRepr.of[BigDecimal] -> decodeBigDecimal,
       TypeRepr.of[BigInt] -> decodeBigInt,
+      TypeRepr.of[Array[?]] -> decodeArray,
       TypeRepr.of[List[?]] -> decodeList,
       TypeRepr.of[Set[?]] -> decodeSet,
       TypeRepr.of[String] -> decodeString
@@ -394,6 +395,25 @@ class ReflectUtil[Q <: Quotes & Singleton](using val _quotes: Q):
             case x: Float  => BigDecimal(x)
             case x: Double => BigDecimal(x)
 
+        case _ => Left(DecodingFailure.Unknown)
+
+    /**
+     * Decode an [[Array]] term using only [[Array]]-specific cases.
+     *
+     * @param term        the term to decode
+     * @param definitions the decoded definitions in scope
+     * @return the value of the given term found at compile time or a [[DecodingFailure]]
+     */
+    def decodeArray(term: Term, definitions: Map[String, ?]): DecodingResult[Array[?]] =
+      term match
+        case Apply(Select(Ident("Array"), "apply"), List(value, values)) =>
+          for
+            decodedValue <- decodeTerm(value, definitions)
+            decodedValues <- decodeTerm(values, definitions).as[List[?]]
+          yield
+            decodedValues.prepended(decodedValue).toArray
+        case Apply(Apply(TypeApply(Select(Ident("Array"), "apply"), _), List(values)), _) =>
+          decodeTerm(values, definitions).as[List[?]].map(_.toArray)
         case _ => Left(DecodingFailure.Unknown)
 
     /**

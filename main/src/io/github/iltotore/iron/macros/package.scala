@@ -60,16 +60,22 @@ private def assertConditionImpl[A: Type](input: Expr[A], cond: Expr[Boolean], me
            |${"Reason".colorized(MAGENTA)}: $reason""".stripMargin
       )
 
-  val inputValue = input.decode.toOption
+  val inputValue = input.decode.fold(
+    _ => input.show,
+    {
+      case array: Array[?] => array.mkString("Array(", ", ", ")")
+      case value => value.toString
+    }
+  )
   val condValue = cond.decode.fold(condError, identity)
 
   if !condValue then
     if config.shortMessages then
-      report.errorAndAbort(s"$messageValue: ${inputValue.getOrElse(input.show)}")
+      report.errorAndAbort(s"$messageValue: $inputValue")
     else
       compileTimeError(s"""|Could not satisfy a constraint for type ${inputType.show.colorized(MAGENTA)}.
                            |
-                           |${"Value".colorized(MAGENTA)}: ${inputValue.getOrElse(input.show)}
+                           |${"Value".colorized(MAGENTA)}: $inputValue
                            |${"Message".colorized(MAGENTA)}: $messageValue""".stripMargin)
 
   '{}

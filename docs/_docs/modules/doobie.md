@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-doobie" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-doobie:version"
+mvn"io.github.iltotore::iron-doobie:version"
 ```
 
 ### Following examples' dependencies
@@ -31,7 +31,7 @@ libraryDependencies += "org.tpolecat" %% "doobie-core" % "1.0.0-RC10"
 Mill:
 
 ```scala 
-ivy"org.tpolecat::doobie-core::1.0.0-RC10"
+mvn"org.tpolecat::doobie-core::1.0.0-RC10"
 ```
 
 ## Get/Put/Meta instances

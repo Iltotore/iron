@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-cats" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-cats:version"
+mvn"io.github.iltotore::iron-cats:version"
 ```
 
 ### Following examples' dependencies
@@ -31,7 +31,7 @@ libraryDependencies += "org.typelevel" %% "cats-core" % "2.8.0"
 Mill:
 
 ```scala 
-ivy"org.typelevel::cats-core::2.8.0"
+mvn"org.typelevel::cats-core::2.8.0"
 ```
 
 ## Accumulative error handling

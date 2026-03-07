@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-pureconfig" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-pureconfig:version"
+mvn"io.github.iltotore::iron-pureconfig:version"
 ```
 
 ### Following examples' dependencies
@@ -31,7 +31,7 @@ libraryDependencies += "com.github.pureconfig" %% "pureconfig-core" % "0.17.7"
 Mill:
 
 ```scala 
-ivy"com.github.pureconfig::pureconfig-core::0.17.7"
+mvn"com.github.pureconfig::pureconfig-core::0.17.7"
 ```
 
 ## ConfigReader instances

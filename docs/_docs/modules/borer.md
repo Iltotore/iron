@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-borer" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-borer:version"
+mvn"io.github.iltotore::iron-borer:version"
 ```
 
 ### Example Dependencies
@@ -34,8 +34,8 @@ libraryDependencies ++= Seq(
 Mill:
 
 ```scala 
-ivy"io.bullet::borer-core::1.13.0"
-ivy"io.bullet::borer-derivation::1.13.0"
+mvn"io.bullet::borer-core::1.13.0"
+mvn"io.bullet::borer-derivation::1.13.0"
 ```
 
 ## How to use

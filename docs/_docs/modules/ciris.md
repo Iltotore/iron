@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-ciris" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-ciris:version"
+mvn"io.github.iltotore::iron-ciris:version"
 ```
 
 ### Following examples' dependencies
@@ -31,7 +31,7 @@ libraryDependencies += "is.cir" %% "ciris" % "3.1.0"
 Mill:
 
 ```scala 
-ivy"is.cir::ciris::3.1.0"
+mvn"is.cir::ciris::3.1.0"
 ```
 
 ## ConfigDecoder instances

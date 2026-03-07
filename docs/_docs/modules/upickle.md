@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-upickle" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-upickle:version"
+mvn"io.github.iltotore::iron-upickle:version"
 ```
 
 ### Following examples' dependencies
@@ -31,7 +31,7 @@ libraryDependencies += "com.lihaoyi" %% "upickle" % "3.1.3"
 Mill:
 
 ```scala 
-ivy"com.lihaoyi::upickle:3.1.3"
+mvn"com.lihaoyi::upickle:3.1.3"
 ```
 
 ## Writer/Reader instances

@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-skunk" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-skunk:version"
+mvn"io.github.iltotore::iron-skunk:version"
 ```
 
 ### Following examples' dependencies
@@ -31,7 +31,7 @@ libraryDependencies += "org.tpolecat" %% "skunk-core" % "1.0.0-M12"
 Mill:
 
 ```scala 
-ivy"org.tpolecat::skunk-core::1.0.0-M12"
+mvn"org.tpolecat::skunk-core::1.0.0-M12"
 ```
 
 ## Codec instances

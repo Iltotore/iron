@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-play-json" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-play-json:version"
+mvn"io.github.iltotore::iron-play-json:version"
 ```
 
 ### Following examples' dependencies
@@ -31,7 +31,7 @@ libraryDependencies += "org.playframework" %% "play-json" % "3.0.5"
 Mill:
 
 ```scala 
-ivy"org.playframework::play-json::3.0.5"
+mvn"org.playframework::play-json::3.0.5"
 ```
 
 ## Writes/Reads instances

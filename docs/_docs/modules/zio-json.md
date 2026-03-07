@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-zio-json" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-zio-json:version"
+mvn"io.github.iltotore::iron-zio-json:version"
 ```
 
 ### Following examples' dependencies
@@ -31,7 +31,7 @@ libraryDependencies += "dev.zio" %% "zio-json" % "0.3.0"
 Mill:
 
 ```scala 
-ivy"dev.zio::zio:0.3.0"
+mvn"dev.zio::zio:0.3.0"
 ```
 
 ## Encoder/Decoder instances

@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-jsoniter" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-jsoniter:version"
+mvn"io.github.iltotore::iron-jsoniter:version"
 ```
 
 ### Following examples' dependencies
@@ -32,8 +32,8 @@ libraryDependencies += "com.github.plokhotnyuk.jsoniter-scala" %% "jsoniter-scal
 Mill:
 
 ```scala 
-ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-core:2.19.1"
-ivy"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:2.19.1"
+mvn"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-core:2.19.1"
+mvn"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:2.19.1"
 ```
 
 ## Encoder/Decoder instances

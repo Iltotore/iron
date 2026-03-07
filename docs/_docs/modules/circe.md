@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-circe" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-circe:version"
+mvn"io.github.iltotore::iron-circe:version"
 ```
 
 ### Following examples' dependencies
@@ -33,9 +33,9 @@ libraryDependencies += "io.circe" %% "circe-parser" % "0.14.5"
 Mill:
 
 ```scala 
-ivy"io.circe::circe-core::0.14.5"
-ivy"io.circe::circe-generic::0.14.5"
-ivy"io.circe::circe-parser::0.14.5"
+mvn"io.circe::circe-core::0.14.5"
+mvn"io.circe::circe-generic::0.14.5"
+mvn"io.circe::circe-parser::0.14.5"
 ```
 
 ## Encoder/Decoder instances

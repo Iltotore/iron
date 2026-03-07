@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-scalacheck" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-scalacheck:version"
+mvn"io.github.iltotore::iron-scalacheck:version"
 ```
 
 ## Arbitrary instances

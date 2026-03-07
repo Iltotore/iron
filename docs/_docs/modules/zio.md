@@ -19,7 +19,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-zio" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-zio:version"
+mvn"io.github.iltotore::iron-zio:version"
 ```
 
 ### Following examples' dependencies
@@ -34,8 +34,8 @@ libraryDependencies += "dev.zio" %% "zio-prelude" % "1.0.0-RC16"
 Mill:
 
 ```scala 
-ivy"dev.zio::zio:2.0.5"
-ivy"dev.zio::zio-prelude:1.0.0-RC16"
+mvn"dev.zio::zio:2.0.5"
+mvn"dev.zio::zio-prelude:1.0.0-RC16"
 ```
 
 ## Accumulative error handling

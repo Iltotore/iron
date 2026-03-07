@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-dynosaur" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-dynosaur:version"
+mvn"io.github.iltotore::iron-dynosaur:version"
 ```
 
 ### Following examples' dependencies
@@ -31,7 +31,7 @@ libraryDependencies += "org.systemfw" %% "dynosaur-core" % "0.7.1"
 Mill:
 
 ```scala
-ivy"org.systemfw::dynosaur-core:0.7.1"
+mvn"org.systemfw::dynosaur-core:0.7.1"
 ```
 
 ## Codec instances

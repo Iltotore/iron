@@ -17,7 +17,7 @@ libraryDependencies += "io.scalaland" %% "chimney" % "version"
 Mill:
 
 ```scala 
-ivy"io.scalaland::chimney:version"
+mvn"io.scalaland::chimney:version"
 ```
 
 ### Following examples' dependencies
@@ -31,7 +31,7 @@ libraryDependencies += "io.scalaland" %% "chimney" % "1.8.2"
 Mill:
 
 ```scala 
-ivy"io.scalaland::chimney:1.8.2"
+mvn"io.scalaland::chimney:1.8.2"
 ```
 
 ## Transformer instances

@@ -17,7 +17,7 @@ libraryDependencies += "io.github.iltotore" %% "iron-decline" % "version"
 Mill:
 
 ```scala 
-ivy"io.github.iltotore::iron-decline:version"
+mvn"io.github.iltotore::iron-decline:version"
 ```
 
 ### Following examples' dependencies
@@ -31,7 +31,7 @@ libraryDependencies += "com.monovore" %% "decline" % "2.4.1"
 Mill:
 
 ```scala 
-ivy"com.monovore::decline::2.4.1"
+mvn"com.monovore::decline::2.4.1"
 ```
 
 ## Argument instances

@@ -83,7 +83,7 @@ libraryDependencies += "io.github.iltotore" %% "iron" % "version"
 Mill:
 
 ```scala
-ivy"io.github.iltotore::iron:version"
+mvn"io.github.iltotore::iron:version"
 ```
 
 **Note: replace `version` with the version of Iron.**

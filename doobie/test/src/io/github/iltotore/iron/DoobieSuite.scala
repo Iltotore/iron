@@ -1,10 +1,10 @@
 package io.github.iltotore.iron
 
-import _root_.doobie.*
-import _root_.doobie.implicits.given
 import cats.implicits.{*, given}
 import io.github.iltotore.iron.constraint.numeric.Positive
 import io.github.iltotore.iron.doobie.given
+import org.typelevel.doobie.*
+import org.typelevel.doobie.implicits.given
 import utest.*
 
 object DoobieSuite extends TestSuite:

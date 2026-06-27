@@ -37,8 +37,8 @@ mvn"org.tpolecat::doobie-core::1.0.0-RC10"
 ## Get/Put/Meta instances
 
 ```scala
-import doobie.*
-import doobie.implicits.*
+import org.typelevel.doobie.*
+import org.typelevel.doobie.implicits.*
 
 import io.github.iltotore.iron.*
 import io.github.iltotore.iron.constraint.all.*

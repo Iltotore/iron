@@ -511,13 +511,13 @@ object doobie extends SubModule {
   def artifactName = "iron-doobie"
 
   def ivyDeps = Agg(
-    ivy"org.tpolecat::doobie-core::1.0.0-RC12"
+    ivy"org.typelevel::doobie-core::1.0.0-RC13"
   )
 
   object test extends Tests{
     def ivyDeps = Agg(
       ivy"com.lihaoyi::utest:0.8.1",
-      ivy"org.tpolecat::doobie-core::1.0.0-RC12",
+      ivy"org.typelevel::doobie-core::1.0.0-RC13",
 
     )
   }

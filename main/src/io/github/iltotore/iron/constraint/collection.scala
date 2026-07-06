@@ -260,11 +260,6 @@ object collection:
           report.info(s"Cannot decode ${expr.asTerm.show(using Printer.TreeStructure)}")
           '{ $expr.forall(c => ${ applyConstraint('c, constraintExpr) }) }
 
-    given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Exists[C2]) = Implication()
-    given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Last[C2]) = Implication()
-    given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Init[C2]) = Implication()
-    given [C1, C2](using C1 ==> C2): (ForAll[C1] ==> Tail[C2]) = Implication()
-
   object Init:
 
     class InitIterable[A, I <: Iterable[A], C, Impl <: Constraint[A, C]](using Impl) extends Constraint[I, Init[C]]:

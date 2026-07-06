@@ -2,6 +2,8 @@ package io.github.iltotore.iron.testing
 
 import io.github.iltotore.iron.*
 import utest.*
+import io.github.iltotore.iron.constraint.numeric.Greater
+import scala.util.NotGiven
 
 object AnySuite extends TestSuite:
 
@@ -22,6 +24,9 @@ object AnySuite extends TestSuite:
     test("not"):
       test - Dummy.assertRefine[Not[False]]
       test - Dummy.assertNotRefine[Not[True]]
+      test("(C1 ==> C2) ==> (Not[C2] ==> Not[C1]"):
+        test - assertGiven[Not[Greater[0]] ==> Not[Greater[5]]]
+        test - assertGiven[NotGiven[Not[Greater[5]] ==> Not[Greater[0]]]]
 
     test("xor"):
       test - Dummy.assertRefine[Xor[True, False]]

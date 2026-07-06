@@ -151,7 +151,7 @@ object any:
      */
     given [C1, C2](using C1 ==> C2): (C1 ==> Not[Not[C2]]) = Implication()
 
-    given [C1, C2](using C1 ==> C2): (Not[C1] ==> Not[C2]) = Implication()
+    given [C1, C2](using C1 ==> C2): (Not[C2] ==> Not[C1]) = Implication()
 
   object Xor:
 

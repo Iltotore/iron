@@ -73,6 +73,8 @@ object NumericSuite extends TestSuite:
       test - BigDecimal(1).assertNotRefine[Multiple[2]]
       test - BigDecimal(2).assertRefine[Multiple[2]]
       test - 9007199254740993L.assertRefine[Multiple[3]]
+      test - 3.assertRefine[Multiple[1.5]]
+      test - 2.assertNotRefine[Multiple[1.5]]
 
     test("divide"):
       test - 1.assertRefine[Divide[2]]
@@ -85,6 +87,8 @@ object NumericSuite extends TestSuite:
       test - BigDecimal(2).assertRefine[Divide[2]]
       test - BigDecimal(3).assertNotRefine[Divide[2]]
       test - 3.assertRefine[Divide[9007199254740993L]]
+      test - 1.5.assertRefine[Divide[3]]
+      test - 2.assertNotRefine[Divide[3]]
 
     test("nan"):
       test - Float.NaN.assertRefine[NaN]

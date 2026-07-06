@@ -5,6 +5,7 @@ import io.github.iltotore.iron.compileTime.*
 import io.github.iltotore.iron.{==>, Constraint, Implication}
 import io.github.iltotore.iron.macros.reflectUtil
 
+import scala.compiletime.constValue
 import scala.compiletime.summonInline
 import scala.quoted.*
 import scala.util.NotGiven
@@ -155,10 +156,10 @@ object numeric:
       override inline def message: String = "Should be greater than " + stringValue[V]
 
     inline given [V <: NumConstant]: GreaterConstraint[Int, V] with
-      override inline def test(inline value: Int): Boolean = value > doubleValue[V]
+      override inline def test(inline value: Int): Boolean = value > longValue[V]
 
     inline given [V <: NumConstant]: GreaterConstraint[Long, V] with
-      override inline def test(inline value: Long): Boolean = value > doubleValue[V]
+      override inline def test(inline value: Long): Boolean = value > longValue[V]
 
     inline given [V <: NumConstant]: GreaterConstraint[Float, V] with
       override inline def test(inline value: Float): Boolean = value > doubleValue[V]
@@ -214,10 +215,10 @@ object numeric:
       override inline def message: String = "Should be less than " + stringValue[V]
 
     inline given [V <: NumConstant]: LessConstraint[Int, V] with
-      override inline def test(inline value: Int): Boolean = value < doubleValue[V]
+      override inline def test(inline value: Int): Boolean = value < longValue[V]
 
     inline given [V <: NumConstant]: LessConstraint[Long, V] with
-      override inline def test(inline value: Long): Boolean = value < doubleValue[V]
+      override inline def test(inline value: Long): Boolean = value < longValue[V]
 
     inline given [V <: NumConstant]: LessConstraint[Float, V] with
       override inline def test(inline value: Float): Boolean = value < doubleValue[V]
@@ -225,7 +226,7 @@ object numeric:
     inline given [V <: NumConstant]: LessConstraint[Double, V] with
       override inline def test(inline value: Double): Boolean = value < doubleValue[V]
 
-    inline given bigDecimalDouble[V <: NumConstant]: LessConstraint[BigDecimal, V] with
+    inline given bigDecimalDouble[V <: Float | Double]: LessConstraint[BigDecimal, V] with
       override inline def test(inline value: BigDecimal): Boolean = ${ checkBigDecimalDouble('value, '{ doubleValue[V] }) }
 
     inline given bigDecimalLong[V <: Int | Long]: LessConstraint[BigDecimal, V] with
@@ -271,25 +272,32 @@ object numeric:
   object Multiple:
     private trait MultipleConstraint[A, V <: NumConstant] extends Constraint[A, Multiple[V]]:
       override inline def message: String = "Should be a multiple of " + stringValue[V]
+    
 
-    inline given [V <: NumConstant]: MultipleConstraint[Int, V] with
-      override inline def test(inline value: Int): Boolean = value % doubleValue[V] == 0
-
-    inline given [V <: NumConstant]: MultipleConstraint[Long, V] with
-      override inline def test(inline value: Long): Boolean = value % doubleValue[V] == 0
-
-    inline given [V <: NumConstant]: MultipleConstraint[Float, V] with
-      override inline def test(inline value: Float): Boolean = value % doubleValue[V] == 0
-
-    inline given [V <: NumConstant]: MultipleConstraint[Double, V] with
-      override inline def test(inline value: Double): Boolean = value % doubleValue[V] == 0
+    inline given [A <: NumConstant, V <: NumConstant]: MultipleConstraint[A, V] with
+      override inline def test(inline value: A): Boolean =
+        inline (value, constValue[V]) match
+          case (v1: Int, v2: Int) => v1 % v2 == 0
+          case (v1: Int, v2: Long) => v1 % v2 == 0
+          case (v1: Int, v2: Float) => v1 % v2 == 0
+          case (v1: Int, v2: Double) => v1 % v2 == 0
+          case (v1: Long, v2: Int) => v1 % v2 == 0
+          case (v1: Long, v2: Long) => v1 % v2 == 0
+          case (v1: Long, v2: Float) => v1 % v2 == 0
+          case (v1: Long, v2: Double) => v1 % v2 == 0
+          case (v1: Float, v2: Int) => v1 % v2 == 0
+          case (v1: Float, v2: Long) => v1 % v2 == 0
+          case (v1: Float, v2: Float) => v1 % v2 == 0
+          case (v1: Float, v2: Double) => v1 % v2 == 0
+          case (v1: Double, v2: Int) => v1 % v2 == 0
+          case (v1: Double, v2: Long) => v1 % v2 == 0
+          case (v1: Double, v2: Float) => v1 % v2 == 0
+          case (v1: Double, v2: Double) => v1 % v2 == 0
 
     inline given [V <: NumConstant]: MultipleConstraint[BigDecimal, V] with
-
       override inline def test(inline value: BigDecimal): Boolean = ${ checkBigDecimal('value, '{ doubleValue[V] }) }
 
     inline given [V <: Int | Long]: MultipleConstraint[BigInt, V] with
-
       override inline def test(inline value: BigInt): Boolean = ${ checkBigInt('value, '{ longValue[V] }) }
 
     private def checkBigDecimal(expr: Expr[BigDecimal], thanExpr: Expr[Double])(using Quotes): Expr[Boolean] =
@@ -314,17 +322,25 @@ object numeric:
     private trait DivideConstraint[A, V <: NumConstant] extends Constraint[A, Divide[V]]:
       override inline def message: String = "Should divide " + stringValue[V]
 
-    inline given [V <: NumConstant]: DivideConstraint[Int, V] with
-      override inline def test(inline value: Int): Boolean = doubleValue[V] % value == 0
-
-    inline given [V <: NumConstant]: DivideConstraint[Long, V] with
-      override inline def test(inline value: Long): Boolean = doubleValue[V] % value == 0
-
-    inline given [V <: NumConstant]: DivideConstraint[Float, V] with
-      override inline def test(inline value: Float): Boolean = doubleValue[V] % value == 0
-
-    inline given [V <: NumConstant]: DivideConstraint[Double, V] with
-      override inline def test(inline value: Double): Boolean = doubleValue[V] % value == 0
+    inline given [A <: NumConstant, V <: NumConstant]: DivideConstraint[A, V] with
+      override inline def test(inline value: A): Boolean =
+        inline (value, constValue[V]) match
+          case (v1: Int, v2: Int) => v2 % v1 == 0
+          case (v1: Int, v2: Long) => v2 % v1 == 0
+          case (v1: Int, v2: Float) => v2 % v1 == 0
+          case (v1: Int, v2: Double) => v2 % v1 == 0
+          case (v1: Long, v2: Int) => v2 % v1 == 0
+          case (v1: Long, v2: Long) => v2 % v1 == 0
+          case (v1: Long, v2: Float) => v2 % v1 == 0
+          case (v1: Long, v2: Double) => v2 % v1 == 0
+          case (v1: Float, v2: Int) => v2 % v1 == 0
+          case (v1: Float, v2: Long) => v2 % v1 == 0
+          case (v1: Float, v2: Float) => v2 % v1 == 0
+          case (v1: Float, v2: Double) => v2 % v1 == 0
+          case (v1: Double, v2: Int) => v2 % v1 == 0
+          case (v1: Double, v2: Long) => v2 % v1 == 0
+          case (v1: Double, v2: Float) => v2 % v1 == 0
+          case (v1: Double, v2: Double) => v2 % v1 == 0
 
     inline given [V <: NumConstant]: DivideConstraint[BigDecimal, V] with
       override inline def test(inline value: BigDecimal): Boolean = ${ checkBigDecimal('value, '{ doubleValue[V] }) }

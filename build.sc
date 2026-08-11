@@ -87,7 +87,7 @@ object docs extends BaseModule {
   def artifactName = "iron-docs"
 
   val modules: Seq[ScalaModule] =
-    Seq(main, cats, chimney, circe, decline, doobie, dynosaur, upickle, ciris, jsoniter, pureconfig, scalacheck, scodec, skunk, upickle, zio, zioJson)
+    Seq(main, cats, chimney, circe, decline, doobie, dynosaur, upickle, ciris, jsoniter, pureconfig, scalacheck, scodec, skunk, upickle, zio, zioBlocksSchema, zioJson)
 
   def docSources = T.sources {
     T.traverse(modules)(_.docSources)().flatten
@@ -585,6 +585,19 @@ object dynosaur extends SubModule {
 
   def ivyDeps = Agg(
     ivy"org.systemfw::dynosaur-core:0.7.1"
+  )
+
+  object test extends Tests
+
+  object js extends JSCrossModule
+}
+
+object zioBlocksSchema extends SubModule {
+
+  def artifactName = "iron-zio-blocks-schema"
+
+  def ivyDeps = Agg(
+    ivy"dev.zio::zio-blocks-schema:0.0.51"
   )
 
   object test extends Tests

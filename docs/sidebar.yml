@@ -37,4 +37,5 @@ subsection:
       - page: modules/skunk.md
       - page: modules/upickle.md
       - page: modules/zio.md
+      - page: modules/zio-blocks-schema.md
       - page: modules/zio-json.md

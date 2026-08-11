@@ -108,6 +108,7 @@ mvn"io.github.iltotore::iron:version"
 | iron-skunk      | ✔️  | ✔️ | ✔️     |
 | iron-upickle    | ✔️  | ✔️ | ✔️     |
 | iron-zio        | ✔️  | ✔️ | ❌     |
+| iron-zio-blocks-schema | ✔️  | ✔️ | ❌     |
 | iron-zio-json   | ✔️  | ✔️ | ❌     |
 | iron-play-json  | ✔️  | ✔️ | ❌     |
 

@@ -25,6 +25,7 @@ These modules are mostly "support"/"interoperability" modules to provide out of 
 - [Skunk](skunk.md): Typeclass instances for refinement types.
 - [uPickle](upickle.md): Typeclass instances for refinement types.
 - [ZIO](zio.md): Accumulative refinement method.
+- [ZIO Blocks Schema](zio-blocks-schema.md): Typeclass instances for refinement types.
 - [ZIO-Json](zio-json.md): Typeclass instances for refinement types.
 
 ## External modules

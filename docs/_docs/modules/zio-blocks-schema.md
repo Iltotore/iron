@@ -61,10 +61,18 @@ its dynamic representation), so validators that load the schema later enforce
 the same supported rule. Iron still validates every constraint while decoding;
 unsupported constraints are not represented as weaker validation rules.
 
-The built-in translation covers positive/negative numeric constraints, string
-regular expressions, and string length constraints. You can provide a
+The built-in translation covers positive/negative numeric constraints, inclusive
+bounds (`GreaterEqual` / `LessEqual`), exact numeric equality (`StrictEqual`),
+string regular expressions, and string length constraints (including
+intersections such as `MinLength[n] & MaxLength[m]`). You can provide a
 `ZioBlocksValidation[A, C]` given to translate an application-specific
 constraint as well.
+
+When a supported constraint is embedded, the same rule is reflected in
+`DynamicSchema` conformance checks and in JSON Schema output from
+`Schema[A].toJsonSchema`, keeping runtime validation, dynamic validation, and
+API documentation aligned — similar to how Kyo Schema couples `validate` rules
+with JSON Schema metadata.
 
 ```scala 3
 import io.github.iltotore.iron.ZioBlocksValidation

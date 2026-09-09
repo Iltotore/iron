@@ -51,7 +51,9 @@ private trait ZioBlocksSchemaLowPriority:
       case ZioBlocksSchemaConfig.ValidationEncoding.RuntimeOnly    => S
 
     val refined = base.transform[T :| P](
-      _.refineEither[P].fold(error => throw SchemaError.validationFailed(error), identity),
+      value =>
+        if C.test(value) then value.asInstanceOf[T :| P]
+        else throw SchemaError.validationFailed(C.message),
       identity
     )
 

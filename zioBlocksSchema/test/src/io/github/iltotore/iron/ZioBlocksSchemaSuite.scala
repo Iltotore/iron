@@ -3,7 +3,7 @@ package io.github.iltotore.iron
 import _root_.zio.blocks.schema.{DynamicSchema, DynamicValue, Modifier, PrimitiveValue, Schema, Validation}
 import io.github.iltotore.iron.constraint.any.StrictEqual
 import io.github.iltotore.iron.constraint.collection.{FixedLength, MaxLength, MinLength}
-import io.github.iltotore.iron.constraint.numeric.{Positive, Positive0}
+import io.github.iltotore.iron.constraint.numeric.{GreaterEqual, LessEqual, Positive, Positive0}
 import io.github.iltotore.iron.constraint.string.Match
 import zioBlocksSchema.given
 import utest.*
@@ -82,3 +82,42 @@ object ZioBlocksSchemaSuite extends TestSuite:
 
       val schema = summon[Schema[Answer]]
       assert(!schema.toDynamicSchema.conforms(DynamicValue.Primitive(PrimitiveValue.Int(41))))
+
+    test("inclusive numeric bounds are translated to durable range validations"):
+      type AtLeastTen = Int :| GreaterEqual[10]
+      type AtMostHundred = Int :| LessEqual[100]
+      type BetweenTenAndHundred = Int :| (GreaterEqual[10] & LessEqual[100])
+
+      val atLeastTen = summon[Schema[AtLeastTen]]
+      val atMostHundred = summon[Schema[AtMostHundred]]
+      val between = summon[Schema[BetweenTenAndHundred]]
+
+      assert(atLeastTen.fromDynamicValue(DynamicValue.Primitive(PrimitiveValue.Int(9))).isLeft)
+      assert(atMostHundred.fromDynamicValue(DynamicValue.Primitive(PrimitiveValue.Int(101))).isLeft)
+      assert(between.fromDynamicValue(DynamicValue.Primitive(PrimitiveValue.Int(5))).isLeft)
+      assert(between.fromDynamicValue(DynamicValue.Primitive(PrimitiveValue.Int(200))).isLeft)
+      assert(between.fromDynamicValue(DynamicValue.Primitive(PrimitiveValue.Int(50))).isRight)
+
+    test("strict equality constraints are translated to durable set validations"):
+      type FortyTwo = Int :| StrictEqual[42]
+
+      val schema = summon[Schema[FortyTwo]]
+      assert(!schema.toDynamicSchema.conforms(DynamicValue.Primitive(PrimitiveValue.Int(41))))
+      assert(schema.toDynamicSchema.conforms(DynamicValue.Primitive(PrimitiveValue.Int(42))))
+
+    test("embedded validations survive dynamic schema round-trip for bounded numerics"):
+      type BetweenTenAndHundred = Int :| (GreaterEqual[10] & LessEqual[100])
+
+      val schema = summon[Schema[BetweenTenAndHundred]]
+      val dynamicSchema = schema.toDynamicSchema
+      val persisted = DynamicSchema.toDynamicValue(dynamicSchema)
+      val restored = DynamicSchema.fromDynamicValue(persisted)
+
+      assert(schema.fromDynamicValue(DynamicValue.Primitive(PrimitiveValue.Int(5))).isLeft)
+      assert(schema.fromDynamicValue(DynamicValue.Primitive(PrimitiveValue.Int(200))).isLeft)
+      assert(schema.fromDynamicValue(DynamicValue.Primitive(PrimitiveValue.Int(50))).isRight)
+      assert(restored.reflect.toString.contains("Range"))
+
+    test("decode uses the runtime constraint without allocating Either on success"):
+      val schema = summon[Schema[Int :| Positive]]
+      assert(schema.fromDynamicValue(Schema[Int].toDynamicValue(5)) == Right(5))

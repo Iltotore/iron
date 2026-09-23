@@ -364,19 +364,19 @@ object ciris extends SubModule {
   def artifactName = "iron-ciris"
 
   def ivyDeps = Agg(
-    ivy"is.cir::ciris::3.1.0"
+    ivy"is.cir::ciris::3.15.1"
   )
 
   object test extends Tests {
     def ivyDeps = Agg(
       ivy"com.lihaoyi::utest:0.8.1",
-      ivy"is.cir::ciris::3.1.0"
+      ivy"is.cir::ciris::3.15.1"
     )
   }
 
   object js extends JSCrossModule
 
-  object native extends NativeCrossModule04
+  object native extends NativeCrossModule
 
 }
 

@@ -7,7 +7,7 @@ import scalalib._, scalalib.scalafmt._, scalalib.publish._, scalajslib._, scalan
 object versions {
   val scala = "3.3.6"
   val scalaJS = "1.16.0"
-  val scalaNative = "0.5.7"
+  val scalaNative = "0.5.12"
 }
 
 trait BaseModule extends ScalaModule with ScalafmtModule with SonatypeCentralPublishModule { outer =>
@@ -70,13 +70,6 @@ trait BaseModule extends ScalaModule with ScalafmtModule with SonatypeCentralPub
     def segment = "native"
 
     def scalaNativeVersion = versions.scalaNative
-  }
-
-  trait NativeCrossModule04 extends CrossModule with ScalaNativeModule {
-
-    def segment = "native"
-
-    def scalaNativeVersion = "0.4.17"
   }
 }
 
@@ -190,7 +183,6 @@ object main extends BaseModule {
 
   object js extends JSCrossModule
   object native extends NativeCrossModule
-  object native04 extends NativeCrossModule04
 }
 
 object examples extends Module {
@@ -285,13 +277,6 @@ trait SubModule extends BaseModule {
 
     def moduleDeps = Seq(main.native)
   }
-
-  trait NativeCrossModule04 extends super.NativeCrossModule04 {
-
-    def transitiveIvyDeps = T { super.transitiveIvyDeps().filter(d => !(d.dep.module.name.value == "scala3-library")) }
-
-    def moduleDeps = Seq(main.native04)
-  }
 }
 
 object sandbox extends SubModule {
@@ -379,19 +364,19 @@ object ciris extends SubModule {
   def artifactName = "iron-ciris"
 
   def ivyDeps = Agg(
-    ivy"is.cir::ciris::3.1.0"
+    ivy"is.cir::ciris::3.15.1"
   )
 
   object test extends Tests {
     def ivyDeps = Agg(
       ivy"com.lihaoyi::utest:0.8.1",
-      ivy"is.cir::ciris::3.1.0"
+      ivy"is.cir::ciris::3.15.1"
     )
   }
 
   object js extends JSCrossModule
 
-  object native extends NativeCrossModule04
+  object native extends NativeCrossModule
 
 }
 
@@ -477,19 +462,19 @@ object skunk extends SubModule {
   def artifactName = "iron-skunk"
 
   def ivyDeps = Agg(
-    ivy"org.tpolecat::skunk-core::1.0.0-M12"
+    ivy"org.tpolecat::skunk-core::2.0.0-RC3"
   )
 
   object test extends Tests {
     def ivyDeps = Agg(
       ivy"com.lihaoyi::utest:0.8.1",
-      ivy"org.tpolecat::skunk-core::0.6.5"
+      ivy"org.tpolecat::skunk-core::2.0.0-RC3"
     )
   }
 
   object js extends JSCrossModule
 
-  object native extends NativeCrossModule04
+  object native extends NativeCrossModule
 
 }
 

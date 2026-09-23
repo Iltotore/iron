@@ -7,7 +7,7 @@ import scalalib._, scalalib.scalafmt._, scalalib.publish._, scalajslib._, scalan
 object versions {
   val scala = "3.3.6"
   val scalaJS = "1.16.0"
-  val scalaNative = "0.5.7"
+  val scalaNative = "0.5.12"
 }
 
 trait BaseModule extends ScalaModule with ScalafmtModule with SonatypeCentralPublishModule { outer =>

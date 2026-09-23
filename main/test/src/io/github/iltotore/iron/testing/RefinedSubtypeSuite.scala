@@ -12,7 +12,7 @@ object RefinedSubtypeSuite extends TestSuite:
   val tests: Tests = Tests {
     test("compile-time apply"):
       val altitude = Altitude(100)
-      compileError("Height(-100)")
+      assertCompileError("Height(-100)")
 
     test("value"):
       val a1 = Altitude(100)

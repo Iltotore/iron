@@ -11,7 +11,7 @@ object RefinedTypeSuite extends TestSuite:
   val tests: Tests = Tests {
     test("compile-time apply"):
       val temperature = Temperature(100)
-      compileError("Temperature(-100)")
+      assertCompileError("Temperature(-100)")
 
     test("value"):
       val t1 = Temperature(100)
@@ -78,7 +78,7 @@ object RefinedTypeSuite extends TestSuite:
       val temperature = Temperature(10)
       assert(temperature + Temperature(10) == Temperature(20))
       assert(temperature + 10 == Temperature(20))
-      compileError("temperature - 10")
+      assertCompileError("temperature - 10")
 
     test("unapply"):
       val temperature = Temperature(10)

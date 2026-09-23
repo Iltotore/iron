@@ -4,10 +4,13 @@ import io.github.iltotore.iron.{:|, Constraint}
 import org.scalacheck.Test.Parameters
 import org.scalacheck.{Arbitrary, Prop, Test}
 import utest.*
+import utest.shaded.fansi.Str
 
 inline def testGen[A, C](using inline arb: Arbitrary[A :| C], inline constraint: Constraint[A, C]): Unit =
   def getTestValues(args: List[Prop.Arg[Any]]): List[TestValue] =
-    args.zipWithIndex.map((arg, i) => TestValue(if arg.label.isBlank then s"value$i" else arg.label, "T", arg.arg))
+    args.zipWithIndex.map((arg, i) =>
+      TestValue.Single(if arg.label.isBlank then s"value$i" else arg.label, Some(Str("T")), arg.arg)
+    )
 
   val result = Test.check(Prop.forAll(arb.arbitrary)(constraint.test(_)))(p => p)
   result.status match

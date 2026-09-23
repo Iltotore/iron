@@ -1,0 +1,518 @@
+//| mill-version: 1.1.10
+
+import mill.*, scalalib.*, scalafmt.*, publish.*, scalajslib.*, scalanativelib.*
+import mill.util.VcsVersion
+import mill.util.VcsVersionModule
+
+object versions:
+  val scala = "3.3.6"
+  val scalaJS = "1.16.0"
+  val scalaNative = "0.5.12"
+
+trait BaseModule extends ScalaModule, ScalafmtModule, SonatypeCentralPublishModule, VcsVersionModule:
+  outer =>
+
+  def scalaVersion = versions.scala
+
+  def pomSettings =
+    PomSettings(
+      description = "Strong type constraints for Scala",
+      organization = "io.github.iltotore",
+      url = "https://github.com/Iltotore/iron",
+      licenses = Seq(License.`Apache-2.0`),
+      versionControl = VersionControl.github("Iltotore", "iron"),
+      developers = Seq(
+        Developer("Iltotore", "Raphaël FROMENTIN", "https://github.com/Iltotore")
+      )
+    )
+
+  trait Tests extends ScalaTests, TestModule.Utest, ScalafmtModule:
+
+    def utestVersion = "0.9.5"
+
+    def compileMvnDeps = outer.compileMvnDeps
+
+  trait CrossModule extends ScalaModule with ScalafmtModule with SonatypeCentralPublishModule:
+
+    def segment: String
+
+    def crossSources: Task[Seq[PathRef]] = Task.Sources(moduleDir / s"src-$segment")
+
+    def sources = outer.sources() ++ crossSources()
+
+    def scalaVersion = outer.scalaVersion
+
+    def mvnDeps = outer.mvnDeps
+
+    def compileMvnDeps = outer.compileMvnDeps
+
+    def artifactName = outer.artifactName
+
+    def publishVersion = outer.publishVersion
+
+    def pomSettings = outer.pomSettings
+
+  trait JSCrossModule extends CrossModule with ScalaJSModule:
+
+    def segment = "js"
+
+    def scalaJSVersion = versions.scalaJS
+
+  trait NativeCrossModule extends CrossModule with ScalaNativeModule:
+
+    def segment = "native"
+
+    def scalaNativeVersion = versions.scalaNative
+
+object docs extends BaseModule:
+
+  def scalaVersion = versions.scala
+
+  def artifactName = "iron-docs"
+
+  val modules: Seq[ScalaModule] =
+    Seq(main, cats, chimney, circe, decline, doobie, dynosaur, upickle, ciris, jsoniter, pureconfig, scalacheck, scodec, skunk, upickle, zio, zioBlocksSchema, zioJson)
+
+  def docSources = Task.traverse(modules)(_.docSources)().flatten
+
+  def compileClasspath = Task.traverse(modules)(_.compileClasspath)().flatten
+
+  def gitTags = Task(
+    os
+      .proc("git", "tag", "-l", "v*.*.*")
+      .call(VcsVersion.vcsBasePath)
+      .out
+      .trim()
+      .split("\n")
+      .reverse
+  )
+
+  def docVersions = Task:
+    val targetDir = Task.dest / "_assets"
+
+    val versions =
+      gitTags()
+        .filterNot(v => v.contains("-RC") || v.isBlank)
+        .map(_.substring(1))
+
+    def versionLink(version: String): String =
+      val splat = version.split("\\.")
+      val (major, minor) = (splat(0).toInt, splat(1).toInt)
+      if(major >= 2 && minor >= 2) s"https://www.javadoc.io/doc/io.github.iltotore/iron-docs_3/$version/docs/index.html"
+      else s"https://www.javadoc.io/doc/io.github.iltotore/iron_3/$version/docs/index.html"
+
+    val links = versions.map(v => (v, ujson.Str(versionLink(v))))
+    val withNightly = links :+ ("Nightly", ujson.Str("https://iltotore.github.io/iron/docs/index.html"))
+    val json = ujson.Obj("versions" -> ujson.Obj.from(withNightly))
+
+    val versionsFile = targetDir / "versions.json"
+    os.write.over(versionsFile, ujson.write(json), createFolders = true)
+
+    PathRef(Task.dest)
+
+  def docResources = sources() :+ docVersions()
+
+  def docRevision = Task:
+    val version = main.publishVersion()
+    if(gitTags().contains(version)) version
+    else "main"
+
+  def externalMappings = Seq(
+    ".*cats.*" -> ("scaladoc3", "https://javadoc.io/doc/org.typelevel/cats-docs_3/latest/"),
+    ".*io.circe.*" -> ("scaladoc2", "https://circe.github.io/circe/api/"),
+    ".*ciris.*" -> ("scaladoc2", "https://cir.is/api/"),
+    ".*chimney.*" -> ("scaladoc3", "https://javadoc.io/doc/io.scalaland/chimney_3/latest/"),
+    ".*com.monovore.decline.*" -> ("scaladoc3", "https://javadoc.io/doc/com.monovore/decline_3/latest/"),
+    ".*doobie.*" -> ("scaladoc3", "https://www.javadoc.io/doc/org.tpolecat/doobie-core_3/latest/"),
+    ".*com.github.plokhotnyuk.jsoniter_scala.core.*" -> ("scaladoc3", "https://www.javadoc.io/doc/com.github.plokhotnyuk.jsoniter-scala/jsoniter-scala-core_3/latest/"),
+    ".*pureconfig.*" -> ("scaladoc3", "https://www.javadoc.io/doc/com.github.pureconfig/pureconfig-core_3/latest/index.html"),
+    ".*io.bullet.borer.*" -> ("scaladoc3", "https://javadoc.io/doc/io.bullet/borer-core_3/latest/"),
+    ".*org.scalacheck.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scalacheck/scalacheck_3/latest/"),
+    ".*org.scodec.*" -> ("scaladoc3", "https://javadoc.io/doc/org.scodec/scodec-core_3/latest/"),
+    ".*skunk.*" -> ("scaladoc3", "https://javadoc.io/doc/org.tpolecat/skunk-docs_3/latest/"),
+    ".*upickle.core.*" -> ("scaladoc3", "https://javadoc.io/doc/com.lihaoyi/upickle-core_3/latest/"),
+    ".*upickle[^\\.core].*" -> ("scaladoc3", "https://javadoc.io/doc/com.lihaoyi/upickle_3/latest/"),
+    ".*zio.json.*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio-json_3/latest/"),
+    ".*zio.prelude.*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio-prelude-docs_3/latest/"),
+    ".*zio[^\\.json].*" -> ("scaladoc3", "https://javadoc.io/doc/dev.zio/zio_3/latest/")
+  )
+
+  def scalaDocOptions =
+    val externalMappingsFlag =
+      externalMappings
+        .map:
+          case (regex, (docType, link)) => s"$regex::$docType::$link"
+        .mkString(",")
+
+    Seq(
+      "-project", "Iron",
+      "-project-version", main.publishVersion(),
+      "-versions-dictionary-url", "https://iltotore.github.io/iron/versions.json",
+      "-source-links:github://Iltotore/iron",
+      "-revision", docRevision(),
+      "-snippet-compiler:nocompile",
+      s"-social-links:github::${main.pomSettings().url}",
+      s"-external-mappings:$externalMappingsFlag"
+    )
+
+object main extends BaseModule:
+
+  def artifactName = "iron"
+
+  object test extends Tests
+
+  object js extends JSCrossModule
+  object native extends NativeCrossModule
+
+object examples extends Module:
+
+  object catsValidation extends ScalaModule with ScalafmtModule:
+
+    def scalaVersion = versions.scala
+
+    def moduleDeps = Seq(main, cats)
+
+    def mvnDeps = Seq(
+      mvn"org.typelevel::cats-effect:3.3.14"
+    )
+
+  object formCats extends ScalaModule with ScalafmtModule:
+
+    def scalaVersion = versions.scala
+
+    def moduleDeps = Seq(main, cats, circe)
+
+    val circeVersion = "0.14.3"
+    val http4sVersion = "0.23.16"
+
+    def mvnDeps = Seq(
+      //mvn"org.typelevel::cats-core:2.8.0",
+      mvn"io.circe::circe-core:$circeVersion",
+      mvn"io.circe::circe-parser:$circeVersion",
+      mvn"io.circe::circe-generic:$circeVersion",
+      mvn"org.http4s::http4s-core:$http4sVersion",
+      mvn"org.http4s::http4s-dsl:$http4sVersion",
+      mvn"org.http4s::http4s-ember-server:$http4sVersion",
+      mvn"org.http4s::http4s-circe:$http4sVersion",
+    )
+
+  object formZio extends ScalaModule with ScalafmtModule:
+
+    def scalaVersion = versions.scala
+
+    def moduleDeps = Seq(main, zioJson)
+
+    def mvnDeps = Seq(
+      mvn"dev.zio::zio-test:2.1.6",
+      mvn"dev.zio::zio-json:0.9.2",
+      mvn"dev.zio::zio-http:3.1.0"
+    )
+
+  object formJsoniter extends ScalaModule with ScalafmtModule:
+
+    def scalaVersion = versions.scala
+
+    def moduleDeps = Seq(main, jsoniter)
+
+    val jsoniterVersion = "2.19.1"
+
+    def mvnDeps = Seq(
+      mvn"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-core:$jsoniterVersion",
+    )
+
+    def compileMvnDeps = Seq(
+      mvn"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:$jsoniterVersion"
+    )
+
+  object borerSerialization extends ScalaModule with ScalafmtModule:
+
+    def scalaVersion = versions.scala
+
+    def moduleDeps = Seq(main, borer)
+
+    def mvnDeps = Seq(
+      mvn"io.bullet::borer-core::1.13.0",
+      mvn"io.bullet::borer-derivation::1.13.0"
+    )
+
+trait SubModule extends BaseModule:
+
+  def moduleDeps = Seq(main)
+
+  trait JSSubModule extends super.JSCrossModule:
+    def moduleDeps = Seq(main.js)
+
+  trait NativeSubModule extends super.NativeCrossModule:
+    def moduleDeps = Seq(main.native)
+
+object sandbox extends SubModule:
+  def artifactName = "sandbox"
+
+object cats extends SubModule:
+
+  def artifactName = "iron-cats"
+
+  def mvnDeps = Seq(
+    mvn"org.typelevel::cats-core::2.13.0",
+    mvn"org.typelevel::algebra::2.13.0"
+  )
+
+  object test extends Tests:
+    def mvnDeps = Seq(
+      mvn"com.lihaoyi::utest:0.8.1",
+      mvn"org.typelevel::kittens:3.4.0"
+    )
+
+  object js extends JSSubModule
+
+  object native extends NativeSubModule
+
+object upickle extends SubModule:
+
+  def artifactName = "iron-upickle"
+
+  def mvnDeps = Seq(
+    mvn"com.lihaoyi::upickle::4.4.3"
+  )
+
+  object test extends Tests
+
+  object js extends JSSubModule
+
+  object native extends NativeSubModule
+
+object circe extends SubModule:
+
+  def artifactName = "iron-circe"
+
+  def mvnDeps = Seq(
+    mvn"io.circe::circe-core::0.14.10"
+  )
+
+  object test extends Tests:
+    override def mvnDeps = Seq(
+      mvn"com.lihaoyi::utest:0.8.1",
+      mvn"io.circe::circe-core::0.14.10"
+    )
+
+  object js extends JSSubModule
+
+  object native extends NativeSubModule
+
+object playJson extends SubModule:
+
+  def artifactName = "iron-play-json"
+
+  def mvnDeps = Seq(
+    mvn"org.playframework::play-json::3.0.5"
+  )
+
+  object test extends Tests:
+    override def mvnDeps = Seq(
+      mvn"com.lihaoyi::utest:0.8.1",
+      mvn"org.playframework::play-json::3.0.5"
+    )
+
+  object js extends JSSubModule
+
+object ciris extends SubModule:
+
+  def artifactName = "iron-ciris"
+
+  def mvnDeps = Seq(
+    mvn"is.cir::ciris::3.15.1"
+  )
+
+  object test extends Tests:
+    def mvnDeps = Seq(
+      mvn"com.lihaoyi::utest:0.8.1",
+      mvn"is.cir::ciris::3.15.1"
+    )
+
+  object js extends JSSubModule
+
+  object native extends NativeSubModule
+
+object zio extends SubModule:
+
+  def artifactName = "iron-zio"
+
+  def mvnDeps = Seq(
+    mvn"dev.zio::zio::2.0.5",
+    mvn"dev.zio::zio-prelude::1.0.0-RC16"
+  )
+
+  object js extends JSSubModule
+
+  object test extends Tests:
+    def mvnDeps = Seq(
+      mvn"com.lihaoyi::utest:0.8.1"
+    )
+
+object zioJson extends SubModule:
+
+  def artifactName = "iron-zio-json"
+
+  def mvnDeps = Seq(
+    mvn"dev.zio::zio-json::0.9.2"
+  )
+
+  object test extends Tests:
+    def mvnDeps = Seq(
+      mvn"com.lihaoyi::utest:0.8.1",
+      mvn"dev.zio::zio-json::0.9.2"
+    )
+  object js extends JSSubModule
+
+object jsoniter extends SubModule:
+
+  def artifactName = "iron-jsoniter"
+
+  val jsoniterVersion = "2.33.2"
+
+  def mvnDeps = Seq(
+    mvn"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-core::$jsoniterVersion"
+  )
+
+  def compileMvnDeps = Seq(
+    mvn"com.github.plokhotnyuk.jsoniter-scala::jsoniter-scala-macros:$jsoniterVersion"
+  )
+
+  object js extends JSSubModule
+
+  object native extends NativeSubModule
+
+  object test extends Tests
+
+object borer extends SubModule:
+
+  def artifactName = "iron-borer"
+
+  def mvnDeps = Seq(
+    mvn"io.bullet::borer-core::1.13.0"
+  )
+
+  object js extends JSSubModule
+
+  object test extends Tests
+
+object skunk extends SubModule:
+
+  def artifactName = "iron-skunk"
+
+  def mvnDeps = Seq(
+    mvn"org.tpolecat::skunk-core::2.0.0-RC3"
+  )
+
+  object test extends Tests:
+    def mvnDeps = Seq(
+      mvn"com.lihaoyi::utest:0.8.1",
+      mvn"org.tpolecat::skunk-core::2.0.0-RC3"
+    )
+
+  object js extends JSSubModule
+
+  object native extends NativeSubModule
+
+object scalacheck extends SubModule:
+
+  def artifactName = "iron-scalacheck"
+
+  def mvnDeps = Seq(
+    mvn"org.scalacheck::scalacheck::1.17.0"
+  )
+
+  object js extends JSSubModule
+
+  object test extends Tests
+
+object doobie extends SubModule:
+
+  def artifactName = "iron-doobie"
+
+  def mvnDeps = Seq(
+    mvn"org.typelevel::doobie-core::1.0.0-RC13"
+  )
+
+  object test extends Tests:
+    def mvnDeps = Seq(
+      mvn"com.lihaoyi::utest:0.8.1",
+      mvn"org.typelevel::doobie-core::1.0.0-RC13",
+
+    )
+
+object decline extends SubModule:
+
+  def artifactName = "iron-decline"
+
+  def mvnDeps = Seq(
+    mvn"com.monovore::decline::2.5.0"
+  )
+
+  object test extends Tests
+
+  object js extends JSSubModule
+
+  object native extends NativeSubModule
+
+object pureconfig extends SubModule:
+
+  def artifactName = "iron-pureconfig"
+
+  def mvnDeps = Seq(
+    mvn"com.github.pureconfig::pureconfig-core::0.17.7"
+  )
+
+  object test extends Tests
+
+object scodec extends SubModule:
+
+  def artifactName = "iron-scodec"
+
+  def mvnDeps = Seq(
+    mvn"org.scodec::scodec-core::2.3.3"
+  )
+
+  object test extends Tests
+
+  object js extends JSSubModule
+
+  object native extends NativeSubModule
+
+object chimney extends SubModule:
+
+  def artifactName = "iron-chimney"
+
+  def mvnDeps = Seq(
+    mvn"io.scalaland::chimney::1.8.2"
+  )
+
+  object test extends Tests
+
+  object js extends JSSubModule
+
+  object native extends NativeSubModule
+
+object dynosaur extends SubModule:
+
+  def artifactName = "iron-dynosaur"
+
+  def mvnDeps = Seq(
+    mvn"org.systemfw::dynosaur-core::0.7.1"
+  )
+
+  object test extends Tests
+
+  object js extends JSSubModule
+
+object zioBlocksSchema extends SubModule:
+
+  def artifactName = "iron-zio-blocks-schema"
+
+  def mvnDeps = Seq(
+    mvn"dev.zio::zio-blocks-schema::0.0.51"
+  )
+
+  object test extends Tests
+
+  object js extends JSSubModule

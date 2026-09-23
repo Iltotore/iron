@@ -71,13 +71,6 @@ trait BaseModule extends ScalaModule with ScalafmtModule with SonatypeCentralPub
 
     def scalaNativeVersion = versions.scalaNative
   }
-
-  trait NativeCrossModule04 extends CrossModule with ScalaNativeModule {
-
-    def segment = "native"
-
-    def scalaNativeVersion = "0.4.17"
-  }
 }
 
 object docs extends BaseModule {
@@ -190,7 +183,6 @@ object main extends BaseModule {
 
   object js extends JSCrossModule
   object native extends NativeCrossModule
-  object native04 extends NativeCrossModule04
 }
 
 object examples extends Module {
@@ -284,13 +276,6 @@ trait SubModule extends BaseModule {
     def transitiveIvyDeps = T { super.transitiveIvyDeps().filter(d => !(d.dep.module.name.value == "scala3-library")) }
 
     def moduleDeps = Seq(main.native)
-  }
-
-  trait NativeCrossModule04 extends super.NativeCrossModule04 {
-
-    def transitiveIvyDeps = T { super.transitiveIvyDeps().filter(d => !(d.dep.module.name.value == "scala3-library")) }
-
-    def moduleDeps = Seq(main.native04)
   }
 }
 

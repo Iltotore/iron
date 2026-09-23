@@ -462,19 +462,19 @@ object skunk extends SubModule {
   def artifactName = "iron-skunk"
 
   def ivyDeps = Agg(
-    ivy"org.tpolecat::skunk-core::1.0.0-M12"
+    ivy"org.tpolecat::skunk-core::2.0.0-RC3"
   )
 
   object test extends Tests {
     def ivyDeps = Agg(
       ivy"com.lihaoyi::utest:0.8.1",
-      ivy"org.tpolecat::skunk-core::0.6.5"
+      ivy"org.tpolecat::skunk-core::2.0.0-RC3"
     )
   }
 
   object js extends JSCrossModule
 
-  object native extends NativeCrossModule04
+  object native extends NativeCrossModule
 
 }
 

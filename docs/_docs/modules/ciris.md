@@ -25,13 +25,13 @@ mvn"io.github.iltotore::iron-ciris:version"
 SBT:
 
 ```scala 
-libraryDependencies += "is.cir" %% "ciris" % "3.1.0"
+libraryDependencies += "is.cir" %% "ciris" % "3.15.1"
 ```
 
 Mill:
 
 ```scala 
-mvn"is.cir::ciris::3.1.0"
+mvn"is.cir::ciris::3.15.1"
 ```
 
 ## ConfigDecoder instances

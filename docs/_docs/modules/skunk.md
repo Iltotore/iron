@@ -25,13 +25,13 @@ mvn"io.github.iltotore::iron-skunk:version"
 SBT:
 
 ```scala 
-libraryDependencies += "org.tpolecat" %% "skunk-core" % "1.0.0-M12"
+libraryDependencies += "org.tpolecat" %% "skunk-core" % "2.0.0-RC3"
 ```
 
 Mill:
 
 ```scala 
-mvn"org.tpolecat::skunk-core::1.0.0-M12"
+mvn"org.tpolecat::skunk-core::2.0.0-RC3"
 ```
 
 ## Codec instances

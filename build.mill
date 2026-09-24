@@ -77,7 +77,7 @@ object docs extends BaseModule:
 
   def compileClasspath = Task.traverse(modules)(_.compileClasspath)().flatten
 
-  def gitTags = Task(
+  def gitTags = Task.Input(
     os
       .proc("git", "tag", "-l", "v*.*.*")
       .call(VcsVersion.vcsBasePath)
@@ -110,7 +110,9 @@ object docs extends BaseModule:
 
     PathRef(Task.dest)
 
-  def docResources = sources() :+ docVersions()
+  def markdownResources = Task.Source(moduleDir)
+
+  def docResources = Seq(markdownResources(), docVersions())
 
   def docRevision = Task:
     val version = main.publishVersion()

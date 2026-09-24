@@ -8,7 +8,6 @@ import io.github.iltotore.iron.macros.reflectUtil
 import scala.compiletime.constValue
 import scala.compiletime.summonInline
 import scala.quoted.*
-import scala.util.NotGiven
 
 /**
  * Number-related constraints.

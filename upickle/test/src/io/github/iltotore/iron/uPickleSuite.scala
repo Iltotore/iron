@@ -10,8 +10,6 @@ import utest.*
 
 object uPickleSuite extends TestSuite:
 
-  import scala.runtime.stdLibPatches.Predef.summon
-
   val tests: Tests = Tests:
 
     test("reader"):

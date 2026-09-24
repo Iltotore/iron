@@ -3,7 +3,6 @@ package io.github.iltotore.iron
 import io.github.iltotore.iron.constraint.all.*
 import utest.{Show as _, *}
 
-import scala.runtime.stdLibPatches.Predef.assert
 import io.github.iltotore.iron.zio.{*, given}
 import _root_.zio.prelude.ZValidation
 import _root_.zio.Chunk

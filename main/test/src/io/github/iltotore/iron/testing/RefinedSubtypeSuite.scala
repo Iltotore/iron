@@ -30,7 +30,7 @@ object RefinedSubtypeSuite extends TestSuite:
       assert(a1 == Altitude(5.0))
       assert(a2 == Altitude(15.0))
 
-    test("assume") - assert(Altitude.assume(-15) == -15.0.asInstanceOf[Altitude])
+    test("assume") - assert(Altitude.assume(-15) == (-15.0).asInstanceOf[Altitude])
 
     test("applyUnsafe"):
       test - assertMatch(Try(Altitude.applyUnsafe(-100))):

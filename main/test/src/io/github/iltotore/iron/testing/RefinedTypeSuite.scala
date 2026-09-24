@@ -29,7 +29,7 @@ object RefinedTypeSuite extends TestSuite:
       assert(t1 == Temperature(5.0))
       assert(t2 == Temperature(15.0))
 
-    test("assume") - assert(Temperature.assume(-15) == -15.0.asInstanceOf[Temperature])
+    test("assume") - assert(Temperature.assume(-15) == (-15.0).asInstanceOf[Temperature])
 
     test("applyUnsafe"):
       test - assertMatch(Try(Temperature.applyUnsafe(-100))):

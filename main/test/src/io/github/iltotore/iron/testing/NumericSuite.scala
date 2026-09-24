@@ -18,13 +18,13 @@ object NumericSuite extends TestSuite:
       test - 9007199254740993L.assertRefine[Greater[9007199254740992L]]
 
     test("greaterEqual"):
-      test - -1.assertNotRefine[GreaterEqual[0]]
+      test - (-1).assertNotRefine[GreaterEqual[0]]
       test - 0.assertRefine[GreaterEqual[0]]
       test - 1.assertRefine[GreaterEqual[1]]
 
     test("less"):
       test - 0.assertNotRefine[Less[0]]
-      test - -1.assertRefine[Less[0]]
+      test - (-1).assertRefine[Less[0]]
       test - BigDecimal(0).assertNotRefine[Less[0]]
       test - BigDecimal(-1).assertRefine[Less[0]]
       test - BigInt(0).assertNotRefine[Less[0]]
@@ -33,35 +33,35 @@ object NumericSuite extends TestSuite:
     test("lessEqual"):
       test - 1.assertNotRefine[LessEqual[0]]
       test - 0.assertRefine[LessEqual[0]]
-      test - -1.assertRefine[LessEqual[0]]
+      test - (-1).assertRefine[LessEqual[0]]
 
     test("interval") {
       test("open"):
         test - 1.assertRefine[Interval.Open[0, 2]]
         test - 0.assertNotRefine[Interval.Open[0, 2]]
         test - 2.assertNotRefine[Interval.Open[0, 2]]
-        test - -1.assertNotRefine[Interval.Open[0, 2]]
+        test - (-1).assertNotRefine[Interval.Open[0, 2]]
         test - 3.assertNotRefine[Interval.Open[0, 2]]
 
       test("openClosed"):
         test - 1.assertRefine[Interval.OpenClosed[0, 2]]
         test - 2.assertRefine[Interval.OpenClosed[0, 2]]
         test - 0.assertNotRefine[Interval.OpenClosed[0, 2]]
-        test - -1.assertNotRefine[Interval.OpenClosed[0, 2]]
+        test - (-1).assertNotRefine[Interval.OpenClosed[0, 2]]
         test - 3.assertNotRefine[Interval.OpenClosed[0, 2]]
 
       test("closedOpen"):
         test - 1.assertRefine[Interval.ClosedOpen[0, 2]]
         test - 0.assertRefine[Interval.ClosedOpen[0, 2]]
         test - 2.assertNotRefine[Interval.ClosedOpen[0, 2]]
-        test - -1.assertNotRefine[Interval.ClosedOpen[0, 2]]
+        test - (-1).assertNotRefine[Interval.ClosedOpen[0, 2]]
         test - 3.assertNotRefine[Interval.ClosedOpen[0, 2]]
 
       test("closed"):
         test - 1.assertRefine[Interval.Closed[0, 2]]
         test - 2.assertRefine[Interval.Closed[0, 2]]
         test - 0.assertRefine[Interval.Closed[0, 2]]
-        test - -1.assertNotRefine[Interval.Closed[0, 2]]
+        test - (-1).assertNotRefine[Interval.Closed[0, 2]]
         test - 3.assertNotRefine[Interval.Closed[0, 2]]
     }
 

@@ -110,7 +110,7 @@ object any:
      */
     given (False ==> Not[True]) = Implication()
 
-  object DescribedAs:
+  object DescribedAs extends DescribedAsLowPriority:
     class DescribedAsConstraint[A, C, Impl <: Constraint[A, C], V <: String](using Impl) extends Constraint[A, DescribedAs[C, V]]:
 
       override inline def test(inline value: A): Boolean = summonInline[Impl].test(value)
@@ -123,12 +123,14 @@ object any:
     /**
      * A described constraint C1 implies C1.
      */
-    given [C1, C2, V <: String](using c1c2: C1 ==> C2, not: NotGiven[C1 ==> DescribedAs[C2, V]]): (DescribedAs[C1, V] ==> C2) = Implication()
+    given [C1, C2, V <: String](using c1c2: C1 ==> C2): (DescribedAs[C1, V] ==> C2) = Implication()
 
+  trait DescribedAsLowPriority:
     /**
      * A constraint C1 implies its "described" form.
      */
-    given [C1, C2, V <: String](using c1c2: C1 ==> C2, not: NotGiven[DescribedAs[C1, V] ==> C2]): (C1 ==> DescribedAs[C2, V]) = Implication()
+    given [C1, C2, V <: String](using c1c2: C1 ==> C2): (C1 ==> DescribedAs[C2, V]) = Implication()
+
 
   object Not:
     class NotConstraint[A, C, Impl <: Constraint[A, C]](using Impl) extends Constraint[A, Not[C]]:

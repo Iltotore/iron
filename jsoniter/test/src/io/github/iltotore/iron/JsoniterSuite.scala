@@ -7,7 +7,6 @@ import io.github.iltotore.iron.given
 import io.github.iltotore.iron.jsoniter.given
 import utest.{Show as _, *}
 
-import scala.runtime.stdLibPatches.Predef.assert
 import scala.util.Try
 
 object JsoniterSuite extends TestSuite:

@@ -12,7 +12,6 @@ import _root_.cats.data.NonEmptyChain
 import _root_.cats.data.NonEmptyList
 import _root_.cats.data.Validated.{Invalid, Valid}
 
-import scala.runtime.stdLibPatches.Predef.assert
 import algebra.ring.{AdditiveCommutativeMonoid, AdditiveCommutativeSemigroup}
 
 object CatsSuite extends TestSuite:
@@ -142,84 +141,78 @@ object CatsSuite extends TestSuite:
       import io.github.iltotore.iron.cats.*
 
       val eitherNecWithFailingPredicate = Temperature.eitherNec(-5)
-      assert(eitherNecWithFailingPredicate == Left(NonEmptyChain.one("Should be strictly positive")), "'eitherNec' returns left if predicate fails")
+      test("'eitherNec' returns left if predicate fails") - assert(eitherNecWithFailingPredicate == Left(NonEmptyChain.one("Should be strictly positive")))
       val eitherNecWithSucceedingPredicate = Temperature.eitherNec(100)
-      assert(eitherNecWithSucceedingPredicate == Right(Temperature(100)), "right should contain result of 'apply'")
+      test("right should contain result of 'apply'") - assert(eitherNecWithSucceedingPredicate == Right(Temperature(100)))
 
       val eitherNecWithFailingPredicateSubtype = Altitude.eitherNec(-5)
-      assert(
+      test("'eitherNec' returns left if predicate fails") - assert(
         eitherNecWithFailingPredicateSubtype == Left(NonEmptyChain.one("Should be strictly positive")),
-        "'eitherNec' returns left if predicate fails"
       )
       val eitherNecWithSucceedingPredicateSubtype = Altitude.eitherNec(100)
-      assert(eitherNecWithSucceedingPredicateSubtype == Right(Altitude(100)), "right should contain result of 'apply'")
+      test("right should contain result of 'apply'") - assert(eitherNecWithSucceedingPredicateSubtype == Right(Altitude(100)))
 
     test("eitherNel"):
       import io.github.iltotore.iron.cats.*
 
       val eitherNelWithFailingPredicate = Temperature.eitherNel(-5)
-      assert(eitherNelWithFailingPredicate == Left(NonEmptyList.one("Should be strictly positive")), "'eitherNel' returns left if predicate fails")
+      test("'eitherNel' returns left if predicate fails") - assert(eitherNelWithFailingPredicate == Left(NonEmptyList.one("Should be strictly positive")))
       val eitherNelWithSucceedingPredicate = Temperature.eitherNel(100)
-      assert(eitherNelWithSucceedingPredicate == Right(Temperature(100)), "right should contain result of 'apply'")
+      test("right should contain result of 'apply'") - assert(eitherNelWithSucceedingPredicate == Right(Temperature(100)))
 
       val eitherNelWithFailingPredicateSubtype = Altitude.eitherNel(-5)
-      assert(
-        eitherNelWithFailingPredicateSubtype == Left(NonEmptyList.one("Should be strictly positive")),
-        "'eitherNel' returns left if predicate fails"
+      test("'eitherNel' returns left if predicate fails") - assert(
+        eitherNelWithFailingPredicateSubtype == Left(NonEmptyList.one("Should be strictly positive"))
       )
       val eitherNelWithSucceedingPredicateSubtype = Altitude.eitherNel(100)
-      assert(eitherNelWithSucceedingPredicateSubtype == Right(Altitude(100)), "right should contain result of 'apply'")
+      test("right should contain result of 'apply'") - assert(eitherNelWithSucceedingPredicateSubtype == Right(Altitude(100)))
 
     test("validated"):
       import io.github.iltotore.iron.cats.*
 
       val validatedWithFailingPredicate = Temperature.validated(-5)
-      assert(validatedWithFailingPredicate == Invalid("Should be strictly positive"), "'eitherNec' returns left if predicate fails")
+      test("'eitherNec' returns left if predicate fails") - assert(validatedWithFailingPredicate == Invalid("Should be strictly positive"))
       val validatedWithSucceedingPredicate = Temperature.validated(100)
-      assert(validatedWithSucceedingPredicate == Valid(Temperature(100)), "right should contain result of 'apply'")
+      test("right should contain result of 'apply'") - assert(validatedWithSucceedingPredicate == Valid(Temperature(100)))
 
       val validatedWithFailingPredicateSubtype = Altitude.validated(-5)
-      assert(validatedWithFailingPredicateSubtype == Invalid("Should be strictly positive"), "'eitherNec' returns left if predicate fails")
+      test("'eitherNec' returns left if predicate fails") - assert(validatedWithFailingPredicateSubtype == Invalid("Should be strictly positive"))
       val validatedWithSucceedingPredicateSubtype = Altitude.validated(100)
-      assert(validatedWithSucceedingPredicateSubtype == Valid(Altitude(100)), "right should contain result of 'apply'")
+      test("right should contain result of 'apply'") - assert(validatedWithSucceedingPredicateSubtype == Valid(Altitude(100)))
 
     test("validatedNec"):
       import io.github.iltotore.iron.cats.*
 
       val validatedNecWithFailingPredicate = Temperature.validatedNec(-5)
-      assert(
+      test("'validatedNec' returns left if predicate fails") - assert(
         validatedNecWithFailingPredicate == Invalid(NonEmptyChain.one("Should be strictly positive")),
-        "'validatedNec' returns left if predicate fails"
       )
       val validatedNecWithSucceedingPredicate = Temperature.validatedNec(100)
-      assert(validatedNecWithSucceedingPredicate == Valid(Temperature(100)), "valid should contain result of 'apply'")
+      test("valid should contain result of 'apply'") - assert(validatedNecWithSucceedingPredicate == Valid(Temperature(100)))
 
       val validatedNecWithFailingPredicateSubtype = Altitude.validatedNec(-5)
-      assert(
+      test("'validatedNec' returns left if predicate fails") - assert(
         validatedNecWithFailingPredicateSubtype == Invalid(NonEmptyChain.one("Should be strictly positive")),
-        "'validatedNec' returns left if predicate fails"
       )
       val validatedNecWithSucceedingPredicateSubtype = Altitude.validatedNec(100)
-      assert(validatedNecWithSucceedingPredicateSubtype == Valid(Altitude(100)), "valid should contain result of 'apply'")
+      test("valid should contain result of 'apply'") - assert(validatedNecWithSucceedingPredicateSubtype == Valid(Altitude(100)))
 
     test("validatedNel"):
       import io.github.iltotore.iron.cats.*
 
       val validatedNelWithFailingPredicate = Temperature.validatedNel(-5)
-      assert(
+      test("'validatedNel' returns left if predicate fails") - assert(
         validatedNelWithFailingPredicate == Invalid(NonEmptyList.one("Should be strictly positive")),
-        "'validatedNel' returns left if predicate fails"
       )
       val validatedNelWithSucceedingPredicate = Temperature.validatedNel(100)
-      assert(validatedNelWithSucceedingPredicate == Valid(Temperature(100)), "valid should contain result of 'apply'")
+      test("valid should contain result of 'apply'") - assert(validatedNelWithSucceedingPredicate == Valid(Temperature(100)))
 
       val validatedNelWithFailingPredicateSubtype = Altitude.validatedNel(-5)
-      assert(
+      test("'validatedNel' returns left if predicate fails") - assert(
         validatedNelWithFailingPredicateSubtype == Invalid(NonEmptyList.one("Should be strictly positive")),
-        "'validatedNel' returns left if predicate fails"
       )
       val validatedNelWithSucceedingPredicateSubtype = Altitude.validatedNel(100)
-      assert(validatedNelWithSucceedingPredicateSubtype == Valid(Altitude(100)), "valid should contain result of 'apply'")
+      test("valid should contain result of 'apply'") - assert(validatedNelWithSucceedingPredicateSubtype == Valid(Altitude(100)))
 
     test("all"):
       test("functoToMapLogic"):

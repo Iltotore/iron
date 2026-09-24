@@ -5,8 +5,8 @@ import mill.util.VcsVersion
 import mill.util.VcsVersionModule
 
 object versions:
-  val scala = "3.3.6"
-  val scalaJS = "1.16.0"
+  val scala = "3.9.0"
+  val scalaJS = "1.22.0"
   val scalaNative = "0.5.12"
 
 trait BaseModule extends ScalaModule, ScalafmtModule, SonatypeCentralPublishModule, VcsVersionModule:

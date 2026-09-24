@@ -8,7 +8,6 @@ import io.github.iltotore.iron.jsoniter.given
 import io.github.iltotore.iron.constraint.all.{*, given}
 import utest.{Show as _, *}
 
-import scala.runtime.stdLibPatches.Predef.assert
 import scala.util.Try
 
 object JsoniterRefinedTypeSuite extends TestSuite:

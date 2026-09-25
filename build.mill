@@ -486,7 +486,7 @@ object chimney extends SubModule:
   def artifactName = "iron-chimney"
 
   def mvnDeps = Seq(
-    mvn"io.scalaland::chimney::1.8.2"
+    mvn"io.scalaland::chimney::2.0.0"
   )
 
   object test extends Tests

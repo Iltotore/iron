@@ -34,11 +34,15 @@ object chimney:
   /**
    * Derives [[io.scalaland.chimney.PartialTransformer]] from raw type to refined
    */
-  given [A, C](using constraint: RuntimeConstraint[A, C], ev: NotGiven[C =:= Pure]): PartialTransformer[A, A :| C] =
+  given [A, C](using constraint: RuntimeConstraint[A, C], ev: NotGiven[Transformer[A, A :| C]]): PartialTransformer[A, A :| C] =
     PartialTransformer(a => Result.fromEitherString[A :| C](a.refineEither))
 
   /**
    * Derives [[io.scalaland.chimney.PartialTransformer]] from raw type to new
    */
-  given [From, To](using mirror: RefinedType.Mirror[To], transformer: PartialTransformer[From, mirror.IronType]): PartialTransformer[From, To] =
+  given [From, To](using
+      mirror: RefinedType.Mirror[To],
+      transformer: PartialTransformer[From, mirror.IronType],
+      ev: NotGiven[Transformer[From, To]]
+  ): PartialTransformer[From, To] =
     transformer.asInstanceOf[PartialTransformer[From, To]]

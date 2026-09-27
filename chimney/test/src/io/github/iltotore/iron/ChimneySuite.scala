@@ -54,4 +54,8 @@ object ChimneySuite extends TestSuite:
       final case class From(s: String)
       final case class To(s: PureString)
 
+      final case class From1(s: String)
+      final case class To1(s: String :| Pure)
+
       From("qwerty").transformIntoPartial[To]
+      From1("qwerty").transformIntoPartial[To1]

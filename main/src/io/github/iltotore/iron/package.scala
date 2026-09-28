@@ -23,7 +23,7 @@ export io.github.iltotore.iron.constraint.any.*
  * @tparam A the underlying type.
  * @tparam C the predicate/constraint guarding this type.
  */
-opaque type IronType[A, C] <: A = A
+into opaque type IronType[A, C] <: A = A
 
 /**
  * Alias for [[IronType]]. Similar to the mathematical symbol `|` in e.g `{x in R | x > 0}`.

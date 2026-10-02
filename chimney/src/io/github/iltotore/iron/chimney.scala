@@ -7,7 +7,14 @@ import scala.annotation.targetName
 import io.scalaland.chimney.partial.Result
 import scala.util.NotGiven
 
-object chimney:
+private trait ChimneyLowPriority:
+  /**
+   * Derives [[io.scalaland.chimney.Transformer]] from refined product to raw (if [[io.scalaland.chimney.Transformer]] from base type to raw exists)
+   */
+  given [A <: Product, C, To](using transformer: Transformer[A, To]): Transformer[A :| C, To] =
+    transformer.asInstanceOf[Transformer[A :| C, To]]
+
+object chimney extends ChimneyLowPriority:
   /**
    * Derives [[io.scalaland.chimney.Transformer]] from new type to raw (if [[io.scalaland.chimney.Transformer]] from refined type to raw exists)
    */

@@ -1,6 +1,7 @@
 package io.github.iltotore.iron
 
 import utest.*
+import io.scalaland.chimney.Transformer
 import io.scalaland.chimney.dsl.*
 import io.github.iltotore.iron.constraint.numeric.Positive
 import io.github.iltotore.iron.constraint.any.Pure
@@ -21,6 +22,15 @@ object ChimneySuite extends TestSuite:
     final case class PositiveInt(i: Int :| Positive)
     final case class PositiveIntNT(i: PositiveIntNewType)
 
+    final case class Address(line: String)
+    final case class AddressDto(line: String)
+    final case class CustomAddressDto(line: String)
+
+    type AddressEntry = AddressEntry.T
+    object AddressEntry extends RefinedType[Address, Pure]
+
+    given Transformer[Address :| Pure, CustomAddressDto] = address => CustomAddressDto(address.line.toUpperCase)
+
     test("Successfull transformation from raw type to the one with pure constraint") - assert(RawInt(1).transformInto[PureInt].i == 1)
     test("Successfull transformation from raw type to the one with pure constraint (new type)") - assert(
       RawInt(1).transformInto[PureIntNT].i.value == 1
@@ -29,6 +39,24 @@ object ChimneySuite extends TestSuite:
     test("Successfull transformation from constrained type (new type) to raw") - assert(
       PositiveIntNT(PositiveIntNewType(1)).transformInto[RawInt].i == 1
     )
+
+    test("Transformation from product new type to product"):
+      val address = AddressEntry(Address("address line"))
+
+      assert(address.transformInto[AddressDto] == AddressDto("address line"))
+
+    test("Nested transformation from product new type to product"):
+      final case class Source(address: AddressEntry)
+      final case class Target(address: AddressDto)
+
+      val source = Source(AddressEntry(Address("address line")))
+
+      assert(source.transformInto[Target] == Target(AddressDto("address line")))
+
+    test("Transformation from product new type uses refined transformer when provided"):
+      val address = AddressEntry(Address("address line"))
+
+      assert(address.transformInto[CustomAddressDto] == CustomAddressDto("ADDRESS LINE"))
 
     test("Partial transformation from raw type to refined"):
       final case class From(i: Int)

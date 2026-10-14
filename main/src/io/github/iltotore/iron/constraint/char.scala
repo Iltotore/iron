@@ -52,8 +52,8 @@ object char:
       import rflUtil.*
 
       expr.decode match
-        case Right(value) => Expr(value.isWhitespace)
-        case _            => '{ $expr.isWhitespace }
+        case Right(value) => Expr(Character.isWhitespace(value))
+        case _            => '{ Character.isWhitespace($expr) }
 
   object LowerCase:
 
@@ -68,8 +68,8 @@ object char:
       import rflUtil.*
 
       expr.decode match
-        case Right(value) => Expr(value.isLower)
-        case _            => '{ $expr.isLower }
+        case Right(value) => Expr(Character.isLowerCase(value))
+        case _            => '{ Character.isLowerCase($expr) }
 
   object UpperCase:
 
@@ -84,8 +84,8 @@ object char:
       import rflUtil.*
 
       expr.decode match
-        case Right(value) => Expr(value.isUpper)
-        case _            => '{ $expr.isUpper }
+        case Right(value) => Expr(Character.isUpperCase(value))
+        case _            => '{ Character.isUpperCase($expr) }
 
   object Digit:
 
@@ -100,8 +100,8 @@ object char:
       import rflUtil.*
 
       expr.decode match
-        case Right(value) => Expr(value.isDigit)
-        case _            => '{ $expr.isDigit }
+        case Right(value) => Expr(Character.isDigit(value))
+        case _            => '{ Character.isDigit($expr) }
 
   object Letter:
 
@@ -116,5 +116,5 @@ object char:
       import rflUtil.*
 
       expr.decode match
-        case Right(value) => Expr(value.isLetter)
-        case _            => '{ $expr.isLetter }
+        case Right(value) => Expr(Character.isLetter(value))
+        case _            => '{ Character.isLetter($expr) }

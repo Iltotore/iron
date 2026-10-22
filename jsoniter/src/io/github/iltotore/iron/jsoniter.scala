@@ -32,17 +32,17 @@ object jsoniter:
    * Creates a [[JsonKeyCodec]] for refined types. Decodes to the underlying type then checks the constraint.
    *
    * @param codec      the [[JsonKeyCodec]] of the underlying type.
-   * @param constraint the [[Constraint]] implementation to test the decoded key.
+   * @param constraint the [[RuntimeConstraint]] implementation to test the decoded key.
    */
-  inline given makeKeyCodec[A, B](using codec: JsonKeyCodec[A], inline constraint: Constraint[A, B]): JsonKeyCodec[A :| B] = new:
+  given makeKeyCodec[A, B](using codec: JsonKeyCodec[A], constraint: RuntimeConstraint[A, B]): JsonKeyCodec[A :| B] = new:
     def decodeKey(in: JsonReader): A :| B =
       val decoded = codec.decodeKey(in)
-      if constraint.test(decoded) then decoded.asInstanceOf[A :| B]
+      if constraint.test(decoded) then decoded.assume[B]
       else in.decodeError(constraint.message)
     def encodeKey(x: A :| B, out: JsonWriter): Unit = codec.encodeKey(x, out)
 
   /**
    * Creates a [[JsonKeyCodec]] for new types
    */
-  inline given refinedTypeKeyCodec[T](using mirror: RefinedType.Mirror[T], ev: JsonKeyCodec[mirror.IronType]): JsonKeyCodec[T] =
+  given refinedTypeKeyCodec[T](using mirror: RefinedType.Mirror[T], ev: JsonKeyCodec[mirror.IronType]): JsonKeyCodec[T] =
     ev.asInstanceOf[JsonKeyCodec[T]]

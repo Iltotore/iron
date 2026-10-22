@@ -57,7 +57,7 @@ writeToString[User](User("totore", 18))
 
 //Decoding
 readFromString[User]("""{"name":"totore","age":18}""")
-readFromString[User]("""{"name":"totore","age":-18}""") //Error: "Should be positive"
+readFromString[User]("""{"name":"totore","age":-18}""") //Error: "Should be strictly positive"
 ```
 
 ## Key codec instances
@@ -84,5 +84,5 @@ writeToString[Map[Int :| Positive, String]](Map(one -> "one"))
 
 //Decoding
 readFromString[Map[Int :| Positive, String]]("""{"1":"one"}""")
-readFromString[Map[Int :| Positive, String]]("""{"-1":"minus one"}""") //Error: "Should be positive"
+readFromString[Map[Int :| Positive, String]]("""{"-1":"minus one"}""") //Error: "Should be strictly positive"
 ```

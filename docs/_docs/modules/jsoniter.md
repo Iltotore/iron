@@ -57,5 +57,32 @@ writeToString[User](User("totore", 18))
 
 //Decoding
 readFromString[User]("""{"name":"totore","age":18}""")
-readFromString[User]("""{"name":"totore","age":-18}""") //Error: "Should be positive"
+readFromString[User]("""{"name":"totore","age":-18}""") //Error: "Should be strictly positive"
+```
+
+## Key codec instances
+
+Given `JsonKeyCodec` for Iron enables using refined types as `Map` keys. The `JsonKeyCodec` of the underlying type is required:
+
+```scala 
+import com.github.plokhotnyuk.jsoniter_scala.macros.*
+import com.github.plokhotnyuk.jsoniter_scala.core.*
+
+import io.github.iltotore.iron.*
+import io.github.iltotore.iron.constraint.all.*
+import io.github.iltotore.iron.jsoniter.given
+
+given JsonKeyCodec[Int] = new:
+  def decodeKey(in: JsonReader): Int = in.readKeyAsInt()
+  def encodeKey(x: Int, out: JsonWriter): Unit = out.writeKey(x)
+
+given JsonValueCodec[Map[Int :| Positive, String]] = JsonCodecMaker.make
+
+//Encoding
+val one: Int :| Positive = 1
+writeToString[Map[Int :| Positive, String]](Map(one -> "one"))
+
+//Decoding
+readFromString[Map[Int :| Positive, String]]("""{"1":"one"}""")
+readFromString[Map[Int :| Positive, String]]("""{"-1":"minus one"}""") //Error: "Should be strictly positive"
 ```

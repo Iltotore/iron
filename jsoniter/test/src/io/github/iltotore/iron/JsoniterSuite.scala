@@ -1,6 +1,6 @@
 package io.github.iltotore.iron
 
-import com.github.plokhotnyuk.jsoniter_scala.core.{JsonValueCodec, readFromString, writeToString}
+import com.github.plokhotnyuk.jsoniter_scala.core.{JsonKeyCodec, JsonReader, JsonValueCodec, JsonWriter, readFromString, writeToString}
 import com.github.plokhotnyuk.jsoniter_scala.macros.*
 import io.github.iltotore.iron.constraint.all.{*, given}
 import io.github.iltotore.iron.given
@@ -12,6 +12,7 @@ import scala.util.Try
 object JsoniterSuite extends TestSuite:
   type Zero = StrictEqual[0]
   val zero: Int :| Zero = 0
+  val one: Int :| Positive = 1
 
   case class Number(zero: Int :| Zero)
 
@@ -25,6 +26,12 @@ object JsoniterSuite extends TestSuite:
 
   given JsonValueCodec[Status] = JsonCodecMaker.make(codecMakerConfig)
 
+  given JsonKeyCodec[Int] = new:
+    def decodeKey(in: JsonReader): Int = in.readKeyAsInt()
+    def encodeKey(x: Int, out: JsonWriter): Unit = out.writeKey(x)
+
+  given JsonValueCodec[Map[Int :| Positive, String]] = JsonCodecMaker.make
+
   extension [A](value: A)(using JsonValueCodec[A])
     def assertEncoding(expected: String): Unit = assert(writeToString(value) == expected)
 
@@ -37,11 +44,14 @@ object JsoniterSuite extends TestSuite:
       test - zero.assertEncoding("0")
       test - Number(0).assertEncoding("""{"zero":0}""")
       test - Status(List(StatusData("John"))).assertEncoding("""{"status_list":[{"user_name":"John"}]}""")
+      test - Map(one -> "one").assertEncoding("""{"1":"one"}""")
 
     test("decoding - valid predicate"):
       test - "0".assertDecodingSuccess[Int :| Zero](zero)
       test - """{"zero":0}""".assertDecodingSuccess[Number](Number(0))
+      test - """{"1":"one"}""".assertDecodingSuccess[Map[Int :| Positive, String]](Map(one -> "one"))
 
     test("decoding - invalid predicate"):
       test - "1".assertDecodingFailure[Zero]
       test - """{"zero":1}""".assertDecodingFailure[Number]
+      test - """{"0":"zero"}""".assertDecodingFailure[Map[Int :| Positive, String]]

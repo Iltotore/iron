@@ -1,6 +1,6 @@
 package io.github.iltotore.iron
 
-import com.github.plokhotnyuk.jsoniter_scala.core.{JsonValueCodec, readFromString, writeToString}
+import com.github.plokhotnyuk.jsoniter_scala.core.{JsonKeyCodec, JsonReader, JsonValueCodec, JsonWriter, readFromString, writeToString}
 import com.github.plokhotnyuk.jsoniter_scala.macros.*
 import io.github.iltotore.iron
 import io.github.iltotore.iron.{*, given}
@@ -23,6 +23,12 @@ object JsoniterRefinedSubtypeSuite extends TestSuite:
 
   given JsonValueCodec[Status] = JsonCodecMaker.make(codecMakerConfig)
 
+  given JsonKeyCodec[Double] = new:
+    def decodeKey(in: JsonReader): Double = in.readKeyAsDouble()
+    def encodeKey(x: Double, out: JsonWriter): Unit = out.writeKey(x)
+
+  given JsonValueCodec[Map[Altitude, String]] = JsonCodecMaker.make
+
   extension [A](value: A)(using JsonValueCodec[A])
     def assertEncoding(expected: String): Unit = assert(writeToString(value) == expected)
 
@@ -35,11 +41,14 @@ object JsoniterRefinedSubtypeSuite extends TestSuite:
       test - altitude.assertEncoding("10.0")
       test - AltitudeNumber(Altitude(20)).assertEncoding("""{"altitude":20.0}""")
       test - Status(List(AltitudeNumber(Altitude(30)))).assertEncoding("""{"status_list":[{"altitude":30.0}]}""")
+      test - Map(Altitude(10) -> "low").assertEncoding("""{"10.0":"low"}""")
 
     test("decoding - valid predicate"):
       test - "10.0".assertDecodingSuccess[Altitude](altitude)
       test - """{"altitude":20.0}""".assertDecodingSuccess[AltitudeNumber](AltitudeNumber(Altitude(20)))
+      test - """{"10.0":"low"}""".assertDecodingSuccess[Map[Altitude, String]](Map(Altitude(10) -> "low"))
 
     test("decoding - invalid predicate"):
       test - "-10.0".assertDecodingFailure[Altitude]
       test - """{"altitude":-20.0}""".assertDecodingFailure[AltitudeNumber]
+      test - """{"-10.0":"underground"}""".assertDecodingFailure[Map[Altitude, String]]

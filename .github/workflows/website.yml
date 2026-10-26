@@ -47,4 +47,4 @@ jobs:
         with:
           path: out/docs/docJar.dest/docs
 
-      - uses: actions/deploy-pages@v5.0.0
+      - uses: actions/deploy-pages@v5.0.1

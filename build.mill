@@ -433,13 +433,13 @@ object doobie extends SubModule:
   def artifactName = "iron-doobie"
 
   def mvnDeps = Seq(
-    mvn"org.typelevel::doobie-core::1.0.0-RC13"
+    mvn"org.typelevel::doobie-core::1.0.0-RC14"
   )
 
   object test extends Tests:
     def mvnDeps = Seq(
       mvn"com.lihaoyi::utest:0.8.1",
-      mvn"org.typelevel::doobie-core::1.0.0-RC13",
+      mvn"org.typelevel::doobie-core::1.0.0-RC14",
 
     )
 
